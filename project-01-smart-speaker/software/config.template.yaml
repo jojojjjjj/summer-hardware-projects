@@ -1,0 +1,135 @@
+# 小智同学配置文件 | Xiao Zhi Configuration File
+# 复制此文件为 config.yaml 并填入你的配置
+
+# ================================
+# API 配置 | API Configuration
+# ================================
+api:
+  # API 提供商：deepseek 或 openai
+  provider: deepseek
+
+  # 你的 API Key（必填）
+  # DeepSeek: https://platform.deepseek.com/
+  # OpenAI: https://platform.openai.com/
+  api_key: "your-api-key-here"
+
+  # 模型名称
+  # DeepSeek: deepseek-chat
+  # OpenAI: gpt-3.5-turbo
+  model: deepseek-chat
+
+  # 温度参数 (0-2)
+  # 越高越随机，越低越确定性
+  temperature: 0.7
+
+  # 最大回复长度
+  max_tokens: 200
+
+# ================================
+# 语音识别配置 | STT Configuration
+# ================================
+stt:
+  # Whisper 模型大小
+  # tiny/base/small/medium/large
+  # 树莓派推荐：tiny 或 base
+  model: tiny
+
+  # 语言代码
+  # zh=中文, en=英文
+  language: zh
+
+# ================================
+# 语音合成配置 | TTS Configuration
+# ================================
+tts:
+  # 语音名称
+  # 常用中文语音：
+  # - zh-CN-XiaoxiaoNeural (女声，年轻)
+  # - zh-CN-YunxiNeural (男声，年轻)
+  # - zh-CN-YunyangNeural (男声，成熟)
+  voice: zh-CN-XiaoxiaoNeural
+
+  # 语速调整
+  # 范围：-50% 到 +100%
+  # "+0%" = 正常速度
+  rate: "+0%"
+
+  # 音量调整
+  # 范围：-100% 到 +100%
+  # "+0%" = 正常音量
+  volume: "+0%"
+
+# ================================
+# 音频配置 | Audio Configuration
+# ================================
+audio:
+  # 采样率 (Hz)
+  # 8000: 电话音质
+  # 16000: 语音识别推荐
+  # 44100: CD 音质
+  sample_rate: 16000
+
+  # 声道数
+  # 1 = 单声道, 2 = 立体声
+  channels: 1
+
+  # 缓冲区大小
+  chunk_size: 1024
+
+  # 录音时长（秒）
+  recording_duration: 5
+
+# ================================
+# 唤醒词配置 | Wake Word Configuration
+# ================================
+wake_word:
+  # 是否启用唤醒词
+  enabled: false
+
+  # Picovoice Access Key
+  # 获取地址：https://picovoice.ai/
+  access_key: "your-access-key-here"
+
+  # 灵敏度 (0-1)
+  # 越高越敏感，但可能误触发
+  sensitivity: 0.5
+
+# ================================
+# 插件配置 | Plugin Configuration
+# ================================
+plugins:
+  # 天气插件 API Key（可选）
+  # OpenWeatherMap: https://openweathermap.org/api
+  weather_api_key: "your-weather-api-key"
+
+  # 默认城市
+  default_city: "Beijing"
+
+# ================================
+# 日志配置 | Logging Configuration
+# ================================
+logging:
+  # 日志级别：DEBUG/INFO/WARNING/ERROR
+  level: INFO
+
+  # 日志目录
+  log_dir: "logs"
+
+  # 是否保留日志文件
+  save_logs: true
+
+# ================================
+# 高级配置 | Advanced Configuration
+# ================================
+advanced:
+  # 是否在启动时预热模型
+  warm_up_models: true
+
+  # 是否使用 GPU（如果有）
+  use_gpu: false
+
+  # 对话历史保留轮数
+  conversation_history: 5
+
+  # 错误重试次数
+  max_retries: 3

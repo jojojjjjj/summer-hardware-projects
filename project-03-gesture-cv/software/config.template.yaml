@@ -1,0 +1,69 @@
+# 手势互动装置 - 配置文件模板
+# Gesture Interactive Installation - Configuration Template
+
+# 摄像头设置 | Camera Settings
+camera:
+  device_id: 0  # 摄像头设备ID
+  width: 1280   # 分辨率宽度
+  height: 720   # 分辨率高度
+  fps: 30       # 目标帧率
+
+# MediaPipe设置 | MediaPipe Settings
+mediapipe:
+  model_complexity: 1  # 0=轻量, 1=中等, 2=复杂
+  max_num_hands: 2     # 最大手部数量
+  min_detection_confidence: 0.7  # 最小检测置信度
+  min_tracking_confidence: 0.5   # 最小追踪置信度
+
+# 手势识别设置 | Gesture Recognition Settings
+gestures:
+  smoothing_window: 5  # 平滑窗口大小
+  confidence_threshold: 0.6  # 置信度阈值
+
+  # 手势阈值 | Gesture Thresholds
+  thresholds:
+    finger_extension: 0.1  # 手指伸直判定阈值
+    thumb_distance: 0.05   # 拇指距离阈值
+    ok_gesture: 0.05       # OK手势阈值
+
+# 音量控制设置 | Volume Control Settings
+volume_control:
+  smoothing_factor: 0.1  # 平滑因子 (0-1)
+  gesture_debounce: 0.5  # 手势防抖时间(秒)
+  step_size: 5           # 音量调节步长
+
+# 虚拟画板设置 | Virtual Canvas Settings
+virtual_canvas:
+  width: 1280
+  height: 720
+  brush_size: 5
+  brush_colors:
+    - [0, 255, 0]    # 绿色
+    - [255, 0, 0]    # 蓝色
+    - [0, 0, 255]    # 红色
+    - [255, 255, 0]  # 青色
+    - [255, 255, 255] # 白色
+
+# LED设置 | LED Settings (可选)
+led:
+  enabled: false
+  pin: 18
+  num_pixels: 30
+  brightness: 0.5
+
+# 舵机设置 | Servo Settings (可选)
+servo:
+  enabled: false
+  pin: 17
+
+# 显示设置 | Display Settings
+display:
+  show_landmarks: true   # 显示关键点
+  show_connections: true # 显示连接线
+  show_fps: true        # 显示FPS
+  mirror: true          # 镜像显示
+
+# 日志设置 | Logging Settings
+logging:
+  level: INFO  # DEBUG, INFO, WARNING, ERROR
+  file: app.log

@@ -1,0 +1,47 @@
+{
+  "name": "summer-project-team",
+  "description": "Summer CS Project Team - 高中生暑期项目团队",
+  "lead": "project-manager",
+  "teammates": [
+    {
+      "name": "frontend-dev",
+      "agent": "frontend-dev",
+      "description": "前端开发 — UI组件和页面实现"
+    },
+    {
+      "name": "backend-dev",
+      "agent": "backend-dev",
+      "description": "后端开发 — API和数据库"
+    },
+    {
+      "name": "data-engineer",
+      "agent": "data-engineer",
+      "description": "数据工程师 — 数据采集和分析"
+    },
+    {
+      "name": "ml-engineer",
+      "agent": "ml-engineer",
+      "description": "AI/ML工程师 — 模型训练和部署"
+    },
+    {
+      "name": "qa-engineer",
+      "agent": "qa-engineer",
+      "description": "测试工程师 — 质量保证"
+    },
+    {
+      "name": "devops",
+      "agent": "devops",
+      "description": "DevOps — 环境和部署"
+    },
+    {
+      "name": "tech-writer",
+      "agent": "tech-writer",
+      "description": "技术文档 — 文档和报告"
+    }
+  ],
+  "settings": {
+    "maxConcurrentTeammates": 3,
+    "messageTimeout": 60000,
+    "taskListPath": ".claude/tasks/summer-project/"
+  }
+}
