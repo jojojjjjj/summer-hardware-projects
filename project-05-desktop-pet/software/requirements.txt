@@ -1,0 +1,22 @@
+# 桌宠 "萌桌面" 依赖列表
+# Desktop Pet "PetDesk" Dependencies
+# 安装方式: pip install -r requirements.txt
+
+# 核心依赖 (Core Dependencies)
+PyQt5>=5.15.0          # GUI框架
+Pillow>=10.0.0         # 图像处理
+PyYAML>=6.0            # 配置文件解析
+
+# AI对话功能 (AI Dialogue - Optional)
+openai>=1.0.0          # LLM API调用（兼容多数国内API）
+
+# 硬件通信 (Hardware Communication - Optional)
+pyserial>=3.5          # Arduino串口通信
+
+# 打包工具 (Packaging Tools)
+pyinstaller>=6.0.0     # 程序打包为exe
+
+# 注意：
+# 1. PyQt5在某些系统上可能需要额外安装 PyQt5-sip
+# 2. openai库兼容DeepSeek、通义千问等国内API
+# 3. pyserial仅在使用Arduino硬件拓展时需要

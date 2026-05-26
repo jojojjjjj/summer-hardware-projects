@@ -1,0 +1,53 @@
+# ================================================
+# 桌宠 "萌桌面" 配置文件
+# Desktop Pet "PetDesk" Configuration
+# ================================================
+# 使用方法：将此文件复制为 config.yaml，然后修改你的设置
+# Usage: Copy this file as config.yaml and modify your settings
+
+# 宠物设置 | Pet Settings
+pet:
+  name: "萌萌"                    # 宠物名字 | Pet name
+  size: 200                       # 显示大小（像素）| Display size (pixels)
+  start_position: "bottom_right"  # 起始位置: bottom_right, center, random
+  fps: 8                          # 默认动画帧率 | Default animation FPS
+
+# 动画设置 | Animation Settings
+animation:
+  sprites_dir: "assets/sprites"   # 素材目录 | Sprites directory
+  default_state: "idle"           # 默认动画状态 | Default animation state
+
+# 需求系统设置 | Needs System Settings
+needs:
+  hunger_decay_rate: 0.5          # 饱食度衰减速率（每秒）| Hunger decay rate (per sec)
+  energy_decay_rate: 0.3          # 体力衰减速率 | Energy decay rate
+  happiness_decay_rate: 0.2       # 快乐值衰减速率 | Happiness decay rate
+  boredom_increase_rate: 0.4      # 无聊度增长速率 | Boredom increase rate
+
+# 音效设置 | Sound Settings
+sound:
+  enabled: true                   # 是否开启音效 | Enable sound effects
+  volume: 50                      # 音量 (0-100) | Volume
+  sounds_dir: "assets/sounds"     # 音效目录 | Sounds directory
+
+# AI对话设置（可选）| AI Dialogue Settings (Optional)
+ai:
+  enabled: false                  # 是否开启AI对话 | Enable AI dialogue
+  api_key: ""                     # API密钥 | API Key (keep secret!)
+  base_url: "https://api.deepseek.com"  # API地址 | API endpoint
+  model: "deepseek-chat"          # 模型名称 | Model name
+  max_tokens: 100                 # 最大回复长度 | Max response tokens
+  temperature: 0.8                # 创造性 (0.0-1.0) | Temperature
+
+# 硬件设置（可选）| Hardware Settings (Optional)
+hardware:
+  enabled: false                  # 是否开启硬件互动 | Enable hardware interaction
+  port: "COM3"                    # 串口号 | Serial port
+  baudrate: 9600                  # 波特率 | Baud rate
+
+# 界面设置 | UI Settings
+ui:
+  bubble_duration: 3000           # 气泡显示时长（毫秒）| Bubble display duration (ms)
+  bubble_typing_speed: 50         # 打字速度（毫秒/字）| Typing speed (ms/char)
+  random_talk_min_interval: 15000 # 随机说话最短间隔（ms）| Random talk min interval
+  random_talk_max_interval: 60000 # 随机说话最长间隔（ms）| Random talk max interval
