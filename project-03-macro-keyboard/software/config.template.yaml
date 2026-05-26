@@ -1,0 +1,112 @@
+# 宏键盘 "键界" 配置模板
+# Macro Keyboard "KeyVerse" Configuration Template
+#
+# 使用方法 | Usage:
+#   复制此文件为 config.yaml，然后修改配置项
+#   Copy this file to config.yaml, then modify settings
+#
+# 最后更新 | Last updated: 2026-05-26
+
+# ===== 键盘硬件配置 | Keyboard Hardware Configuration =====
+keyboard:
+  name: "KeyVerse Macro Keyboard"    # 键盘名称
+  layout: "ortho_4x4"                # 布局类型（正交 4x4）
+  rows: 4                            # 矩阵行数
+  cols: 4                            # 矩阵列数
+  total_keys: 16                     # 总按键数
+
+# ===== 矩阵扫描配置 | Matrix Scanning Configuration =====
+matrix:
+  row_pins:                          # 行引脚（STM32 GPIO）
+    - "PA0"
+    - "PA1"
+    - "PA2"
+    - "PA3"
+  col_pins:                          # 列引脚（STM32 GPIO）
+    - "PA4"
+    - "PA5"
+    - "PA6"
+    - "PA7"
+  debounce_ms: 5                     # 消抖时间（毫秒）
+  scan_rate_hz: 1000                 # 扫描频率（Hz）
+
+# ===== OLED 显示配置 | OLED Display Configuration =====
+oled:
+  enabled: true                      # 是否启用
+  type: "SSD1306"                    # 驱动芯片型号
+  resolution: "128x64"               # 分辨率
+  interface: "I2C"                   # 通信接口
+  address: "0x3C"                    # I2C 地址
+  scl_pin: "PB6"                     # 时钟引脚
+  sda_pin: "PB7"                     # 数据引脚
+  contrast: 200                      # 对比度 (0-255)
+  flip: true                         # 是否翻转显示
+
+# ===== RGB 灯效配置 | RGB LED Configuration =====
+rgb:
+  enabled: true                      # 是否启用
+  type: "WS2812B"                    # 灯珠型号
+  count: 16                          # 灯珠数量
+  data_pin: "PA8"                    # 数据引脚
+  max_brightness: 128                # 最大亮度 (0-255，限制电流)
+  default_mode: "rainbow"            # 默认灯效模式
+  default_color:                     # 默认颜色 (HSV)
+    hue: 170                         # 色相 (0-255)
+    saturation: 255                  # 饱和度 (0-255)
+    value: 128                       # 明度 (0-255)
+
+# RGB 灯效模式列表
+  modes:
+    - "static"                       # 静态单色
+    - "breathing"                    # 呼吸灯
+    - "rainbow"                      # 彩虹
+    - "rainbow_swirl"                # 彩虹旋涡
+    - "gradient"                     # 渐变
+
+# ===== 旋钮编码器配置 | Rotary Encoder Configuration =====
+encoder:
+  enabled: true                      # 是否启用
+  a_pin: "PB0"                       # A 相引脚
+  b_pin: "PB1"                       # B 相引脚
+  switch_pin: "PB5"                  # 按键引脚
+  resolution: 4                      # 每棘格脉冲数
+  # 基础层旋钮功能
+  base_cw: "KC_VOLU"                # 顺时针：音量加
+  base_ccw: "KC_VOLD"               # 逆时针：音量减
+  base_press: "KC_MUTE"             # 按下：静音
+
+# ===== 键位映射配置 | Keymap Configuration =====
+keymap:
+  layers:
+    - name: "Base"                   # 层 0：数字键盘
+      keys:
+        - ["KC_P7", "KC_P8", "KC_P9", "KC_PSLS"]
+        - ["KC_P4", "KC_P5", "KC_P6", "KC_PAST"]
+        - ["KC_P1", "KC_P2", "KC_P3", "KC_PMNS"]
+        - ["KC_P0", "KC_PDOT", "KC_PENT", "KC_PPLS"]
+    - name: "FN"                     # 层 1：功能层
+      keys:
+        - ["KC_MUTE", "KC_VOLU", "RGB_MOD", "KC_TRNS"]
+        - ["KC_MPRV", "KC_MPLY", "KC_MNXT", "KC_TRNS"]
+        - ["KC_VOLD", "KC_TRNS", "KC_TRNS", "KC_TRNS"]
+        - ["KC_TRNS", "KC_TRNS", "KC_TRNS", "QK_BOOT"]
+
+# ===== USB 配置 | USB Configuration =====
+usb:
+  vid: "0xFEED"                      # 厂商 ID
+  pid: "0x6060"                      # 产品 ID
+  max_power_ma: 100                  # 最大功耗（毫安）
+  poll_interval_ms: 1                # 轮询间隔（毫秒）
+
+# ===== 调试配置 | Debug Configuration =====
+debug:
+  enabled: false                     # 是否启用调试模式
+  console_output: false              # 是否输出到 QMK 控制台
+  matrix_scan_rate: false            # 是否显示扫描速率
+  key_events: false                  # 是否显示按键事件
+
+# ===== 测试配置 | Test Configuration =====
+test:
+  serial_port: "COM3"                # 串口号（根据实际修改）
+  baud_rate: 115200                  # 波特率
+  timeout_sec: 5                     # 超时时间（秒）
