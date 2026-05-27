@@ -67,7 +67,12 @@
 │   └── assignments/              # 作业与评分标准
 │
 ├── project-02-[name]/            # 项目二
-└── project-03-[name]/            # 项目三
+├── project-03-[name]/            # 项目三
+├── project-04-[name]/            # 项目四
+├── project-05-[name]/            # 项目五
+├── project-06-[name]/            # 项目六
+├── project-07-[name]/            # 项目七
+└── project-08-[name]/            # 项目八（进阶难度）
 ```
 
 ---
