@@ -1,0 +1,123 @@
+# ============================================================================
+# ElectronBot 进阶桌宠机器人配置模板
+# ElectronBot Advanced Desktop Pet Configuration Template
+# ============================================================================
+#
+# 使用方法：复制此文件为 config.yaml，根据实际硬件修改参数
+# Usage: Copy this file as config.yaml and modify parameters for your hardware
+# ============================================================================
+
+# === USB 通信配置 | USB Communication Configuration ===
+usb:
+  port: "COM3"                 # USB CDC 虚拟串口号 (Windows: COM3, Linux: /dev/ttyACM0)
+                               # USB CDC virtual serial port
+  baudrate: 115200             # 波特率 | Baud rate
+  timeout: 2                   # 读取超时 (秒) | Read timeout (seconds)
+
+# === 舵机配置 | Servo Configuration ===
+# 6 个舵机定义，每个舵机包含角度范围、偏移和 PID 参数
+# 6 servo definitions, each with angle range, offset, and PID parameters
+servos:
+  - id: 0
+    name: "head_yaw"           # 头部偏航 | Head yaw
+    min_angle: -90             # 最小角度 (度) | Min angle (degrees)
+    max_angle: 90              # 最大角度 (度) | Max angle (degrees)
+    offset: 0                  # 零位偏移 (度) | Zero-position offset (degrees)
+    pid_p: 1.2                 # 比例增益 | Proportional gain
+    pid_i: 0.02                # 积分增益 | Integral gain
+    pid_d: 0.5                 # 微分增益 | Derivative gain
+
+  - id: 1
+    name: "head_pitch"         # 头部俯仰 | Head pitch
+    min_angle: -45
+    max_angle: 45
+    offset: 0
+    pid_p: 1.0
+    pid_i: 0.01
+    pid_d: 0.4
+
+  - id: 2
+    name: "left_arm"           # 左臂 | Left arm
+    min_angle: -90
+    max_angle: 90
+    offset: 5
+    pid_p: 0.8
+    pid_i: 0.01
+    pid_d: 0.3
+
+  - id: 3
+    name: "right_arm"          # 右臂 | Right arm
+    min_angle: -90
+    max_angle: 90
+    offset: -5
+    pid_p: 0.8
+    pid_i: 0.01
+    pid_d: 0.3
+
+  - id: 4
+    name: "body_yaw"           # 躯干偏航 | Body yaw
+    min_angle: -30
+    max_angle: 30
+    offset: 0
+    pid_p: 1.5
+    pid_i: 0.02
+    pid_d: 0.6
+
+  - id: 5
+    name: "body_pitch"         # 躯干俯仰 | Body pitch
+    min_angle: -20
+    max_angle: 20
+    offset: 0
+    pid_p: 1.5
+    pid_i: 0.02
+    pid_d: 0.6
+
+# === 显示屏配置 | Display Configuration ===
+# GC9A01 圆形 SPI 屏幕 | GC9A01 round SPI display
+display:
+  width: 240                   # 屏幕宽度 (像素) | Screen width (pixels)
+  height: 240                  # 屏幕高度 (像素) | Screen height (pixels)
+  spi_speed: 40000000          # SPI 时钟频率 (Hz) | SPI clock frequency (Hz)
+
+# === 摄像头配置 | Camera Configuration ===
+camera:
+  device_id: 0                 # 摄像头设备号 | Camera device ID
+  resolution: [640, 480]       # 分辨率 [宽, 高] | Resolution [width, height]
+  fps: 30                      # 帧率 | Frames per second
+
+# === 表情资源配置 | Expression Asset Configuration ===
+expressions:
+  path: "assets/expressions/"  # 表情图片目录 | Expression image directory
+  default_expression: "idle"   # 默认表情 | Default expression name
+
+# === AI 对话配置 | AI Dialogue Configuration ===
+ai:
+  api_key: "YOUR_API_KEY_HERE" # API 密钥（请勿提交真实密钥！）
+                               # API key (DO NOT commit real keys!)
+  model: "gpt-4o-mini"         # 模型名称 | Model name
+  system_prompt: >-
+    你是 ElectronBot，一个可爱的桌面宠物机器人。你的回答应该简短、活泼、充满个性。
+    你可以用中文或英文回答，但每次只说一句话。
+    You are ElectronBot, a cute desktop pet robot. Keep your responses short,
+    lively, and full of personality. You may reply in Chinese or English,
+    but only one sentence at a time.
+
+# === 行为配置 | Behavior Configuration ===
+behavior:
+  reaction_enabled: true       # 是否启用事件反应 | Enable event reactions
+  idle_timeout: 30             # 空闲超时 (秒)，超时后播放空闲动画
+                               # Idle timeout (seconds), play idle animation after
+  gesture_sensitivity: 0.7     # 手势识别灵敏度 (0.0-1.0) | Gesture sensitivity
+  blink_interval_min: 3        # 眨眼最小间隔 (秒) | Min blink interval (seconds)
+  blink_interval_max: 8        # 眨眼最大间隔 (秒) | Max blink interval (seconds)
+  idle_animations:             # 空闲时随机播放的动画列表 | Random idle animations
+    - "look_around"
+    - "stretch"
+    - "yawn"
+    - "wave"
+
+# === 日志配置 | Logging Configuration ===
+logging:
+  level: "INFO"                # 日志级别: DEBUG, INFO, WARNING, ERROR
+  save_logs: false             # 是否保存日志到文件 | Save logs to file
+  log_dir: "logs"              # 日志目录 | Log directory
