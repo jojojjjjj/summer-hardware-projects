@@ -1,0 +1,30 @@
+# ============================================================================
+# ElectronBot 进阶桌宠机器人依赖说明 | ElectronBot Advanced Desktop Pet Dependencies
+# ============================================================================
+# PC 端 Python 工具包（用于 Unity 桥接、计算机视觉、AI 对话等）
+# PC-side Python packages (for Unity bridging, computer vision, AI dialogue, etc.)
+#
+# 安装方法 | Install:
+#   pip install -r requirements.txt
+# ============================================================================
+
+# USB CDC 通信 | USB CDC communication with STM32
+pyserial>=3.5
+
+# 计算机视觉 | Computer vision
+opencv-python>=4.8.0
+
+# 姿态估计 - 比 OpenPose 更轻量 | Pose estimation - lighter than OpenPose
+mediapipe>=0.10.0
+
+# 数学运算 | Math operations
+numpy>=1.24.0
+
+# OpenCV 扩展模块（SIFT/SURF 等专利算法） | OpenCV contrib modules
+opencv-contrib-python>=4.8.0
+
+# 图像处理 | Image processing
+Pillow>=10.0.0
+
+# 配置文件解析 | Configuration file parsing
+pyyaml>=6.0
