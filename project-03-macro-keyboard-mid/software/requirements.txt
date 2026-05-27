@@ -1,0 +1,28 @@
+# 宏键盘 "键界" Python 工具依赖
+# Macro Keyboard "KeyVerse" Python Tool Dependencies
+#
+# 安装方法 | Installation:
+#   pip install -r requirements.txt
+#
+# 最后更新 | Last updated: 2026-05-26
+
+# 测试框架 | Testing
+pytest>=7.0.0
+
+# YAML 配置文件解析 | YAML config parsing
+pyyaml>=6.0
+
+# 串口通信（用于调试 QMK 控制台输出）
+# Serial communication (for QMK console debugging)
+pyserial>=3.5
+
+# USB HID 设备检测（可选）
+# USB HID device detection (optional)
+hidapi>=0.14.0
+
+# 格式化输出 | Pretty printing
+rich>=13.0.0
+
+# 开发工具 | Development tools
+flake8>=6.0.0        # 代码风格检查
+black>=23.0.0        # 自动格式化
