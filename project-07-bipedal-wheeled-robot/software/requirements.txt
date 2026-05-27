@@ -1,0 +1,51 @@
+; ============================================================================
+; 轮足机器人依赖说明 | Bipedal Wheeled Robot Dependency Notes
+; ============================================================================
+; 本文件不是标准的依赖文件，而是对 platformio.ini 中依赖的详细说明
+; This file is NOT a standard dependency file, but detailed notes on
+; the dependencies defined in platformio.ini
+;
+; 实际依赖配置请参见 platformio.ini | See platformio.ini for actual config
+; ============================================================================
+
+# 核心依赖列表 | Core Dependency List
+# ============================================================================
+#
+# 1. ElectronicCats/MPU6050 @ ^0.6.0
+#    - 六轴惯性测量单元（IMU）传感器库
+#    - 6-axis Inertial Measurement Unit (IMU) sensor library
+#    - 读取三轴加速度计和三轴陀螺仪数据
+#    - Reads 3-axis accelerometer and 3-axis gyroscope data
+#    - 用于计算机器人倾斜角度（平衡关键传感器）
+#    - Used to calculate robot tilt angle (critical for balancing)
+#
+# 2. askuric/Simple FOC @ ^2.2.3
+#    - 无刷直流电机（BLDC）磁场定向控制库
+#    - Brushless DC motor Field-Oriented Control library
+#    - 支持 FOC 算法，实现平滑的力矩控制
+#    - Supports FOC algorithm for smooth torque control
+#    - 也可用于有刷电机的简单 PWM 控制
+#    - Can also be used for simple PWM control of brushed motors
+#
+# 3. madhephaestus/ESP32Encoder @ ^0.11.0
+#    - ESP32 硬件编码器计数库
+#    - ESP32 hardware encoder counting library
+#    - 使用 PCNT（脉冲计数器）外设，不占用 CPU
+#    - Uses PCNT peripheral, does not consume CPU
+#    - 提供电机转速反馈（速度环 PID 需要）
+#    - Provides motor speed feedback (needed for velocity PID loop)
+#
+# 内置依赖（无需额外安装）| Built-in Dependencies (no install needed)
+# ============================================================================
+#
+# 4. Wire (ESP32 内置 | built-in)
+#    - I2C 通信库，用于与 MPU6050 通信
+#    - I2C communication library for talking to MPU6050
+#
+# 5. WiFi (ESP32 内置 | built-in)
+#    - 无线网络库，用于远程控制和调试
+#    - Wireless network library for remote control and debugging
+#
+# 6. BluetoothSerial (ESP32 内置 | built-in)
+#    - 蓝牙串口库，用于手机遥控
+#    - Bluetooth serial library for phone remote control
