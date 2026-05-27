@@ -1,12 +1,12 @@
-# Day 06: 宠物行为系统 | Pet Behavior System
+# Day 06: 显示屏驱动与GUI开发 | Display Driver & GUI Development
 
 > **今日目标:**
-> - 设计宠物需求系统（饥饿度、心情值、体力值）
-> - 实现方向感知的行走动画
-> - 添加随机行为选择器
-> - 让桌宠拥有"自主意识"
+> - 掌握SPI总线协议
+> - 驱动ST7789显示屏 (240x240)
+> - LVGL图形库入门
+> - 实现天气时钟界面和表情动画
 >
-> **产出:** 桌宠能自主做出多种行为决策，有需求系统驱动的状态切换
+> **产出:** ST7789成功点亮并显示彩色图像，LVGL界面运行，实现天气时钟和宠物表情
 
 ---
 
@@ -14,408 +14,507 @@
 
 | 时间 | 活动类型 | 内容 |
 |------|----------|------|
-| 09:00 - 09:15 | 晨间活动 | 状态机运行效果展示 |
-| 09:15 - 10:30 | 知识讲解 | 需求系统设计、行为树概念 |
+| 09:00 - 09:15 | 晨间活动 | 传感器数据采集系统演示、显示效果预期 |
+| 09:15 - 10:30 | 知识讲解 | SPI总线协议、ST7789驱动原理、LVGL架构 |
 | 10:30 - 10:45 | 课间休息 | |
-| 10:45 - 12:00 | 动手实践 | 实现需求系统 |
+| 10:45 - 12:00 | 动手实践 | ST7789初始化、纯色填充、图片显示 |
 | 12:00 - 13:30 | 午餐休息 | |
-| 13:30 - 15:00 | 项目实战 | 行为选择器和方向感知移动 |
+| 13:30 - 15:00 | 项目实战 | LVGL移植与控件使用、事件回调 |
 | 15:00 - 15:15 | 课间休息 | |
-| 15:15 - 16:30 | 拓展练习 | 个性化行为、表情系统 |
-| 16:30 - 17:00 | 总结分享 | 行为系统设计讨论 |
+| 15:15 - 16:30 | 拓展练习 | 天气时钟界面设计、表情动画切换 |
+| 16:30 - 17:00 | 总结分享 | 各组GUI界面展示、代码评审 |
 
 ---
 
-## 上午: 需求系统 | Morning: Needs System
+## 上午: SPI总线与ST7789驱动 | Morning: SPI Bus & ST7789 Driver
 
 ### 为什么要学这个? | Why Learn This?
 
-真正让桌宠有"生命感"的不是动画有多好看，而是它有没有自己的"需求"。想想你养的真实宠物：它会饿、会困、会无聊、会想玩。这些需求驱动着它的行为 -- 肚子饿了就找吃的，困了就去睡觉，无聊了就来找你玩。
+屏幕是SparkBot与用户交互的最主要界面。所有信息——天气、时间、AI回复、表情——都通过屏幕展示。SPI (Serial Peripheral Interface) 是嵌入式系统中最常见的高速通信协议，比I2C更快，适合显示屏这类大数据量外设。LVGL则是嵌入式GUI的事实标准，被NXP、小米、华为等公司广泛使用。
 
-What gives a desktop pet its "lifelike" quality is not just animation quality, but its "needs". Think about a real pet: it gets hungry, sleepy, bored, and wants to play. These needs drive its behavior -- hungry means seeking food, sleepy means finding a place to nap, bored means coming to interact with you.
+The display is SparkBot's main user interface. All information -- weather, time, AI replies, expressions -- goes through the screen. SPI is the most common high-speed protocol for data-intensive peripherals. LVGL is the de facto standard for embedded GUI, used by NXP, Xiaomi, Huawei, and more.
 
-这个概念在游戏设计中叫做"需求系统"（Needs System），模拟人生（The Sims）就是最著名的例子。在AI和机器人领域，这叫做"基于动机的行为选择"。
+### 任务6.1: SPI总线与ST7789初始化 (50分钟)
 
-In game design, this is called the "Needs System" -- The Sims is the most famous example. In AI and robotics, it is called "motivation-based behavior selection".
+ST7789是一个240x240像素的TFT-LCD驱动芯片，通过SPI接口与ESP32-S3通信。
 
-### 任务6.1: 设计需求系统 (30分钟)
+```c
+#include <stdio.h>
+#include <string.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "driver/spi_master.h"
+#include "driver/gpio.h"
+#include "esp_log.h"
 
-**步骤:**
+static const char *TAG = "ST7789";
 
-创建文件 `needs_system.py`：
+// SPI引脚定义 (根据SparkBot原理图)
+#define PIN_MOSI        GPIO_NUM_11
+#define PIN_SCLK        GPIO_NUM_12
+#define PIN_CS          GPIO_NUM_10    // 片选
+#define PIN_DC          GPIO_NUM_14    // 数据/命令选择
+#define PIN_RST         GPIO_NUM_9     // 复位
+#define PIN_BL          GPIO_NUM_8     // 背光
 
-```python
-import time
+#define LCD_WIDTH       240
+#define LCD_HEIGHT      240
 
-class NeedsSystem:
-    """宠物需求系统 -- 管理宠物的各种需求值"""
+static spi_device_handle_t spi;
 
-    def __init__(self):
-        # 需求值范围: 0（最低）到 100（最高）
-        self.hunger = 80       # 饱食度：越高越饱，越低越饿
-        self.energy = 100      # 体力值：越高越精神，越低越困
-        self.happiness = 70    # 快乐值：越高越开心
-        self.boredom = 30      # 无聊度：越高越无聊
+// 写命令 (DC引脚拉低)
+static void lcd_write_cmd(uint8_t cmd)
+{
+    gpio_set_level(PIN_DC, 0);
+    spi_transaction_t t = { .length = 8, .tx_buffer = &cmd };
+    spi_device_polling_transmit(spi, &t);
+}
 
-        # 需求衰减速率（每秒减少多少）
-        self.hunger_decay_rate = 0.5     # 每秒饱食度-0.5
-        self.energy_decay_rate = 0.3     # 每秒体力-0.3
-        self.happiness_decay_rate = 0.2  # 每秒快乐值-0.2
-        self.boredom_increase_rate = 0.4 # 每秒无聊度+0.4
+// 写数据 (DC引脚拉高)
+static void lcd_write_data(const uint8_t *data, size_t len)
+{
+    gpio_set_level(PIN_DC, 1);
+    spi_transaction_t t = { .length = len * 8, .tx_buffer = data };
+    spi_device_polling_transmit(spi, &t);
+}
 
-        # 阈值设置
-        self.HUNGRY_THRESHOLD = 30      # 饱食度低于30 -> 饥饿
-        self.SLEEPY_THRESHOLD = 20      # 体力低于20 -> 困倦
-        self.SAD_THRESHOLD = 25         # 快乐值低于25 -> 不开心
-        self.BORED_THRESHOLD = 70       # 无聊度高于70 -> 无聊
+// ST7789初始化序列
+static void st7789_init(void)
+{
+    // 硬件复位
+    gpio_set_level(PIN_RST, 0);
+    vTaskDelay(pdMS_TO_TICKS(10));
+    gpio_set_level(PIN_RST, 1);
+    vTaskDelay(pdMS_TO_TICKS(120));
 
-        self.last_update_time = time.time()
+    // 软件复位
+    lcd_write_cmd(0x01);  // SWRESET
+    vTaskDelay(pdMS_TO_TICKS(150));
 
-    def update(self):
-        """更新需求值（每帧调用）"""
-        now = time.time()
-        elapsed = now - self.last_update_time
-        self.last_update_time = now
+    // 退出休眠模式
+    lcd_write_cmd(0x11);  // SLPOUT
+    vTaskDelay(pdMS_TO_TICKS(120));
 
-        # 需求值自然衰减
-        self.hunger = max(0, self.hunger - self.hunger_decay_rate * elapsed)
-        self.energy = max(0, self.energy - self.energy_decay_rate * elapsed)
-        self.happiness = max(0, self.happiness - self.happiness_decay_rate * elapsed)
-        self.boredom = min(100, self.boredom + self.boredom_increase_rate * elapsed)
+    // 像素格式: 16位RGB565
+    lcd_write_cmd(0x3A);  // COLMOD
+    uint8_t pfmt = 0x55; lcd_write_data(&pfmt, 1);
 
-    def feed(self, amount=30):
-        """喂食 -- 提高饱食度"""
-        self.hunger = min(100, self.hunger + amount)
-        self.happiness = min(100, self.happiness + 10)  # 吃东西也开心
+    // 显示反转开启 (ST7789通常需要)
+    lcd_write_cmd(0x21);  // INVON
 
-    def rest(self, amount=2):
-        """休息 -- 恢复体力"""
-        self.energy = min(100, self.energy + amount)
+    // 普通显示模式
+    lcd_write_cmd(0x13);  // NORON
 
-    def play(self):
-        """玩耍 -- 提高快乐值，降低无聊度"""
-        self.happiness = min(100, self.happiness + 15)
-        self.boredom = max(0, self.boredom - 20)
-        self.energy = max(0, self.energy - 5)  # 玩耍消耗体力
+    // 开启显示
+    lcd_write_cmd(0x29);  // DISPON
+    vTaskDelay(pdMS_TO_TICKS(50));
 
-    def pet(self):
-        """抚摸 -- 提高快乐值"""
-        self.happiness = min(100, self.happiness + 10)
+    // 打开背光
+    gpio_set_level(PIN_BL, 1);
 
-    # 需求检查方法
-    def is_hungry(self):
-        return self.hunger < self.HUNGRY_THRESHOLD
+    ESP_LOGI(TAG, "ST7789 初始化完成!");
+}
 
-    def is_sleepy(self):
-        return self.energy < self.SLEEPY_THRESHOLD
+// 设置绘图窗口区域
+static void lcd_set_window(uint16_t x, uint16_t y, uint16_t w, uint16_t h)
+{
+    uint16_t xe = x + w - 1, ye = y + h - 1;
+    uint8_t data[4];
 
-    def is_sad(self):
-        return self.happiness < self.SAD_THRESHOLD
+    lcd_write_cmd(0x2A);  // CASET: 列地址
+    data[0] = x >> 8;  data[1] = x & 0xFF;
+    data[2] = xe >> 8; data[3] = xe & 0xFF;
+    lcd_write_data(data, 4);
 
-    def is_bored(self):
-        return self.boredom > self.BORED_THRESHOLD
+    lcd_write_cmd(0x2B);  // RASET: 行地址
+    data[0] = y >> 8;  data[1] = y & 0xFF;
+    data[2] = ye >> 8; data[3] = ye & 0xFF;
+    lcd_write_data(data, 4);
 
-    def get_most_urgent_need(self):
-        """获取最紧急的需求"""
-        if self.is_hungry():
-            return "hungry"
-        elif self.is_sleepy():
-            return "sleepy"
-        elif self.is_sad():
-            return "sad"
-        elif self.is_bored():
-            return "bored"
-        else:
-            return "content"
+    lcd_write_cmd(0x2C);  // RAMWR: 写内存
+}
 
-    def get_status_text(self):
-        """获取当前状态的文字描述"""
-        needs = []
-        if self.is_hungry():
-            needs.append("饿了")
-        if self.is_sleepy():
-            needs.append("困了")
-        if self.is_sad():
-            needs.append("不开心")
-        if self.is_bored():
-            needs.append("无聊")
-        if not needs:
-            needs.append("心情不错")
-        return "，".join(needs)
+// 填充纯色
+static void lcd_fill_color(uint16_t color)
+{
+    lcd_set_window(0, 0, LCD_WIDTH, LCD_HEIGHT);
 
-    def __str__(self):
-        return (f"饱食:{self.hunger:.0f} 体力:{self.energy:.0f} "
-                f"快乐:{self.happiness:.0f} 无聊:{self.boredom:.0f}")
+    uint16_t *line = heap_caps_malloc(LCD_WIDTH * 2, MALLOC_CAP_DMA);
+    for (int i = 0; i < LCD_WIDTH; i++) line[i] = color;
+
+    gpio_set_level(PIN_DC, 1);
+    for (int y = 0; y < LCD_HEIGHT; y++) {
+        spi_transaction_t t = { .length = LCD_WIDTH * 16, .tx_buffer = line };
+        spi_device_polling_transmit(spi, &t);
+    }
+    free(line);
+}
+
+void app_main(void)
+{
+    // GPIO初始化
+    gpio_reset_pin(PIN_DC);  gpio_set_direction(PIN_DC, GPIO_MODE_OUTPUT);
+    gpio_reset_pin(PIN_RST); gpio_set_direction(PIN_RST, GPIO_MODE_OUTPUT);
+    gpio_reset_pin(PIN_BL);  gpio_set_direction(PIN_BL, GPIO_MODE_OUTPUT);
+
+    // SPI总线初始化
+    spi_bus_config_t bus_cfg = {
+        .mosi_io_num = PIN_MOSI,
+        .miso_io_num = -1,        // ST7789不需要MISO
+        .sclk_io_num = PIN_SCLK,
+        .quadwp_io_num = -1,
+        .quadhd_io_num = -1,
+        .max_transfer_sz = LCD_WIDTH * LCD_HEIGHT * 2 + 8,
+    };
+    ESP_ERROR_CHECK(spi_bus_initialize(SPI3_HOST, &bus_cfg, SPI_DMA_CH_AUTO));
+
+    // 添加ST7789设备
+    spi_device_interface_config_t dev_cfg = {
+        .mode = 3,                          // SPI Mode 3 (CPOL=1, CPHA=1)
+        .clock_speed_hz = 40 * 1000 * 1000, // 40MHz
+        .spics_io_num = PIN_CS,
+        .queue_size = 7,
+    };
+    ESP_ERROR_CHECK(spi_bus_add_device(SPI3_HOST, &dev_cfg, &spi));
+
+    // 初始化和测试
+    st7789_init();
+
+    ESP_LOGI(TAG, "颜色测试: 红→绿→蓝→白→黑");
+    lcd_fill_color(0xF800);  vTaskDelay(pdMS_TO_TICKS(500));  // 红色
+    lcd_fill_color(0x07E0);  vTaskDelay(pdMS_TO_TICKS(500));  // 绿色
+    lcd_fill_color(0x001F);  vTaskDelay(pdMS_TO_TICKS(500));  // 蓝色
+    lcd_fill_color(0xFFFF);  vTaskDelay(pdMS_TO_TICKS(500));  // 白色
+    lcd_fill_color(0x0000);                                     // 黑色
+    ESP_LOGI(TAG, "ST7789测试完成!");
+}
 ```
 
+**RGB565颜色编码:**
+```
+16位颜色: RRRRR GGGGGG BBBBB
+0xF800 = 红, 0x07E0 = 绿, 0x001F = 蓝
+0xFFFF = 白, 0x0000 = 黑
+```
+
+**SPI四种模式对比:**
+
+| 模式 | CPOL | CPHA | 数据采样时机 | 常见设备 |
+|------|------|------|-------------|----------|
+| 0 | 0 | 0 | 上升沿 | 大部分SPI设备 |
+| 1 | 0 | 1 | 下降沿 | 少数ADC |
+| 2 | 1 | 0 | 下降沿 | 少数Flash |
+| 3 | 1 | 1 | 上升沿 | **ST7789** |
+
 **预期结果:**
-- 理解需求值如何随时间自然衰减
-- 理解喂食、休息等操作如何改变需求值
-- 理解"最紧急需求"的判断逻辑
+- 屏幕背光亮起，依次显示红、绿、蓝、白、黑五种纯色
+- 无花屏、条纹或颜色异常
 
 **常见问题:**
-- **需求值衰减太快/太慢**：调整decay_rate的数值
-- **不知道什么时候调用update()**：应该在状态机的update定时器中同步调用
+- **白屏无图像**：检查RST复位时序，延时至少120ms
+- **花屏**：检查SPI模式是否正确（ST7789用Mode 3: CPOL=1, CPHA=1）
+- **颜色不对**：检查RGB565字节序，可能需要交换高低字节
 
-### 任务6.2: 将需求系统集成到状态机 (30分钟)
+### 任务6.2: 显示图片和文字 (30分钟)
 
-```python
-class HungryState(State):
-    """饥饿状态 -- 宠物饿了会原地不动，等待喂食"""
+```c
+// 绘制像素点
+static void lcd_draw_pixel(uint16_t x, uint16_t y, uint16_t color)
+{
+    lcd_set_window(x, y, 1, 1);
+    lcd_write_data((uint8_t *)&color, 2);
+}
 
-    def __init__(self):
-        super().__init__("hungry")
-        self.wait_time = 0
+// 绘制填充矩形
+static void lcd_fill_rect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
+{
+    lcd_set_window(x, y, w, h);
+    uint16_t *line = heap_caps_malloc(w * 2, MALLOC_CAP_DMA);
+    for (int i = 0; i < w; i++) line[i] = color;
+    gpio_set_level(PIN_DC, 1);
+    for (int row = 0; row < h; row++) {
+        spi_transaction_t t = { .length = w * 16, .tx_buffer = line };
+        spi_device_polling_transmit(spi, &t);
+    }
+    free(line);
+}
 
-    def on_enter(self, pet):
-        super().on_enter(pet)
-        self.wait_time = 0
-        if hasattr(pet, 'show_hint'):
-            pet.show_hint("肚子好饿...", 3000)
+// 绘制像素级表情 — 开心脸
+static void draw_emoji_happy(uint16_t x, uint16_t y, uint8_t scale)
+{
+    uint16_t yellow = 0xFFE0, black = 0x0000;
+    lcd_fill_rect(x, y, 16 * scale, 16 * scale, yellow);
+    // 左眼
+    lcd_fill_rect(x + 3 * scale, y + 4 * scale, 2 * scale, 2 * scale, black);
+    // 右眼
+    lcd_fill_rect(x + 11 * scale, y + 4 * scale, 2 * scale, 2 * scale, black);
+    // 微笑弧线
+    for (int i = 0; i < 6; i++) {
+        lcd_draw_pixel(x + (5 + i) * scale, y + 12 * scale, black);
+    }
+}
 
-    def update(self, pet):
-        self.wait_time += 16
-        # 如果被喂食了（饱食度恢复），回到idle
-        if not pet.needs.is_hungry():
-            pet.state_machine.transition_to("idle")
-            return
-        # 等太久没人喂，可能去睡觉
-        if self.wait_time > 15000:
-            pet.state_machine.transition_to("sleep")
+// 绘制像素级表情 — 难过脸
+static void draw_emoji_sad(uint16_t x, uint16_t y, uint8_t scale)
+{
+    uint16_t yellow = 0xFFE0, black = 0x0000;
+    lcd_fill_rect(x, y, 16 * scale, 16 * scale, yellow);
+    lcd_fill_rect(x + 3 * scale, y + 4 * scale, 2 * scale, 2 * scale, black);
+    lcd_fill_rect(x + 11 * scale, y + 4 * scale, 2 * scale, 2 * scale, black);
+    for (int i = 0; i < 6; i++) {
+        lcd_draw_pixel(x + (5 + i) * scale, y + 11 * scale, black);
+    }
+}
 
-    def handle_event(self, pet, event):
-        if event == "feed":
-            pet.needs.feed()
-            pet.show_hint("好好吃！", 2000)
-            pet.state_machine.transition_to("happy")
+// 在LCD上画圆形 (Bresenham中点圆算法)
+static void lcd_draw_circle(uint16_t cx, uint16_t cy, uint16_t r, uint16_t color)
+{
+    int x = 0, y = r, d = 3 - 2 * r;
+    while (y >= x) {
+        lcd_draw_pixel(cx + x, cy + y, color); lcd_draw_pixel(cx - x, cy + y, color);
+        lcd_draw_pixel(cx + x, cy - y, color); lcd_draw_pixel(cx - x, cy - y, color);
+        lcd_draw_pixel(cx + y, cy + x, color); lcd_draw_pixel(cx - y, cy + x, color);
+        lcd_draw_pixel(cx + y, cy - x, color); lcd_draw_pixel(cx - y, cy - x, color);
+        x++;
+        if (d > 0) { y--; d += 4 * (x - y) + 10; }
+        else { d += 4 * x + 6; }
+    }
+}
 ```
 
 ---
 
-## 下午: 行为选择器 | Afternoon: Behavior Selector
+## 下午: LVGL图形库入门 | Afternoon: LVGL Graphics Library
 
-### 为什么要学随机行为? | Why Randomized Behavior?
+### 任务6.3: LVGL移植与基础控件 (50分钟)
 
-观察真实的宠物，你会发现它的行为是"有规律但不可预测"的。它大部分时间在睡觉，偶尔会走来走去，突然又会跑过来找你玩。如果我们用固定的模式（走10秒 -> 睡5秒 -> 走10秒），桌宠会显得很机械。
+LVGL (Light and Versatile Graphics Library) 移植需要实现三个关键接口：像素刷新回调、输入读取、时钟基准。
 
-Observing real pets, you will notice their behavior is "patterned but unpredictable". They sleep most of the time, occasionally walk around, and suddenly come to play with you. Fixed patterns (walk 10s -> sleep 5s -> walk 10s) make the pet feel robotic.
+```c
+#include "lvgl.h"
 
-引入随机性是让AI行为更自然的关键技巧。游戏中的NPC之所以不会让你觉得无聊，正是因为它们的行为包含了随机元素。
+// LVGL显示缓冲 (1/10屏幕行 = 双缓冲)
+#define LVGL_BUF_SIZE  (LCD_WIDTH * LCD_HEIGHT / 10)
+static lv_disp_draw_buf_t draw_buf;
+static lv_color_t buf1[LVGL_BUF_SIZE];
+static lv_color_t buf2[LVGL_BUF_SIZE];
 
-Introducing randomness is the key technique for natural AI behavior. Game NPCs remain interesting because their behavior includes random elements.
+// 像素刷新回调 — 连接LVGL和ST7789硬件
+static void lvgl_flush_cb(lv_disp_drv_t *disp, const lv_area_t *area,
+                          lv_color_t *color_p)
+{
+    uint16_t w = area->x2 - area->x1 + 1;
+    uint16_t h = area->y2 - area->y1 + 1;
+    lcd_set_window(area->x1, area->y1, w, h);
+    lcd_write_data((uint8_t *)color_p, w * h * 2);
+    lv_disp_flush_ready(disp);  // 通知LVGL: 刷新完成
+}
 
-### 任务6.3: 实现行为选择器 (40分钟)
+// 时钟基准 (每1ms调用一次)
+static void lvgl_tick_cb(void *arg)
+{
+    lv_tick_inc(1);
+}
 
-```python
-import random
+void lvgl_init(void)
+{
+    lv_init();
 
-class BehaviorSelector:
-    """行为选择器 -- 基于需求和随机性选择下一个行为"""
+    // 初始化显示缓冲
+    lv_disp_draw_buf_init(&draw_buf, buf1, buf2, LVGL_BUF_SIZE);
 
-    def __init__(self, needs_system):
-        self.needs = needs_system
+    // 注册显示驱动
+    static lv_disp_drv_t disp_drv;
+    lv_disp_drv_init(&disp_drv);
+    disp_drv.hor_res = LCD_WIDTH;
+    disp_drv.ver_res = LCD_HEIGHT;
+    disp_drv.flush_cb = lvgl_flush_cb;
+    disp_drv.draw_buf = &draw_buf;
+    lv_disp_drv_register(&disp_drv);
 
-    def choose_next_behavior(self):
-        """选择下一个行为"""
-        # 首先检查紧急需求
-        urgent_need = self.needs.get_most_urgent_need()
+    // 注册1ms定时器
+    const esp_timer_create_args_t timer_args = {
+        .callback = lvgl_tick_cb, .name = "lvgl_tick"
+    };
+    esp_timer_handle_t lvgl_timer;
+    esp_timer_create(&timer_args, &lvgl_timer);
+    esp_timer_start_periodic(lvgl_timer, 1000);
 
-        if urgent_need == "hungry":
-            return "hungry"    # 饿了 -> 找吃的
-        elif urgent_need == "sleepy":
-            return "sleep"     # 困了 -> 睡觉
+    ESP_LOGI(TAG, "LVGL 初始化完成!");
+}
 
-        # 没有紧急需求时，按概率随机选择
-        roll = random.random()  # 0到1之间的随机数
+// 创建基础演示界面
+void create_demo_ui(void)
+{
+    // 深色背景
+    lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x1a1a2e), 0);
 
-        if roll < 0.4:
-            return "idle"      # 40%概率待着不动
-        elif roll < 0.7:
-            return "walk"      # 30%概率到处走走
-        elif roll < 0.85:
-            return "play"      # 15%概率找主人玩
-        else:
-            return "explore"   # 15%概率四处探索
+    // 标题标签
+    lv_obj_t *title = lv_label_create(lv_scr_act());
+    lv_label_set_text(title, "ESP-SparkBot");
+    lv_obj_set_style_text_color(title, lv_color_hex(0x00FF88), 0);
+    lv_obj_set_style_text_font(title, &lv_font_montserrat_20, 0);
+    lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 20);
+
+    // 创建按钮
+    lv_obj_t *btn = lv_btn_create(lv_scr_act());
+    lv_obj_set_size(btn, 120, 50);
+    lv_obj_align(btn, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_style_bg_color(btn, lv_color_hex(0x4CAF50), 0);
+
+    // 按钮上的标签
+    lv_obj_t *btn_label = lv_label_create(btn);
+    lv_label_set_text(btn_label, "Hello!");
+    lv_obj_center(btn_label);
+
+    // 按钮点击事件回调
+    lv_obj_add_event_cb(btn, [](lv_event_t *e) {
+        ESP_LOGI("UI", "按钮被点击!");
+        lv_obj_t *btn = lv_event_get_target(e);
+        lv_obj_t *label = lv_obj_get_child(btn, 0);
+        lv_label_set_text(label, "Clicked!");
+    }, LV_EVENT_CLICKED, NULL);
+
+    // 图片控件 (显示LVGL内置符号)
+    lv_obj_t *icon = lv_label_create(lv_scr_act());
+    lv_label_set_text(icon, LV_SYMBOL_HOME);
+    lv_obj_set_style_text_font(icon, &lv_font_montserrat_48, 0);
+    lv_obj_set_style_text_color(icon, lv_color_hex(0xFFD700), 0);
+    lv_obj_align(icon, LV_ALIGN_BOTTOM_MID, 0, -20);
+}
+
+// LVGL主循环任务
+void lvgl_task(void *pv)
+{
+    while (1) {
+        lv_timer_handler();  // 驱动LVGL所有定时器和渲染
+        vTaskDelay(pdMS_TO_TICKS(5));
+    }
+}
 ```
 
-### 任务6.4: 方向感知行走 (30分钟)
+### 任务6.4: 天气时钟界面 (40分钟)
 
-让宠物走路时面朝移动方向：
+```c
+static lv_obj_t *time_label, *date_label, *temp_label, *weather_icon;
 
-```python
-class WalkState(State):
-    """走路状态 -- 支持方向感知"""
+void create_weather_clock(void)
+{
+    // 深色主题背景
+    lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x0f3460), 0);
 
-    def __init__(self):
-        super().__init__("walk")
-        self.target_x = 0
-        self.target_y = 0
-        self.walk_speed = 2
-        self.direction = "right"  # "left" 或 "right"
+    // 天气图标
+    weather_icon = lv_label_create(lv_scr_act());
+    lv_label_set_text(weather_icon, LV_SYMBOL_WIFI);
+    lv_obj_set_style_text_font(weather_icon, &lv_font_montserrat_48, 0);
+    lv_obj_set_style_text_color(weather_icon, lv_color_hex(0xFFD700), 0);
+    lv_obj_align(weather_icon, LV_ALIGN_TOP_MID, 0, 10);
 
-    def on_enter(self, pet):
-        super().on_enter(pet)
-        screen = QApplication.desktop().screenGeometry()
-        self.target_x = random.randint(0, screen.width() - 200)
-        self.target_y = random.randint(0, screen.height() - 200)
+    // 时间 — 大字体
+    time_label = lv_label_create(lv_scr_act());
+    lv_label_set_text(time_label, "12:00");
+    lv_obj_set_style_text_font(time_label, &lv_font_montserrat_36, 0);
+    lv_obj_set_style_text_color(time_label, lv_color_hex(0xFFFFFF), 0);
+    lv_obj_align(time_label, LV_ALIGN_CENTER, 0, -10);
 
-        # 确定方向
-        self.direction = "right" if self.target_x > pet.x() else "left"
+    // 日期
+    date_label = lv_label_create(lv_scr_act());
+    lv_label_set_text(date_label, "2026-05-27 周三");
+    lv_obj_set_style_text_color(date_label, lv_color_hex(0xAAAAAA), 0);
+    lv_obj_align(date_label, LV_ALIGN_CENTER, 0, 25);
 
-        # 根据方向选择动画
-        anim_name = f"walk_{self.direction}"
-        if hasattr(pet, 'anim_manager'):
-            if anim_name in pet.anim_manager.animations:
-                pet.anim_manager.switch_to(anim_name)
-            else:
-                pet.anim_manager.switch_to("walk")
+    // 温度
+    temp_label = lv_label_create(lv_scr_act());
+    lv_label_set_text(temp_label, "25 C");
+    lv_obj_set_style_text_font(temp_label, &lv_font_montserrat_20, 0);
+    lv_obj_set_style_text_color(temp_label, lv_color_hex(0x4FC3F7), 0);
+    lv_obj_align(temp_label, LV_ALIGN_BOTTOM_MID, 0, -20);
+}
 
-        # 水平翻转图片（如果只有一套walk动画）
-        self.update_sprite_direction(pet)
+// 定时刷新 — 每秒调用
+static void clock_update_cb(lv_timer_t *timer)
+{
+    time_t now;
+    struct tm timeinfo;
+    time(&now);
+    localtime_r(&now, &timeinfo);
 
-    def update_sprite_direction(self, pet):
-        """根据方向翻转图片"""
-        if self.direction == "left":
-            # PyQt5中可以通过QTransform水平翻转
-            from PyQt5.QtGui import QTransform
-            transform = QTransform().scale(-1, 1)
-            # 翻转当前帧
-            current_pixmap = pet.pet_label.pixmap()
-            if current_pixmap:
-                flipped = current_pixmap.transformed(transform)
-                pet.pet_label.setPixmap(flipped)
+    char buf[32];
 
-    def update(self, pet):
-        current_x = pet.x()
-        current_y = pet.y()
+    // 时:分
+    strftime(buf, sizeof(buf), "%H:%M", &timeinfo);
+    lv_label_set_text(time_label, buf);
 
-        dx = self.target_x - current_x
-        dy = self.target_y - current_y
-        distance = (dx ** 2 + dy ** 2) ** 0.5
+    // 日期 + 中文星期
+    const char *week[] = {"周日","周一","周二","周三","周四","周五","周六"};
+    snprintf(buf, sizeof(buf), "%d-%02d-%02d %s",
+             timeinfo.tm_year + 1900, timeinfo.tm_mon + 1,
+             timeinfo.tm_mday, week[timeinfo.tm_wday]);
+    lv_label_set_text(date_label, buf);
 
-        if distance < self.walk_speed:
-            pet.move(self.target_x, self.target_y)
-            pet.state_machine.transition_to("idle")
-        else:
-            move_x = int(dx / distance * self.walk_speed)
-            move_y = int(dy / distance * self.walk_speed)
-            pet.move(current_x + move_x, current_y + move_y)
-```
+    // 温度 (模拟波动 — 实际应从传感器/API获取)
+    static float temp = 25.0f;
+    temp += (rand() % 100 - 50) / 100.0f;
+    snprintf(buf, sizeof(buf), "%.1f C", temp);
+    lv_label_set_text(temp_label, buf);
+}
 
-### 任务6.5: 整合行为系统 (20分钟)
-
-在桌宠主类中整合需求系统和行为选择器：
-
-```python
-class PetWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        # 初始化需求系统
-        self.needs = NeedsSystem()
-        # 初始化行为选择器
-        self.behavior_selector = BehaviorSelector(self.needs)
-        # ... 其他初始化
-
-    def setup_state_machine(self):
-        """初始化状态机和行为系统"""
-        self.state_machine = StateMachine(self)
-        self.state_machine.add_state(IdleState())
-        self.state_machine.add_state(WalkState())
-        self.state_machine.add_state(SleepState())
-        self.state_machine.add_state(HappyState())
-        self.state_machine.add_state(HungryState())
-        self.state_machine.set_initial_state("idle")
-
-        # 启动更新定时器
-        self.update_timer = QTimer()
-        self.update_timer.timeout.connect(self.game_loop)
-        self.update_timer.start(16)
-
-    def game_loop(self):
-        """主游戏循环 -- 每帧调用"""
-        # 更新需求系统
-        self.needs.update()
-        # 更新状态机
-        self.state_machine.update()
-
-    def contextMenuEvent(self, event):
-        """右键菜单 -- 添加喂食选项"""
-        menu = QMenu(self)
-
-        feed_action = QAction("喂食", self)
-        feed_action.triggered.connect(lambda: self.do_feed())
-        menu.addAction(feed_action)
-
-        play_action = QAction("玩耍", self)
-        play_action.triggered.connect(lambda: self.do_play())
-        menu.addAction(play_action)
-
-        status_action = QAction("查看状态", self)
-        status_action.triggered.connect(lambda: self.show_status())
-        menu.addAction(status_action)
-
-        menu.addSeparator()
-
-        quit_action = QAction("退出", self)
-        quit_action.triggered.connect(QApplication.quit)
-        menu.addAction(quit_action)
-
-        menu.exec_(event.globalPos())
-
-    def do_feed(self):
-        self.needs.feed()
-        self.show_hint("谢谢喂食！", 2000)
-        self.state_machine.handle_event("feed")
-
-    def do_play(self):
-        self.needs.play()
-        self.show_hint("一起玩！", 2000)
-
-    def show_status(self):
-        status = self.needs.get_status_text()
-        self.show_hint(f"我现在{status}", 3000)
+void app_main(void)
+{
+    // ... SPI, ST7789, LVGL初始化 ...
+    create_weather_clock();
+    lv_timer_create(clock_update_cb, 1000, NULL);  // 每1秒
+    xTaskCreate(lvgl_task, "lvgl", 8192, NULL, 1, NULL);
+}
 ```
 
 **预期结果:**
-- 桌宠有完整的饥饿、体力、快乐、无聊系统
-- 饥饿时会显示"肚子好饿..."并等待喂食
-- 困了会自动去睡觉，睡觉恢复体力
-- 右键菜单可以喂食、玩耍、查看状态
-- 走路时角色面朝移动方向
+- 深色主题的天气时钟界面
+- 时间每秒刷新，日期含中文星期
+- 温度动态显示在底部
+- 界面布局居中协调
+
+**常见问题:**
+- **LVGL编译失败**：确认 `idf_component.yml` 有 `lvgl/lvgl: "^8.3"` 依赖
+- **中文不显示**：LVGL默认字体不含中文，需加载中文字库
+- **屏幕刷新慢**：增大缓冲区到1/4屏幕或使用`spi_device_queue_transmit`异步传输
 
 ---
 
 ## 今日作业 | Homework
 
 ### 必做题
-1. 实现NeedsSystem类，包含至少3种需求
-2. 实现BehaviorSelector，根据需求优先级选择行为
-3. 右键菜单添加"喂食"和"查看状态"功能
+1. 完成ST7789初始化，屏幕依次显示红绿蓝白黑五色
+2. 完成LVGL移植，显示"Hello SparkBot"和一个可点击按钮
+3. 实现天气时钟界面，时间每秒更新
 
 ### 挑战题
-1. 实现需求值的可视化显示（如底部小进度条）
-2. 添加"清洁度"需求，宠物长时间不洗澡会变脏
-3. 实现日夜节律：白天更活跃，晚上更容易困
+1. **宠物表情界面**: 用LVGL控件设计至少4种宠物表情（开心、难过、惊讶、生气），包含不同的图标、颜色和文字
+2. **表情切换动画**: 使用LVGL动画API (`lv_anim_t`) 实现表情淡入淡出切换，包括缩放和透明度变化
+3. **传感器联动**: 将Day 5的BMI270加速度数据接入，摇晃SparkBot时屏幕自动切换到"头晕"表情
 
 ### 思考题
-1. 需求值衰减速度对宠物行为有什么影响？太快和太慢分别会导致什么问题？
-2. 行为选择中为什么要有概率，而不是全部由需求值决定？
+1. 为什么显示屏用SPI而不是I2C？SPI和I2C在速度、引脚数、架构上有什么本质区别？
+2. LVGL的 `lv_timer_handler()` 为什么需要在任务循环中反复调用？内部在做什么工作？
+3. LVGL的双缓冲机制如何减少画面撕裂？单缓冲 vs 双缓冲的权衡是什么？
 
 ---
 
 ## 明日预告 | Tomorrow's Preview
 
-明天我们将为桌宠添加"说话"的能力！实现气泡对话框，让宠物能用文字表达自己的想法和心情。你将学习自定义Widget、QSS样式设计、以及如何让对话内容更丰富有趣。
+明天我们将为SparkBot装上"眼睛"！通过OV2640摄像头，SparkBot将获得拍照和实时视频能力。你还会学习ESP-WHO人脸检测框架，让SparkBot能识别并框出画面中的人脸！
 
-Tomorrow we give the pet the ability to "speak"! We will implement bubble dialog boxes so the pet can express its thoughts and feelings with text. You will learn custom widgets, QSS styling, and making dialogue content more engaging.
+Tomorrow we give SparkBot "eyes"! With the OV2640 camera, SparkBot gains photo and live video capabilities. You will also learn the ESP-WHO face detection framework, enabling SparkBot to detect and mark faces in the frame!
 
 ---
 
 ## 参考资源 | References
 
-- [模拟人生需求系统分析（搜索 "Sims needs system"）](https://search.bilibili.com/all?keyword=%E6%A8%A1%E6%8B%9F%E4%BA%BA%E7%94%9F%20%E9%9C%80%E6%B1%82%E7%B3%BB%E7%BB%9F)
-- [行为树 vs 状态机（游戏AI设计）](https://search.bilibili.com/all?keyword=%E8%A1%8C%E4%B8%BA%E6%A0%91%20%E7%8A%B6%E6%80%81%E6%9C%BA%20%E6%B8%B8%E6%88%8FAI)
-- [pixelgotchi Pygame桌宠（GitHub）](https://github.com/elohcrypto/pixelgotchi) -- 包含需求系统参考
-- [VPet 需求系统源码（GitHub）](https://github.com/LorisYounger/VPet)
+- [ESP-IDF SPI 驱动指南](https://docs.espressif.com/projects/esp-idf/zh_CN/stable/esp32s3/api-reference/peripherals/spi_master.html)
+- [ST7789V 数据手册](https://newhavendisplay.com/content/datasheets/ST7789V.pdf)
+- [LVGL 官方文档](https://docs.lvgl.io/master/index.html)
+- [LVGL 中文教程 (百问网)](https://lvgl.100ask.net/)
+- [LVGL 图片在线转换工具](https://lvgl.io/tools/imageconverter)
+- [ESP32 LVGL 实战教程 (B站)](https://search.bilibili.com/all?keyword=ESP32%20LVGL%20%E6%95%99%E7%A8%8B)
 
-*最后更新：2026-05-26*
+*最后更新：2026-05-27*

@@ -1,12 +1,13 @@
-# Day 02: 窗口透明与无边框技术 | Transparent & Frameless Window
+# Day 02: 硬件认识与焊接基础 | Hardware Overview & Soldering Basics
 
 > **今日目标:**
-> - 理解窗口透明的原理和实现方式
-> - 实现无边框、透明背景的桌宠窗口
-> - 让宠物图片"悬浮"在桌面上
-> - 处理透明窗口下的鼠标事件
+> - 深入了解ESP32-S3芯片架构和外设
+> - 认识SparkBot的硬件组成：3块PCB和核心元器件
+> - 学习焊接安全规范和电烙铁使用
+> - 完成贴片元件焊接练习
+> - 学习万用表的基本使用
 >
-> **产出:** 一个无边框透明窗口，宠物角色直接显示在桌面上
+> **产出:** 完成焊接练习板，能够熟练使用万用表测量电压和通断
 
 ---
 
@@ -14,315 +15,362 @@
 
 | 时间 | 活动类型 | 内容 |
 |------|----------|------|
-| 09:00 - 09:15 | 晨间活动 | 回顾Day 1作业，解答疑问 |
-| 09:15 - 10:30 | 知识讲解 | 窗口属性、透明原理、Qt窗口标志 |
+| 09:00 - 09:15 | 晨间活动 | 回顾Day 1作业，FreeRTOS任务展示 |
+| 09:15 - 10:30 | 知识讲解 | ESP32-S3架构、SparkBot硬件组成、焊接原理 |
 | 10:30 - 10:45 | 课间休息 | |
-| 10:45 - 12:00 | 动手实践 | 实现透明无边框窗口 |
+| 10:45 - 12:00 | 动手实践 | 焊接安全演示、练习板焊接 |
 | 12:00 - 13:30 | 午餐休息 | |
-| 13:30 - 15:00 | 项目实战 | 在透明窗口中显示宠物并处理鼠标 |
+| 13:30 - 15:00 | 项目实战 | 认识SparkBot原理图、元器件识别 |
 | 15:00 - 15:15 | 课间休息 | |
-| 15:15 - 16:30 | 拓展练习 | 右键菜单、窗口置顶 |
-| 16:30 - 17:00 | 总结分享 | 透明窗口的技术原理分享 |
+| 15:15 - 16:30 | 拓展练习 | 万用表测量练习、焊接进阶技巧 |
+| 16:30 - 17:00 | 总结分享 | 焊接心得、硬件知识竞答 |
 
 ---
 
-## 上午: 透明窗口原理与实现 | Morning: Transparent Window Theory & Implementation
+## 上午: ESP32-S3架构与焊接基础 | Morning: ESP32-S3 Architecture & Soldering Basics
 
 ### 为什么要学这个? | Why Learn This?
 
-如果你用过Shimeji桌宠或BongoCat，你会发现宠物是直接"站"在桌面上的，没有白色或灰色的窗口背景。这不是魔法，而是通过"窗口透明"技术实现的。
+写嵌入式程序不只是写代码——你要理解代码是如何操控硬件的。就像开车不仅要会踩油门，还要知道发动机怎么工作。理解芯片架构能帮助你写出更高效的代码，排错时也能快速定位问题。
 
-If you have used Shimeji or BongoCat, you know the pet stands directly on the desktop without a white/gray window background. This is not magic -- it is achieved through "window transparency" technology.
+Writing embedded programs is not just about code -- you need to understand how code controls hardware. Just like driving requires knowing more than pressing the accelerator, understanding chip architecture helps you write efficient code and debug faster.
 
-这项技术不仅用于桌宠。在游戏开发中，HUD（平视显示器）、屏幕录制工具的悬浮窗、直播软件的弹幕显示，都用到了同样的原理。掌握透明窗口是制作桌面应用的必备技能。
+焊接是硬件开发的必备技能。SparkBot有上百个元器件需要焊接到PCB上——贴片电阻、电容、芯片、连接器……掌握焊接技能，你就能自己组装和维修电子设备。
 
-This technique is used beyond desktop pets: game HUDs, screen recording overlays, and streaming software floating windows all use the same principle.
+Soldering is an essential hardware skill. SparkBot has over a hundred components to solder onto PCBs -- SMD resistors, capacitors, chips, connectors... Mastering soldering lets you build and repair electronic devices yourself.
 
-### 任务2.1: 理解窗口透明的层次 (30分钟)
+### 任务2.1: ESP32-S3芯片架构详解 (30分钟)
 
-**窗口透明有三个层次：**
+**ESP32-S3内部结构:**
 
 ```
-层次1: 完全不透明（默认）
-┌──────────────┐
-│   窗口背景    │  宠物在窗口里面
-│   ┌──────┐   │
-│   │ 宠物  │   │
-│   └──────┘   │
-└──────────────┘
-
-层次2: 窗口背景透明
-                 宠物浮在桌面上，但窗口还是一个矩形
-   ┌──────┐
-   │ 宠物  │     点击宠物旁边的位置 -> 穿透到桌面
-   └──────┘
-
-层次3: 完全透明（鼠标穿透）
-   ┌──────┐
-   │ 宠物  │     只有宠物图片的部分响应鼠标
-   └──────┘     其他区域完全穿透到桌面
+┌─────────────────────────────────────────────────────┐
+│                   ESP32-S3 芯片                       │
+├─────────────────────────────────────────────────────┤
+│  ┌──────────────┐  ┌──────────────┐                  │
+│  │  Xtensa LX7  │  │  Xtensa LX7  │  双核处理器       │
+│  │   Core 0     │  │   Core 1     │  @240MHz          │
+│  │  (PRO_CPU)   │  │  (APP_CPU)   │                  │
+│  └──────┬───────┘  └──────┬───────┘                  │
+│         └────────┬────────┘                          │
+│         ┌────────┴────────┐                          │
+│         │   总线矩阵       │                          │
+│         │   Bus Matrix    │                          │
+│         └────────┬────────┘                          │
+│   ┌──────────────┼──────────────┐                    │
+│   │              │              │                    │
+│   ▼              ▼              ▼                    │
+│ ┌──────┐   ┌──────────┐   ┌──────────┐              │
+│ │ 512KB│   │  8MB     │   │  384KB   │              │
+│ │ SRAM │   │  PSRAM   │   │  ROM     │  存储器       │
+│ └──────┘   └──────────┘   └──────────┘              │
+│                                                     │
+│ ┌──────────────────────────────────────┐            │
+│ │          外设接口                      │            │
+│ │  I2C×2  SPI×4  UART×3  I2S×2         │            │
+│ │  USB OTG  DVP Camera  LCD(8080/RGB)   │            │
+│ │  GPIO×45  ADC2×20  Touch×14         │            │
+│ │  LED PWM×8  MCPWM  RMT×4             │            │
+│ └──────────────────────────────────────┘            │
+│                                                     │
+│ ┌──────────────────────────────────────┐            │
+│ │          无线通信                      │            │
+│ │  WiFi 2.4GHz  802.11 b/g/n           │            │
+│ │  Bluetooth 5.0 LE + Classic          │            │
+│ │  ESP-NOW (乐鑫私有协议)                │            │
+│ └──────────────────────────────────────┘            │
+└─────────────────────────────────────────────────────┘
 ```
 
-**关键Qt属性：**
+**关键参数记忆口诀:**
+- "双核240" -- 双核处理器，最高240MHz
+- "8M外存512K内" -- 8MB PSRAM（外部）+ 512KB SRAM（内部）
+- "I2C两个SPI四，触摸十四ADC二十" -- 2个I2C, 4个SPI, 14个触摸通道, 20个ADC通道
 
-| 属性 | 作用 | 代码 |
-|------|------|------|
-| `Qt.FramelessWindowHint` | 去掉标题栏和边框 | `self.setWindowFlags(Qt.FramelessWindowHint)` |
-| `Qt.WA_TranslucentBackground` | 窗口背景透明 | `self.setAttribute(Qt.WA_TranslucentBackground)` |
-| `Qt.WindowStaysOnTopHint` | 窗口始终在最上层 | `self.setWindowFlags(Qt.WindowStaysOnTopHint)` |
-| `Qt.Tool` | 不在任务栏显示图标 | `self.setWindowFlags(Qt.Tool)` |
+### 任务2.2: SparkBot硬件组成详解 (30分钟)
 
-### 任务2.2: 创建透明无边框窗口 (30分钟)
+**SparkBot = 3块PCB + 1个3D外壳 + 若干连接器**
 
-**步骤:**
+```
+SparkBot 硬件架构:
 
-创建文件 `transparent_pet.py`：
-
-```python
-import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import Qt
-
-class TransparentPetWindow(QWidget):
-    """透明无边框的桌宠窗口"""
-
-    def __init__(self):
-        super().__init__()
-        self.init_ui()
-
-    def init_ui(self):
-        # 设置无边框 + 背景透明 + 始终置顶
-        self.setWindowFlags(
-            Qt.FramelessWindowHint |      # 无边框
-            Qt.WindowStaysOnTopHint |     # 始终在最上层
-            Qt.Tool                       # 不在任务栏显示
-        )
-        self.setAttribute(Qt.WA_TranslucentBackground)  # 背景透明
-
-        # 设置窗口大小
-        self.resize(200, 200)
-
-        # 创建图片标签
-        self.pet_label = QLabel(self)
-        self.pet_label.setGeometry(0, 0, 200, 200)
-        self.pet_label.setAlignment(Qt.AlignCenter)
-
-        # 加载宠物图片
-        self.load_pet_image("assets/sprites/idle_01.png")
-
-        # 将窗口放在屏幕右下角
-        self.move_to_bottom_right()
-
-        self.show()
-
-    def load_pet_image(self, image_path):
-        """加载宠物图片"""
-        pixmap = QPixmap(image_path)
-        if not pixmap.isNull():
-            scaled = pixmap.scaled(
-                self.pet_label.size(),
-                Qt.KeepAspectRatio,
-                Qt.SmoothTransformation
-            )
-            self.pet_label.setPixmap(scaled)
-        else:
-            self.pet_label.setText("请放入图片！")
-
-    def move_to_bottom_right(self):
-        """将窗口移到屏幕右下角"""
-        screen = QApplication.desktop().screenGeometry()
-        window = self.geometry()
-        x = screen.width() - window.width() - 50
-        y = screen.height() - window.height() - 100
-        self.move(x, y)
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = TransparentPetWindow()
-    sys.exit(app.exec_())
+┌─────────────────────────────────────────────┐
+│              SparkBot 系统框图                │
+├─────────────────────────────────────────────┤
+│                                             │
+│  ┌─────────────────────┐                    │
+│  │   主板 (Main Board)  │                    │
+│  │  ┌───────────────┐  │                    │
+│  │  │  ESP32-S3     │  │  核心控制器         │
+│  │  │  ESP32-S3-WROOM-1 模块              │
+│  │  └───────┬───────┘  │                    │
+│  │          │           │                    │
+│  │  ┌───────┴───────┐  │                    │
+│  │  │  DC-DC电源    │  │  5V->3.3V 降压     │
+│  │  │  TP4054充电   │  │  锂电池充电管理     │
+│  │  │  BMI270       │  │  6轴IMU传感器       │
+│  │  │  PCF8563      │  │  RTC实时时钟        │
+│  │  │  MicroSD槽    │  │  TF卡存储           │
+│  │  └───────────────┘  │                    │
+│  └────────┬────────────┘                    │
+│           │ FPC排线                          │
+│  ┌────────┴────────────┐                    │
+│  │  显示+触控板         │                    │
+│  │  (Display Board)    │                    │
+│  │  ┌───────────────┐  │                    │
+│  │  │  ST7789V      │  │  1.54" / 2.0" LCD │
+│  │  │  CST816T      │  │  电容触摸           │
+│  │  │  OV2640       │  │  200W摄像头         │
+│  │  └───────────────┘  │                    │
+│  └────────┬────────────┘                    │
+│           │ FPC排线                          │
+│  ┌────────┴────────────┐                    │
+│  │  音频板 (Audio Board)│                    │
+│  │  ┌───────────────┐  │                    │
+│  │  │  ES8311       │  │  音频编解码器       │
+│  │  │  NS4150B      │  │  D类功放 3W         │
+│  │  │  MEMS麦克风    │  │  硅麦克风           │
+│  │  │  喇叭接口      │  │  8Ω/2W 扬声器      │
+│  │  └───────────────┘  │                    │
+│  └─────────────────────┘                    │
+│                                             │
+│  ┌─────────────────────┐                    │
+│  │  电池: 3.7V锂电池    │                    │
+│  │  容量: 约500-1000mAh │                    │
+│  └─────────────────────┘                    │
+└─────────────────────────────────────────────┘
 ```
 
-**预期结果:**
-- 窗口没有标题栏和边框
-- 窗口背景完全透明，只能看到宠物图片
-- 宠物"悬浮"在桌面右下角
-- 宠物始终在其他窗口上方
+**各元器件速查表:**
 
-**常见问题:**
-- **窗口背景不透明**：确认同时设置了`FramelessWindowHint`和`WA_TranslucentBackground`
-- **图片有灰色背景**：图片本身必须是PNG格式，带透明通道
-- **窗口不见了**：可能被其他窗口遮挡，加`WindowStaysOnTopHint`
+| 元器件 | 功能 | 通信接口 | 关键参数 |
+|--------|------|----------|----------|
+| ESP32-S3-WROOM-1 | 主控模组 | - | 240MHz, 8MB PSRAM, 16MB Flash |
+| DC-DC (SY8089) | 5V->3.3V降压 | - | 输出1A |
+| TP4054 | 锂电池充电管理 | - | 最大500mA充电 |
+| BMI270 | 6轴IMU(加速度+陀螺仪) | I2C | 地址0x68 |
+| PCF8563 | RTC实时时钟 | I2C | 地址0x51 |
+| ST7789V | LCD驱动 | SPI | 240x240像素 |
+| CST816T | 电容触摸 | I2C | 地址0x15 |
+| OV2640 | 200W摄像头 | DVP | UXGA(1600x1200) |
+| ES8311 | 音频编解码 | I2S + I2C | 24-bit, 8-96kHz |
+| NS4150B | D类功放 | 模拟输入 | 3W@4Ω |
+| MEMS麦克风 | 硅麦克风 | PDM/模拟 | 灵敏度-26dB |
 
-### 任务2.3: 添加鼠标拖拽功能 (20分钟)
+### 任务2.3: 焊接安全与基础 (30分钟)
 
-透明窗口没有标题栏，无法通过拖拽标题栏移动。我们需要自己实现拖拽：
+**安全第一！焊接涉及高温（约350°C），必须严格遵守以下规则：**
 
-A frameless window has no title bar, so we implement our own drag functionality:
+Safety first! Soldering involves high temperatures (~350°C). Must follow these rules:
 
-```python
-class TransparentPetWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self._drag_pos = None  # 记录拖拽起始位置
-        self.init_ui()
+```
+焊接安全守则 | Soldering Safety Rules:
 
-    def init_ui(self):
-        # ... (之前的代码不变)
-        pass
+1. ⚠️ 电烙铁永远放在烙铁架上，不要乱放
+   Always place iron in the stand, never leave it lying around
+   
+2. ⚠️ 手只握烙铁手柄，绝不触碰金属部分
+   Only hold the handle, never touch the metal part
 
-    def mousePressEvent(self, event):
-        """鼠标按下事件"""
-        if event.button() == Qt.LeftButton:
-            # 记录鼠标按下时的全局位置
-            self._drag_pos = event.globalPos() - self.frameGeometry().topLeft()
-            event.accept()
+3. ⚠️ 焊接时戴防护眼镜（焊锡可能飞溅）
+   Wear safety glasses (solder may splash)
 
-    def mouseMoveEvent(self, event):
-        """鼠标移动事件 -- 实现拖拽"""
-        if self._drag_pos and event.buttons() == Qt.LeftButton:
-            # 移动窗口到新位置
-            self.move(event.globalPos() - self._drag_pos)
-            event.accept()
+4. ⚠️ 焊接区域保持通风（焊锡烟雾有害）
+   Keep the soldering area ventilated (fumes are harmful)
 
-    def mouseReleaseEvent(self, event):
-        """鼠标释放事件"""
-        self._drag_pos = None
+5. ⚠️ 离开座位时关掉电烙铁电源
+   Turn off the iron when leaving your seat
+
+6. ⚠️ 不要穿短裤和凉鞋焊接（焊锡掉落会烫伤）
+   Don't wear shorts or sandals (falling solder will burn)
+
+7. ⚠️ 焊完后洗手（焊锡含铅，无铅焊锡也有助焊剂残留）
+   Wash hands after soldering
 ```
 
-**预期结果:**
-- 按住宠物图片拖拽，可以移动桌宠位置
-- 松开鼠标后，桌宠停在新位置
+**电烙铁使用要点:**
+
+```
+正确的焊接姿势:
+1. 右手持烙铁（像握笔一样）
+2. 左手持焊锡丝
+3. 烙铁头先接触焊盘和元件引脚（1-2秒预热）
+4. 焊锡丝接触烙铁头与焊盘的连接处
+5. 锡熔化后先撤焊锡丝，再撤烙铁
+6. 整个过程2-3秒完成
+
+好焊点的特征:
+  - 光亮、圆润、呈山形
+  - 完全覆盖焊盘
+  - 无气泡、无尖刺
+  
+坏焊点的特征:
+  - 球形（未浸润焊盘）
+  - 发白/粗糙（冷焊）
+  - 锡量过少或过多
+  - 连锡（短路相邻焊盘）
+```
+
+**焊接温度建议:**
+- 有铅焊锡: 300-320°C
+- 无铅焊锡: 340-370°C
+- 大焊盘/粗引脚: 提高20-30°C
+- 贴片小元件: 降低10-20°C
 
 ---
 
-## 下午: 窗口行为与右键菜单 | Afternoon: Window Behavior & Context Menu
+## 下午: 焊接练习与万用表 | Afternoon: Soldering Practice & Multimeter
 
-### 为什么要学右键菜单? | Why Context Menus?
+### 任务2.4: 焊接练习板实操 (60分钟)
 
-右键菜单是桌面应用最常用的交互模式之一。当你右键桌宠时，应该弹出一个菜单，提供"喂食"、"设置"、"退出"等选项。这也是很多成熟桌宠（如VPet）的标准交互方式。
+**步骤:**
 
-Context menus are one of the most common interaction patterns in desktop apps. Right-clicking the pet should show a menu with options like "Feed", "Settings", "Exit". This is the standard interaction pattern in mature desktop pets like VPet.
+1. **准备工具**
+   - 电烙铁（调至320°C无铅 / 300°C有铅）
+   - 焊锡丝（0.6mm或0.8mm直径）
+   - 镊子（贴片元件操作必备）
+   - 助焊剂（可选，帮助锡更好流动）
+   - 焊接练习板（课程提供）
+   - 湿海绵或铜丝球（清洁烙铁头用）
 
-### 任务2.4: 实现右键菜单 (30分钟)
+2. **练习一：直插电阻焊接（10分钟）**
+   ```
+   步骤:
+   1. 将电阻引脚穿过练习板的孔
+   2. 在背面将引脚稍微弯折，固定电阻
+   3. 烙铁接触焊盘和引脚1-2秒
+   4. 送锡，看到锡覆盖整个焊盘
+   5. 先撤锡再撤烙铁
+   6. 用斜口钳剪掉多余引脚
+   ```
 
-```python
-from PyQt5.QtWidgets import QMenu, QAction
+3. **练习二：0805贴片电阻焊接（15分钟）**
+   ```
+   步骤:
+   1. 在其中一个焊盘上预先加点锡
+   2. 用镊子夹住电阻，放到焊盘上
+   3. 烙铁熔化那个预加锡的焊盘，同时将电阻推到位
+   4. 撤烙铁，等2秒冷却
+   5. 焊接另一个焊盘
+   6. 检查两个焊点是否都圆润光亮
+   
+   贴片元件焊接关键技巧:
+   - 元件放稳再焊接第一个焊盘
+   - 焊第二个焊盘时保持元件不移动
+   - 锡量适中，刚好覆盖焊盘边缘
+   ```
 
-class TransparentPetWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self._drag_pos = None
-        self.init_ui()
+4. **练习三：SOP-8芯片焊接（20分钟）**
+   ```
+   步骤:
+   1. 在其中一个焊盘上加少量锡
+   2. 用镊子放好芯片，对准所有引脚
+   3. 焊接定位的那个引脚固定芯片
+   4. 逐个焊接其余7个引脚
+   5. 用放大镜或手机微距检查是否有连锡
+   6. 如有连锡: 加助焊剂，用烙铁拖焊清除
+   
+   拖焊技巧: 
+   - 所有引脚均匀加锡
+   - 加助焊剂
+   - 烙铁头从引脚根部向外拖动
+   - 连锡会被助焊剂和表面张力自动分开
+   ```
 
-    def init_ui(self):
-        # 设置透明窗口 (同上)
-        self.setWindowFlags(
-            Qt.FramelessWindowHint |
-            Qt.WindowStaysOnTopHint |
-            Qt.Tool
-        )
-        self.setAttribute(Qt.WA_TranslucentBackground)
-        self.resize(200, 200)
+**检查标准:**
+- [ ] 所有焊点圆润光亮
+- [ ] 无连锡、无虚焊
+- [ ] 元件方向正确（有极性标识的元件注意正负极）
+- [ ] PCB背面干净，无多余焊渣
 
-        # 宠物图片
-        self.pet_label = QLabel(self)
-        self.pet_label.setGeometry(0, 0, 200, 200)
-        self.load_pet_image("assets/sprites/idle_01.png")
+**常见问题:**
+- **焊锡不粘焊盘**：烙铁温度不够，或焊盘氧化。提高温度，加助焊剂
+- **连锡了怎么办**：加助焊剂，用干净的烙铁头从中间向外拖。不要用吸锡器（会把芯片也吸走）
+- **元件焊歪了**：未固化前立即用镊子调整。已固化：加热两个焊盘同时调整
+- **烙铁头变黑**：随时在海绵/铜丝球上擦拭干净。黑色氧化物会阻碍热传导
 
-        self.move_to_bottom_right()
-        self.show()
+### 任务2.5: 万用表使用入门 (30分钟)
 
-    def contextMenuEvent(self, event):
-        """右键菜单事件"""
-        menu = QMenu(self)
+**为什么要学万用表？**
+万用表是硬件工程师的"第三只眼"。它能帮你检查电路是否连通、电压是否正确、短路在哪里——没有万用表，硬件调试就像蒙着眼睛走路。
 
-        # 添加菜单项
-        feed_action = QAction("喂食", self)
-        feed_action.triggered.connect(self.feed_pet)
-        menu.addAction(feed_action)
+A multimeter is the hardware engineer's "third eye". It checks circuit continuity, voltage levels, and shorts -- without it, hardware debugging is like walking blindfolded.
 
-        talk_action = QAction("聊天", self)
-        talk_action.triggered.connect(self.talk_to_pet)
-        menu.addAction(talk_action)
+**万用表三大功能:**
 
-        menu.addSeparator()  # 分割线
+| 功能 | 档位 | 用法 | 测量对象 |
+|------|------|------|----------|
+| 电压测量 | V⎓ (DC) | 并联在被测两点 | 电源输出、芯片供电 |
+| 电阻测量 | Ω | 断开电路测量 | 电阻值、焊点质量 |
+| 通断测试 | 蜂鸣器档 | 接触两测试点 | 检查电路是否连通 |
 
-        settings_action = QAction("设置", self)
-        settings_action.triggered.connect(self.open_settings)
-        menu.addAction(settings_action)
+**练习：**
 
-        quit_action = QAction("退出", self)
-        quit_action.triggered.connect(QApplication.quit)
-        menu.addAction(quit_action)
+```powershell
+# 练习1: 测量USB口的5V电压
+档位: DC 20V
+红表笔: USB正极 (VCC)
+黑表笔: USB负极 (GND)
+预期读数: 4.8V ~ 5.2V
 
-        # 在鼠标位置显示菜单
-        menu.exec_(event.globalPos())
+# 练习2: 测量练习板上的3.3V
+档位: DC 20V
+红表笔: 3.3V测试点
+黑表笔: GND
+预期读数: 3.20V ~ 3.40V
 
-    def feed_pet(self):
-        """喂食宠物"""
-        self.pet_label.setText("好好吃！谢谢！")
+# 练习3: 检查焊接的每个电阻
+档位: 蜂鸣器档(通断)
+表笔接触: 电阻两个焊点
+预期: 蜂鸣器响，说明焊接连通
 
-    def talk_to_pet(self):
-        """和宠物聊天"""
-        self.pet_label.setText("你好呀~")
-
-    def open_settings(self):
-        """打开设置"""
-        print("设置功能开发中...")
-
-    # ... 其他方法同上
+# 练习4: 测量电阻值
+档位: 合适的电阻档(如20kΩ)
+表笔接触: 电阻两端
+预期读数: 接近标称值(误差5%以内)
 ```
 
-**预期结果:**
-- 右键点击桌宠，弹出包含"喂食"、"聊天"、"设置"、"退出"的菜单
-- 点击"喂食"显示感谢文字
-- 点击"退出"关闭程序
-
-### 任务2.5: 双击交互 (15分钟)
-
-```python
-def mouseDoubleClickEvent(self, event):
-    """双击事件 -- 宠物互动"""
-    if event.button() == Qt.LeftButton:
-        self.pet_label.setText("被双击了！好开心！")
-        # 2秒后恢复（Day 3学QTimer后可以实现自动恢复）
-```
+**安全注意事项:**
+- 测电压时**绝对不要**将表笔插在电流孔！
+- 测电阻时**必须断开电源**！否则会烧表
+- 不确定电压范围时，从最大档位开始
 
 ---
 
 ## 今日作业 | Homework
 
 ### 必做题
-1. 创建透明无边框窗口，宠物图片直接显示在桌面上
-2. 实现鼠标拖拽移动宠物位置
-3. 实现右键菜单，至少包含3个选项
+1. 完成焊接练习板的所有练习（直插电阻、0805电阻、SOP-8芯片）
+2. 用万用表测量练习板上至少3个点的电压，记录数值
+3. 画出SparkBot的系统框图，标注各芯片的通信接口
+4. 熟记SparkBot各核心元器件名称和功能
 
 ### 挑战题
-1. 让右键菜单的样式更美观（提示：使用QSS样式表）
-2. 尝试让宠物窗口不遮挡桌面图标的点击（提示：研究鼠标穿透）
-3. 根据鼠标位置改变宠物的表情（左键点击头部vs身体的不同反应）
+1. 尝试焊接更小的0603封装元件（如果练习板有的话）
+2. 用万用表测量一个导线的电阻——为什么不直接用蜂鸣档？
+3. 研究TP4054充电芯片的数据手册第1页，找出它的最大充电电流和充满电压
 
 ### 思考题
-1. 为什么透明窗口需要同时设置`FramelessWindowHint`和`WA_TranslucentBackground`？只设置一个会怎样？
-2. 没有标题栏的窗口如何实现拖拽？你在代码中是如何记录拖拽起始位置的？
+1. 为什么ESP32-S3需要PSRAM（外部RAM）？内置的512KB SRAM不够用吗？什么场景会需要大RAM？
+2. 贴片焊接和直插焊接有什么本质区别？为什么现代电子产品几乎都用贴片元件？
+3. 焊接温度太高或太低分别会导致什么问题？如何判断焊接温度是否合适？
 
 ---
 
 ## 明日预告 | Tomorrow's Preview
 
-明天我们将学习帧动画系统，让桌宠"活"起来！不再是一张静态图片，而是一个会呼吸、会眨眼、会走路的动态角色。
+明天是焊接实战日！我们将正式开始焊接SparkBot的主板——包括DC-DC电源电路、充电电路、ESP32-S3模组和BMI270传感器。这将是决定你SparkBot能否正常工作的一天，做好准备！
 
-Tomorrow we will learn the sprite animation system to make the pet "alive"! No longer a static image, but a dynamic character that breathes, blinks, and walks.
+Tomorrow is soldering day! We start soldering the SparkBot main board -- including the DC-DC power circuit, charging circuit, ESP32-S3 module, and BMI270 sensor. This will be the day that determines whether your SparkBot works!
 
 ---
 
 ## 参考资源 | References
 
-- [PyQt5 窗口属性文档](https://www.riverbankcomputing.com/static/Docs/PyQt5/api/qtcore/qt.html#WindowType-enum)
-- [Qt 窗口标志详解](https://doc.qt.io/qt-5/qt.html#WindowType-enum)
-- [五分钟学会自制桌面宠物（B站）](https://www.bilibili.com/video/BV1YmCdYhEoc/)
-- [Shimeji桌宠制作教程（B站）](https://www.bilibili.com/video/BV1q441127zw/)
+- [ESP32-S3 数据手册](https://www.espressif.com/sites/default/files/documentation/esp32-s3_datasheet_cn.pdf)
+- [焊接入门教程（B站搜索）](https://search.bilibili.com/all?keyword=%E7%84%8A%E6%8E%A5%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B)
+- [贴片元件焊接技巧（B站搜索）](https://search.bilibili.com/all?keyword=%E8%B4%B4%E7%89%87%E7%84%8A%E6%8E%A5%20SMD)
+- [万用表使用教程（B站搜索）](https://search.bilibili.com/all?keyword=%E4%B8%87%E7%94%A8%E8%A1%A8%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B)
+- [焊接课堂：从零开始学焊接（合集）](https://www.bilibili.com/video/BV1Nq421w7Tn/) -- 从0基础开始的焊接教学视频合集
 
-*最后更新：2026-05-26*
+*最后更新：2026-05-27*

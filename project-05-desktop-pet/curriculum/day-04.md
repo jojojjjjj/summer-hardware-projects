@@ -1,12 +1,13 @@
-# Day 04: 事件处理与鼠标交互 | Event Handling & Mouse Interaction
+# Day 04: PCB焊接与硬件组装(下) | PCB Soldering & Assembly Part 2
 
 > **今日目标:**
-> - 深入理解Qt事件系统
-> - 实现多种鼠标交互（点击、双击、悬停、拖拽）
-> - 学习键盘事件处理
-> - 为桌宠添加丰富的交互反馈
+> - 完成显示屏和摄像头焊接组装
+> - 完成音频电路焊接(ES8311 + NS4150B + 喇叭 + MEMS麦克风)
+> - 完成触摸FPC连接
+> - 安装3D打印外壳
+> - 整机组装完成，所有硬件就位
 >
-> **产出:** 桌宠能对不同鼠标操作做出不同反应（点击开心、拖拽跟随、悬停好奇）
+> **产出:** SparkBot整机组装完成，所有硬件模块就绪，第二次上电全功能测试通过
 
 ---
 
@@ -14,413 +15,397 @@
 
 | 时间 | 活动类型 | 内容 |
 |------|----------|------|
-| 09:00 - 09:15 | 晨间活动 | 动画系统效果展示，讨论最佳实践 |
-| 09:15 - 10:30 | 知识讲解 | Qt事件系统、事件过滤器、事件传播 |
+| 09:00 - 09:15 | 晨间活动 | 主板焊接检查与上电复测 |
+| 09:15 - 10:30 | 知识讲解 | 显示屏、摄像头、音频电路原理 |
 | 10:30 - 10:45 | 课间休息 | |
-| 10:45 - 12:00 | 动手实践 | 实现多种鼠标交互 |
+| 10:45 - 12:00 | 动手实践 | 焊接显示板和音频板 |
 | 12:00 - 13:30 | 午餐休息 | |
-| 13:30 - 15:00 | 项目实战 | 集成交互系统到桌宠 |
+| 13:30 - 15:00 | 项目实战 | 连接FPC排线、组装3D外壳 |
 | 15:00 - 15:15 | 课间休息 | |
-| 15:15 - 16:30 | 拓展练习 | 键盘快捷键、桌面边界检测 |
-| 16:30 - 17:00 | 总结分享 | 交互设计讨论 |
+| 15:15 - 16:30 | 拓展练习 | 全功能上电测试、故障排查 |
+| 16:30 - 17:00 | 总结分享 | 硬件组装成果展示、阶段总结 |
 
 ---
 
-## 上午: Qt事件系统 | Morning: Qt Event System
+## 上午: 显示板与音频板焊接 | Morning: Display & Audio Board Soldering
 
 ### 为什么要学这个? | Why Learn This?
 
-"交互"是桌宠区别于普通桌面壁纸的核心。一个好的桌宠应该对用户的每个操作都有反馈：鼠标移过来时好奇地看、点击时开心地跳、拖拽时跟着走、放下来时摇摇尾巴。
+今天是硬件组装的最后一天。昨天你已经让ESP32-S3"活"了（能运行代码），今天我们要给它装上"眼睛"（摄像头）、"嘴巴"（屏幕）、"耳朵"（麦克风）和"嗓子"（喇叭）。完成今天的工作后，你的SparkBot就具备了完整的硬件能力。
 
-"Interaction" is what distinguishes a desktop pet from wallpaper. A good pet reacts to every user action: curious when the mouse approaches, happy when clicked, follows when dragged, and wags its tail when released.
+Today is the final hardware assembly day. Yesterday you brought the ESP32-S3 to life (it runs code). Today we give it "eyes" (camera), "mouth" (screen), "ears" (microphone), and "voice" (speaker). After today, your SparkBot will have complete hardware capabilities.
 
-事件处理是所有GUI应用的核心。无论是手机App的滑动、网页的点击、还是游戏的按键操作，底层都是"事件驱动"机制。掌握事件处理，是成为合格软件开发者的必经之路。
+显示屏和音频电路涉及高频数字信号和模拟信号的混合，焊接质量直接影响显示效果和音质。精度要求比昨天更高。
 
-Event handling is the core of all GUI apps. Whether it is swiping on mobile, clicking on web pages, or pressing keys in games, the underlying mechanism is event-driven programming.
+The display and audio circuits involve mixed high-frequency digital and analog signals. Soldering quality directly affects display quality and audio performance, requiring higher precision than yesterday.
 
-### Qt事件传播机制 | Qt Event Propagation
+### 任务4.1: 显示板焊接 (40分钟)
 
+**显示板组成:**
 ```
-事件产生（操作系统）
-    ↓
-QApplication（应用级分发）
-    ↓
-QWidget（接收事件）
-    ↓
-事件处理函数被调用
-    ├── 处理了 -> event.accept()，事件到此结束
-    └── 没处理 -> event.ignore()，事件传给父控件
+显示板 (Display Board):
+┌────────────────────────────┐
+│  ┌────────────────────┐    │
+│  │   ST7789V 1.54"    │    │  SPI接口
+│  │   240×240 LCD      │    │  背光控制
+│  │                    │    │
+│  └────────────────────┘    │
+│  ┌──────┐  ┌───────────┐   │
+│  │OV2640 │  │ CST816T   │   │  摄像头+DVP接口
+│  │摄像头 │  │ 触摸控制  │   │  触摸+I2C接口
+│  └──────┘  └───────────┘   │
+│  ┌────────────────────┐    │
+│  │  0.5mm FPC连接器   │    │  连接主板
+│  └────────────────────┘    │
+└────────────────────────────┘
 ```
-
-**常用鼠标事件：**
-
-| 事件 | 触发时机 | 方法名 |
-|------|----------|--------|
-| 鼠标按下 | 按下鼠标按键 | `mousePressEvent` |
-| 鼠标释放 | 松开鼠标按键 | `mouseReleaseEvent` |
-| 鼠标移动 | 移动鼠标 | `mouseMoveEvent` |
-| 鼠标双击 | 快速按两次 | `mouseDoubleClickEvent` |
-| 鼠标进入 | 鼠标移入控件 | `enterEvent` |
-| 鼠标离开 | 鼠标移出控件 | `leaveEvent` |
-| 滚轮滚动 | 滚动鼠标滚轮 | `wheelEvent` |
-
-### 任务4.1: 综合鼠标事件处理 (40分钟)
 
 **步骤:**
 
-创建文件 `interaction_demo.py`：
+1. **焊接ST7789V显示屏 (1.54" LCD模块)**
+   ```
+   显示屏接口类型: SPI 4线
+   连接方式: 通常通过FPC排线座连接
+   
+   如果显示屏是独立模块(预焊接好FPC座):
+   1. 焊接PCB上的FPC连接器(0.5mm间距，需要技巧)
+   2. 插上显示屏FPC排线
+   
+   如果是裸屏需要直接焊接:
+   1. 在PCB对应焊盘上预加锡
+   2. 放置显示屏，对齐引脚
+   3. 逐个焊接(屏线很细，小心操作)
+   
+   关键引脚:
+   - SCL: SPI时钟
+   - SDA: SPI数据(MOSI)
+   - RES: 复位
+   - DC: 数据/命令选择
+   - CS: 片选
+   - BLK: 背光控制(PWM)
+   - VCC: 3.3V供电
+   - GND: 地
+   ```
 
-```python
-import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import Qt, QTimer, QPoint
+2. **焊接FPC连接器 (0.5mm间距)**
+   ```
+   FPC连接器焊接技巧:
+   1. 先在PCB焊盘上预加一层极薄的锡
+   2. 涂助焊剂
+   3. 放置FPC连接器，确保所有引脚对齐
+   4. 先焊接两侧的定位焊盘(大的金属片)
+   5. 拖焊信号引脚(一排小引脚)
+   6. 用放大镜检查每个引脚无连锡
+   
+   注意: FPC座有方向！塑料卡扣端对着排线插入方向
+   ```
 
-class InteractivePetWindow(QWidget):
-    """支持多种鼠标交互的桌宠窗口"""
+3. **焊接OV2640摄像头**
+   ```
+   OV2640摄像头接口: DVP(数字视频端口) 8位并行
+   
+   焊接FPC排线座(通常24pin):
+   1. 先焊定位引脚
+   2. 再焊信号引脚
+   3. FPC座焊接后，插入摄像头排线
+   
+   摄像头排线插入注意事项:
+   - 金属触点朝下(或按PCB丝印指示)
+   - 排线完全插入到位
+   - 锁紧FPC座的卡扣(向下压)
+   ```
 
-    def __init__(self):
-        super().__init__()
-        self._drag_pos = None
-        self._click_count = 0
-        self.init_ui()
+4. **焊接CST816T触摸控制器(如有)**
+   - 通常集成在显示屏模块中，通过I2C连接
+   - 如果独立焊接，芯片较小(QFN封装)，注意对准
 
-    def init_ui(self):
-        # 透明窗口设置
-        self.setWindowFlags(
-            Qt.FramelessWindowHint |
-            Qt.WindowStaysOnTopHint |
-            Qt.Tool
-        )
-        self.setAttribute(Qt.WA_TranslucentBackground)
-        self.resize(200, 200)
+**检查:** 
+- [ ] FPC排线座焊接牢固，引脚无连锡
+- [ ] 摄像头排线插入到位，卡扣锁紧
+- [ ] 显示屏FPC排线正确插入
 
-        # 宠物图片
-        self.pet_label = QLabel(self)
-        self.pet_label.setGeometry(0, 0, 200, 200)
-        self.pet_label.setAlignment(Qt.AlignCenter)
-        self.load_image("assets/sprites/idle_01.png")
+### 任务4.2: 音频板焊接 (40分钟)
 
-        # 提示标签（临时文字提示）
-        self.hint_label = QLabel("", self)
-        self.hint_label.setGeometry(0, -30, 200, 30)
-        self.hint_label.setAlignment(Qt.AlignCenter)
-        self.hint_label.setStyleSheet("""
-            font-size: 14px;
-            color: #FF6B6B;
-            background-color: rgba(255, 255, 255, 180);
-            border-radius: 10px;
-            padding: 2px 8px;
-        """)
-        self.hint_label.hide()
-
-        # 恢复定时器（用于延迟恢复表情）
-        self.recover_timer = QTimer()
-        self.recover_timer.setSingleShot(True)  # 只触发一次
-        self.recover_timer.timeout.connect(self.recover_to_idle)
-
-        self.move(800, 400)
-        self.show()
-
-    def load_image(self, path):
-        """加载图片"""
-        pixmap = QPixmap(path)
-        if not pixmap.isNull():
-            scaled = pixmap.scaled(
-                self.pet_label.size(),
-                Qt.KeepAspectRatio,
-                Qt.SmoothTransformation
-            )
-            self.pet_label.setPixmap(scaled)
-
-    def show_hint(self, text, duration=2000):
-        """显示临时提示文字"""
-        self.hint_label.setText(text)
-        self.hint_label.show()
-        # duration毫秒后自动隐藏
-        QTimer.singleShot(duration, self.hint_label.hide)
-
-    # ---- 鼠标事件处理 ----
-
-    def mousePressEvent(self, event):
-        """鼠标按下"""
-        if event.button() == Qt.LeftButton:
-            self._drag_pos = event.globalPos() - self.frameGeometry().topLeft()
-            self._click_count += 1
-
-            # 根据点击次数显示不同反应
-            if self._click_count == 1:
-                self.show_hint("喵~")
-            elif self._click_count == 3:
-                self.show_hint("摸够了啦！")
-                self._click_count = 0
-            else:
-                reactions = ["嘿嘿~", "好舒服！", "继续~", "开心！"]
-                import random
-                self.show_hint(random.choice(reactions))
-
-            event.accept()
-
-        elif event.button() == Qt.RightButton:
-            # 右键不处理（留给contextMenuEvent）
-            event.ignore()
-
-    def mouseReleaseEvent(self, event):
-        """鼠标释放"""
-        if event.button() == Qt.LeftButton:
-            self._drag_pos = None
-            event.accept()
-
-    def mouseMoveEvent(self, event):
-        """鼠标移动 -- 拖拽"""
-        if self._drag_pos and event.buttons() == Qt.LeftButton:
-            new_pos = event.globalPos() - self._drag_pos
-            self.move(new_pos)
-            event.accept()
-
-    def mouseDoubleClickEvent(self, event):
-        """鼠标双击"""
-        if event.button() == Qt.LeftButton:
-            self.show_hint("被双击了！好痒！", 3000)
-            event.accept()
-
-    def enterEvent(self, event):
-        """鼠标移入"""
-        self.show_hint("有人来了？", 1500)
-
-    def leaveEvent(self, event):
-        """鼠标移出"""
-        self.hint_label.hide()
-
-    def wheelEvent(self, event):
-        """鼠标滚轮"""
-        delta = event.angleDelta().y()
-        if delta > 0:
-            self.show_hint("往上滚了~")
-        else:
-            self.show_hint("往下滚了~")
-        event.accept()
-
-    def recover_to_idle(self):
-        """恢复到待机状态"""
-        self.load_image("assets/sprites/idle_01.png")
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = InteractivePetWindow()
-    sys.exit(app.exec_())
+**音频板组成:**
+```
+音频板 (Audio Board):
+┌────────────────────────────┐
+│  ┌──────────────────────┐  │
+│  │  ES8311 音频编解码器  │  │  I2S + I2C接口
+│  │  (QFN-32封装)        │  │  DAC+ADC
+│  └──────────────────────┘  │
+│  ┌──────────────────────┐  │
+│  │  NS4150B D类功放     │  │  3W输出
+│  │  (SOP-8封装)         │  │  驱动喇叭
+│  └──────────────────────┘  │
+│  ┌──────────────────────┐  │
+│  │  MEMS硅麦克风         │  │  模拟输出
+│  └──────────────────────┘  │
+│  ┌────┐  ┌──────────────┐  │
+│  │喇叭│  │  电源管理    │  │  3.3V供电
+│  │接口│  │              │  │
+│  └────┘  └──────────────┘  │
+└────────────────────────────┘
 ```
 
-**预期结果:**
-- 鼠标移入：显示"有人来了？"
-- 单击：显示随机反应文字
-- 双击：显示"被双击了！好痒！"
-- 滚轮：显示"往上/下滚了~"
-- 拖拽：宠物跟随鼠标移动
+**步骤:**
 
-**常见问题:**
-- **事件不触发**：确认窗口设置中没有`Qt.WindowTransparentForInput`（鼠标穿透）
-- **拖拽和点击冲突**：在`mousePressEvent`中记录起始位置，在`mouseMoveEvent`中检查
-- **文字显示位置不对**：调整`hint_label`的Geometry
+1. **焊接ES8311音频编解码器 (QFN-32)**
+   ```
+   这是最难焊的芯片之一(QFN封装，底部焊盘+四周引脚)
+   
+   方法: 热风枪 + 烙铁配合
+   
+   步骤:
+   1. 在PCB焊盘上涂一薄层锡浆(或助焊剂+预上锡)
+   2. 用镊子精确放置ES8311，QFN的pin 1圆点对应PCB的pin 1标记
+   3. 热风枪280°C，中低风速，均匀加热30-40秒
+   4. 观察芯片自动归位(表面张力对齐)
+   5. 冷却后检查四周引脚是否连锡
+   6. 如有连锡: 加助焊剂，用烙铁拖焊清除
+   ```
 
-### 任务4.2: 区域点击检测 (20分钟)
+2. **焊接NS4150B功放芯片 (SOP-8)**
+   ```
+   NS4150B引脚:
+           ┌────┐
+   SHDN ───┤1  8├─── VDD(5V)
+   BYP  ───┤2  7├─── OUT+
+   IN+  ───┤3  6├─── GND
+   IN-  ───┤4  5├─── OUT-
+           └────┘
+   
+   焊接: SOP-8相对容易，使用标准拖焊方法
+   注意: 电源走线较粗(大电流)，焊盘散热快，适当提高温度
+   ```
 
-让宠物对不同部位的点击有不同反应：
+3. **焊接MEMS麦克风**
+   ```
+   MEMS麦克风: 底部进音孔，顶部出焊盘
+   
+   注意方向!
+   - 底部有进音孔，PCB对应位置有过孔
+   - 焊盘标记: OUT(输出), GND(地), VDD(供电)
+   - LGA封装，类似BMI270
+   
+   热风枪焊接: 280°C, 中低风, 20-30秒
+   ```
 
-```python
-def mousePressEvent(self, event):
-    """根据点击位置给出不同反应"""
-    if event.button() == Qt.LeftButton:
-        click_pos = event.pos()  # 窗口内的相对坐标
+4. **连接喇叭**
+   ```
+   喇叭规格: 8Ω/2W (或4Ω/3W)
+   
+   连接方式(二选一):
+   - 焊接导线到PCB喇叭焊盘(推荐，接触可靠)
+   - 使用2pin JST连接器(方便拆卸)
+   
+   注意: 喇叭无极性，正反都可以
+   ```
 
-        # 将窗口分为上下两部分（假设200x200窗口）
-        if click_pos.y() < 100:  # 上半部分 = 头部
-            self.show_hint("摸头了~好舒服！")
-        else:  # 下半部分 = 身体
-            self.show_hint("摸肚子了~痒痒的！")
-
-        # 记录拖拽位置
-        self._drag_pos = event.globalPos() - self.frameGeometry().topLeft()
-        event.accept()
-```
+5. **音频板焊接检查**
+   ```
+   [ ] ES8311方向正确
+   [ ] NS4150B方向正确
+   [ ] MEMS麦克风方向正确(进音孔朝下)
+   [ ] 音频输入电容焊接正确
+   [ ] 功率电源电容足够大(100uF+)
+   
+   万用表检查:
+   [ ] VDD_AUDIO对GND不短路
+   [ ] 功放输出对GND不短路
+   [ ] 功放输出之间不短路(OUT+和OUT-)
+   ```
 
 ---
 
-## 下午: 键盘事件与桌面边界 | Afternoon: Keyboard Events & Boundary Detection
+## 下午: FPC连接与3D外壳组装 | Afternoon: FPC Connection & 3D Case Assembly
 
-### 任务4.3: 键盘事件处理 (20分钟)
+### 任务4.3: 连接FPC排线 (20分钟)
 
-```python
-def keyPressEvent(self, event):
-    """键盘按下事件"""
-    key = event.key()
+**SparkBot的3块PCB通过FPC排线连接:**
 
-    if key == Qt.Key_Escape:
-        # ESC键退出
-        QApplication.quit()
-    elif key == Qt.Key_Space:
-        # 空格键 -- 宠物跳跃
-        self.show_hint("跳！", 1000)
-    elif key == Qt.Key_F:
-        # F键 -- 喂食
-        self.show_hint("谢谢喂食！", 2000)
-    elif key == Qt.Key_H:
-        # H键 -- 打招呼
-        self.show_hint("你好呀！", 2000)
-
-    event.accept()
+```
+FPC排线连接图:
+┌──────────┐
+│ 音频板    │
+│(Audio)   │──── FPC2 ────┐
+└──────────┘              │
+                          ▼
+┌──────────┐         ┌──────────┐
+│ 显示板    │──FPC1── │  主板    │──── USB线 ──── 电脑/充电器
+│(Display) │         │ (Main)   │
+└──────────┘         └────┬─────┘
+                          │
+                     ┌────┴─────┐
+                     │  电池     │
+                     │  3.7V    │
+                     └──────────┘
 ```
 
-**注意：** 键盘事件需要窗口有焦点才能接收。对于桌宠来说，你可能更希望它不抢夺焦点（用`Qt.Tool`标志已经实现了）。
+**步骤:**
 
-### 任务4.4: 桌面边界检测 (30分钟)
+1. **连接主板-显示板FPC排线**
+   - 识别FPC排线方向(金属触点面)
+   - 轻轻插入FPC座
+   - 锁紧FPC座卡扣
+   - 轻轻拉一下排线确认已锁紧(不要太用力！)
 
-防止宠物走出屏幕：
+2. **连接主板-音频板FPC排线**
+   - 同样操作
+   - 音频排线通常比显示排线更宽(更多引脚)
 
-```python
-def move_to(self, x, y):
-    """移动宠物到指定位置，防止走出屏幕"""
-    screen = QApplication.desktop().screenGeometry()
+3. **连接电池**
+   - JST 1.25mm 2pin连接器
+   - 注意正负极性！红线=V+, 黑线=GND
+   - 插上电池连接器(听到"咔"的锁紧声)
 
-    # 计算边界限制
-    max_x = screen.width() - self.width()
-    max_y = screen.height() - self.height()
+4. **FPC连接检查**
+   ```
+   [ ] FPC排线金属触点方向正确
+   [ ] 排线插入到位(看不到金属触点)
+   [ ] FPC座卡扣已锁紧
+   [ ] 排线无扭曲或折痕
+   [ ] 电池极性正确(红线V+, 黑线GND)
+   ```
 
-    # 限制在屏幕范围内
-    x = max(0, min(x, max_x))
-    y = max(0, min(y, max_y))
+**常见问题:**
+- **FPC排线插不进去**：排线可能歪了，退出来重新对准。不要用力硬插！
+- **FPC卡扣锁不紧**：检查排线是否完全插入。卡扣向上扳是打开，向下压是锁紧
+- **排线方向反了**：FPC排线一面是金属触点(金色)，另一面是加强板(蓝色/白色)。金属触点在插入后应接触FPC座内的引脚
 
-    self.move(x, y)
+### 任务4.4: 安装3D打印外壳 (30分钟)
 
-def get_position(self):
-    """获取宠物当前位置"""
-    pos = self.pos()
-    return pos.x(), pos.y()
+**外壳设计特点:**
+```
+SparkBot 3D打印外壳:
+┌──────────────────────────────┐
+│  ┌──────┐     ┌──────────┐   │
+│  │ 正面 │     │   背面    │   │
+│  │      │     │          │   │
+│  │ 屏幕 │     │ 喇叭孔   │   │
+│  │ 摄像头│     │ USB插座  │   │
+│  │ 触摸 │     │ 充电口   │   │
+│  └──────┘     └──────────┘   │
+│                              │
+│  ┌──────────────────────┐    │
+│  │   底面: 电池仓       │    │
+│  └──────────────────────┘    │
+└──────────────────────────────┘
 ```
 
-### 任务4.5: 整合交互系统 (30分钟)
+**步骤:**
 
-将今天学习的所有交互整合到桌宠中：
+1. **检查3D打印件**
+   - 检查有无断裂、翘曲
+   - 确认所有螺丝孔位置正确
+   - 确认屏幕窗口和摄像头窗口无遮挡
+   - 确认喇叭孔排列正确
 
-```python
-class InteractivePetWindow(QWidget):
-    """完整交互桌宠 -- 第一阶段最终版本"""
+2. **安装PCB到外壳**
+   ```
+   步骤:
+   1. 先将3块PCB叠放在一起(FPC连接完成)
+   2. 将主板对准外壳的固定柱
+   3. 检查屏幕是否对准窗口
+   4. 检查摄像头镜头是否对准窗口
+   5. 检查USB口是否对准外壳开口
+   
+   特别注意:
+   - 屏幕正面紧贴外壳窗口, 不要有缝隙
+   - 摄像头镜头不要被外壳遮挡
+   - 按钮(如果有)是否能够按下
+   - USB插座是否与外壳开口对齐
+   ```
 
-    def __init__(self):
-        super().__init__()
-        self._drag_pos = None
-        self._click_count = 0
-        self.is_dragging = False
-        self.init_ui()
-        self.setup_animations()
+3. **固定螺丝**
+   - 使用M1.6或M2螺丝(根据外壳设计)
+   - 先不要拧紧，所有螺丝都放入后再逐个拧紧
+   - 不要用力过猛，塑料壳容易裂
+   - 推荐使用"对角拧紧法"：先拧左上，再拧右下，再拧右上，再拧左下
 
-    def init_ui(self):
-        self.setWindowFlags(
-            Qt.FramelessWindowHint |
-            Qt.WindowStaysOnTopHint |
-            Qt.Tool
-        )
-        self.setAttribute(Qt.WA_TranslucentBackground)
-        self.resize(200, 200)
+4. **安装电池**
+   - 将电池放入外壳底部的电池仓
+   - 如果有双面胶固定电池到外壳内壁
+   - 确保电池连接器插紧
+   - 整理电池线，不要夹到螺丝孔里
 
-        # 宠物显示
-        self.pet_label = QLabel(self)
-        self.pet_label.setGeometry(0, 0, 200, 200)
+5. **合上外壳**
+   - 如果外壳是两片式(前后盖)，合上后盖
+   - 拧上外壳螺丝
+   - 检查外壳缝隙是否均匀
 
-        # 提示气泡（简化版，Day 7会详细实现）
-        self.hint_label = QLabel("", self)
-        self.hint_label.setGeometry(0, -30, 200, 30)
-        self.hint_label.setAlignment(Qt.AlignCenter)
-        self.hint_label.setStyleSheet(
-            "font-size: 14px; color: #333; "
-            "background-color: rgba(255,255,255,200); "
-            "border-radius: 10px; padding: 2px 8px;"
-        )
-        self.hint_label.hide()
+---
 
-        self.show()
+### 任务4.5: 整机组装后全功能测试 (30分钟)
 
-    def setup_animations(self):
-        """设置动画（集成Day 3的AnimationManager）"""
-        from animation_manager import AnimationManager
+**步骤:**
 
-        self.anim_manager = AnimationManager(self.pet_label)
-        self.anim_manager.load_animation("idle", "assets/sprites/idle", fps=8)
-        self.anim_manager.load_animation("happy", "assets/sprites/happy", fps=10)
-        self.anim_manager.load_animation("walk", "assets/sprites/walk", fps=10)
-        self.anim_manager.switch_to("idle")
+1. **供电测试**
+   ```powershell
+   1. 通过USB口供电(不接电池, 直接USB)
+   2. 检查电源指示灯是否亮
+   3. 用万用表检查3.3V供电正常
+   ```
 
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self._drag_pos = event.globalPos() - self.frameGeometry().topLeft()
-            self.anim_manager.switch_to("happy")  # 被点击时切换到开心动画
-            self.show_hint("喵~", 2000)
-            event.accept()
+2. **烧录测试固件**
+   ```powershell
+   idf.py -p COM3 flash monitor
+   ```
+   确认芯片能正常启动
 
-    def mouseMoveEvent(self, event):
-        if self._drag_pos and event.buttons() == Qt.LeftButton:
-            new_pos = event.globalPos() - self._drag_pos
-            self.move(new_pos)
-            if not self.is_dragging:
-                self.is_dragging = True
-                self.anim_manager.switch_to("walk")  # 拖拽时切换到走路动画
-            event.accept()
+3. **各模块快速检查**
+   ```
+   [ ] USB串口连接正常
+   [ ] 屏幕是否有背光亮起(即使不显示内容)
+   [ ] 摄像头镜头无遮挡
+   [ ] 喇叭: 用手指轻轻碰触功放输入端(应该听到"嗡嗡"声)
+   [ ] 麦克风: 无法直接测试, Day 8会编程测试
+   [ ] 触摸: Day 5会编程测试
+   [ ] 按钮是否可按
+   [ ] 外壳是否有松动
+   [ ] 电池(如果接了)能否正常充电(观察充电指示灯)
+   ```
 
-    def mouseReleaseEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self._drag_pos = None
-            self.is_dragging = False
-            self.anim_manager.switch_to("idle")  # 释放后回到待机
-            event.accept()
-
-    def show_hint(self, text, duration=2000):
-        self.hint_label.setText(text)
-        self.hint_label.show()
-        QTimer.singleShot(duration, self.hint_label.hide)
-```
-
-**预期结果（第一阶段完整版本）：**
-- 透明无边框窗口显示宠物
-- 待机动画自动循环播放
-- 点击显示开心反应
-- 拖拽跟随移动并切换走路动画
-- 松开后回到待机状态
-- 右键弹出功能菜单
+4. **记录检查结果**
+   在每一台SparkBot的《硬件检查表》上记录测试结果，作为Day 4完成的标志。
 
 ---
 
 ## 今日作业 | Homework
 
 ### 必做题
-1. 实现完整的鼠标交互系统（单击、双击、拖拽、悬停）
-2. 实现桌面边界检测，防止宠物走出屏幕
-3. 将动画系统和交互系统整合到一起
+1. 完成所有PCB焊接和整机组装
+2. 上电测试: 测量各电压并记录
+3. 烧录hello_world确认系统正常启动
+4. 填写《硬件组装检查表》，记录每个测试点的测试结果
 
 ### 挑战题
-1. 实现"碰撞反弹"效果：宠物走到屏幕边缘时自动折返
-2. 添加键盘快捷键（至少3个功能键）
-3. 实现鼠标悬停时宠物眼睛跟随鼠标方向转动（需要额外的动画帧）
+1. 用手机拍摄你的SparkBot组装过程的延时视频
+2. 绘制完整的SparkBot系统框图(标注所有芯片型号、通信接口、GPIO)
+3. 测量SparkBot在正常工作时的电流消耗(如果可以串入万用表)
 
 ### 思考题
-1. `mousePressEvent`和`mouseDoubleClickEvent`会冲突吗？如果你快速点击两次，两个事件都会触发吗？如何处理这个问题？
-2. 为什么Qt中要用`event.accept()`和`event.ignore()`？它们有什么作用？
+1. 为什么音频电路和数字电路通常要分开布局（甚至分两块PCB）？如果放在一起会有什么问题？
+2. FPC排线和普通杜邦线有什么区别？为什么现代电子产品都用FPC排线？
+3. 3D打印外壳相比注塑外壳有什么优缺点？为什么做原型通常用3D打印？
 
 ---
 
 ## 明日预告 | Tomorrow's Preview
 
-恭喜完成第一阶段！从明天开始进入第二阶段，我们将学习"状态机设计模式"。这是一个在游戏开发、机器人控制、UI设计中广泛使用的设计模式。学会了它，你就能让桌宠拥有自主行为 -- 它会自己决定什么时候走路、什么时候睡觉、什么时候找你玩！
+恭喜！硬件组装完成！从明天开始，我们将进入软件编程阶段。第一站是GPIO编程和传感器驱动——你将用C代码点亮LED、读取BMI270加速度数据、用触摸按键控制SparkBot。准备好进入嵌入式C的世界！
 
-Congratulations on completing Phase 1! Starting tomorrow, we enter Phase 2 with the "State Machine Design Pattern". This is a widely used pattern in game development, robotics, and UI design. With it, your pet will autonomously decide when to walk, sleep, or play with you!
+Congratulations! Hardware assembly is complete! Starting tomorrow, we enter the software programming phase. First stop: GPIO programming and sensor drivers -- you will light up LEDs, read BMI270 accelerometer data, and control SparkBot with touch buttons using C code. Get ready for embedded C!
 
 ---
 
 ## 参考资源 | References
 
-- [Qt 事件系统文档](https://doc.qt.io/qt-5/eventsandfilters.html)
-- [PyQt5 鼠标事件详解](https://www.riverbankcomputing.com/static/Docs/PyQt5/api/qtgui/qmouseevent.html)
-- [事件驱动编程（Wikipedia）](https://zh.wikipedia.org/wiki/%E4%BA%8B%E4%BB%B6%E9%A9%B1%E5%8A%A8%E7%BC%96%E7%A8%8B)
-- [Python桌面宠物脚本（B站）](https://www.bilibili.com/video/BV1DE4m1R7z5/)
+- [ST7789V 数据手册](https://newhavendisplay.com/content/datasheets/ST7789V.pdf)
+- [OV2640 摄像头数据手册](https://www.uctronics.com/download/cam_module/OV2640DS.pdf)
+- [ES8311 音频编解码器数据手册](https://www.everest-semi.com/pdf/ES8311%20PB.pdf)
+- [NS4150B 功放数据手册](https://datasheet.lcsc.com/lcsc/1912111437_NEOWAY-NS4150B_C437693.pdf)
+- [FPC排线安装教程（B站搜索）](https://search.bilibili.com/all?keyword=FPC%E6%8E%92%E7%BA%BF%20%E5%AE%89%E8%A3%85)
+- [3D打印后处理与组装技巧（B站搜索）](https://search.bilibili.com/all?keyword=3D%E6%89%93%E5%8D%B0%20%E5%90%8E%E5%A4%84%E7%90%86)
 
-*最后更新：2026-05-26*
+*最后更新：2026-05-27*

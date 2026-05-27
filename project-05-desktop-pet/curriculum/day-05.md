@@ -1,12 +1,13 @@
-# Day 05: 状态机设计模式 | State Machine Design Pattern
+# Day 05: GPIO编程与传感器驱动 | GPIO Programming & Sensor Drivers
 
 > **今日目标:**
-> - 理解有限状态机（FSM）的概念和原理
-> - 学习State设计模式的Python实现
-> - 为桌宠设计完整的行为状态图
-> - 实现基础状态机框架
+> - 掌握ESP-IDF的GPIO编程方法（输出、输入、中断）
+> - 学习I2C总线协议，读取BMI270加速度计/陀螺仪数据
+> - 使用串口输出传感器数据到PC监视器
+> - 编程控制ESP32-S3触摸按键
+> - 理解FreeRTOS任务间通信（队列）
 >
-> **产出:** 一个状态机框架，桌宠能在idle/walk/sleep三个状态之间自动切换
+> **产出:** 通过GPIO控制LED和触摸按键，通过I2C成功读取BMI270传感器数据并在串口打印，构建传感器数据采集系统
 
 ---
 
@@ -14,395 +15,522 @@
 
 | 时间 | 活动类型 | 内容 |
 |------|----------|------|
-| 09:00 - 09:15 | 晨间活动 | 第一阶段回顾，介绍第二阶段目标 |
-| 09:15 - 10:30 | 知识讲解 | 状态机概念、状态图、State设计模式 |
+| 09:00 - 09:15 | 晨间活动 | 前日焊接PCB上电测试，检查硬件连接 |
+| 09:15 - 10:30 | 知识讲解 | GPIO编程模型、中断处理、I2C总线协议原理 |
 | 10:30 - 10:45 | 课间休息 | |
-| 10:45 - 12:00 | 动手实践 | 实现基础状态机框架 |
+| 10:45 - 12:00 | 动手实践 | LED闪烁控制、按键读取与消抖、I2C初始化 |
 | 12:00 - 13:30 | 午餐休息 | |
-| 13:30 - 15:00 | 项目实战 | 为桌宠设计和实现行为状态机 |
+| 13:30 - 15:00 | 项目实战 | BMI270数据读取、触摸按键编程 |
 | 15:00 - 15:15 | 课间休息 | |
-| 15:15 - 16:30 | 拓展练习 | 状态转换条件设计 |
-| 16:30 - 17:00 | 总结分享 | 状态机设计讨论 |
+| 15:15 - 16:30 | 拓展练习 | FreeRTOS任务间通信、综合传感器采集系统 |
+| 16:30 - 17:00 | 总结分享 | 传感器数据可视化展示、代码Review |
 
 ---
 
-## 上午: 状态机理论 | Morning: State Machine Theory
+## 上午: GPIO基础与I2C总线 | Morning: GPIO Basics & I2C Bus
 
 ### 为什么要学这个? | Why Learn This?
 
-想象一下你的日常生活：早上起床 -> 洗漱 -> 吃早餐 -> 上课 -> 午餐 -> 下午活动 -> 晚餐 -> 睡觉。你一直在不同的"状态"之间切换，每个状态有自己的行为，切换的条件也是确定的（到了饭点就吃饭，困了就睡觉）。
+GPIO（General Purpose Input/Output）是嵌入式系统最基本、最核心的概念。一切外设控制——点亮LED、检测按键、发送信号——都从GPIO开始。I2C则是嵌入式系统中最常用的通信协议之一，传感器、显示屏、触摸控制器都通过它和主控对话。
 
-Think about your daily routine: wake up -> wash -> breakfast -> class -> lunch -> afternoon activity -> dinner -> sleep. You are constantly switching between different "states", each with its own behavior, and the switching conditions are deterministic.
+GPIO is the most fundamental concept in embedded systems. All peripheral control -- lighting LEDs, detecting buttons, sending signals -- starts with GPIO. I2C is one of the most common communication protocols, used by sensors, displays, and touch controllers to talk to the main MCU.
 
-这就是状态机的核心思想。在游戏中，NPC的AI（巡逻->发现敌人->追击->攻击->回到巡逻）用的就是状态机。工业自动化中，生产线的控制逻辑也是状态机。甚至你手机上的App界面（登录页->主页->详情页->返回主页）本质上也是一种状态机。
-
-This is the core idea of state machines. In games, NPC AI (patrol -> detect enemy -> chase -> attack -> return to patrol) uses state machines. Industrial automation control logic is also a state machine. Even your mobile app navigation (login -> home -> detail -> back to home) is essentially a state machine.
-
-### 状态机核心概念 | Core Concepts
-
-```
-状态机 = 状态 + 转换 + 事件
-
-┌─────────────────────────────────────┐
-│           宠物状态图                  │
-│                                     │
-│   ┌──────┐  被点击  ┌──────┐       │
-│   │ IDLE │ ───────> │HAPPY │       │
-│   │ 待机  │ <─────── │ 开心  │       │
-│   └──┬───┘  3秒后   └──────┘       │
-│      │                              │
-│      │ 随机触发                     │
-│      ▼                              │
-│   ┌──────┐  走到目标 ┌──────┐      │
-│   │ WALK │ ───────> │ IDLE │      │
-│   │ 行走  │          │ 待机  │      │
-│   └──────┘          └──┬───┘      │
-│                        │           │
-│                        │ 无操作30秒 │
-│                        ▼           │
-│                     ┌──────┐      │
-│                     │SLEEP │      │
-│                     │ 睡觉  │      │
-│                     └──────┘      │
-└─────────────────────────────────────┘
-```
-
-**三要素：**
-1. **状态（State）**：宠物当前的行为模式（idle、walk、sleep、happy）
-2. **转换（Transition）**：从一个状态切换到另一个状态
-3. **事件/条件（Event/Condition）**：触发状态转换的原因（被点击、定时器、到达目标）
-
-### 任务5.1: 用生活例子理解状态机 (20分钟)
-
-**练习：画出"交通灯"的状态图**
-
-```
-┌─────┐  60秒  ┌─────┐  5秒   ┌──────┐
-│ 绿灯 │ ─────> │ 黄灯 │ ─────> │ 红灯  │
-└─────┘       └─────┘       └──┬───┘
-                                │ 60秒
-                                ▼
-                            ┌─────┐
-                            │ 绿灯 │  (回到开始)
-                            └─────┘
-```
-
-**练习：画出"自动售货机"的状态图**
-
-思考以下状态：待机 -> 投币 -> 选择商品 -> 出货 -> 找零 -> 待机
-
-### 任务5.2: 实现基础状态机框架 (40分钟)
+### 任务5.1: GPIO输出 -- 控制LED闪烁 (30分钟)
 
 **步骤:**
 
-创建文件 `state_machine.py`：
+创建项目文件 `main/gpio_blink.c`：
 
-```python
-from abc import ABC, abstractmethod
+```c
+#include <stdio.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "driver/gpio.h"
+#include "esp_log.h"
 
-class State(ABC):
-    """状态基类 -- 所有具体状态都继承这个类"""
+static const char *TAG = "GPIO_BLINK";
 
-    def __init__(self, name):
-        self.name = name
+// SparkBot主板LED引脚定义（根据实际原理图）
+#define LED_GPIO        GPIO_NUM_48    // 主板LED
+#define BOOT_BUTTON     GPIO_NUM_0     // BOOT按键
 
-    def on_enter(self, pet):
-        """进入状态时调用（子类可重写）"""
-        print(f"[状态机] 进入 {self.name} 状态")
+void app_main(void)
+{
+    ESP_LOGI(TAG, "=== SparkBot GPIO LED 演示 ===");
 
-    def on_exit(self, pet):
-        """退出状态时调用（子类可重写）"""
-        print(f"[状态机] 离开 {self.name} 状态")
+    // ---- GPIO输出配置 ----
+    gpio_reset_pin(LED_GPIO);                       // 复位引脚到默认状态
+    gpio_set_direction(LED_GPIO, GPIO_MODE_OUTPUT); // 设置为输出模式
+    gpio_set_level(LED_GPIO, 0);                    // 初始状态: LED关闭
 
-    def update(self, pet):
-        """状态更新（每帧调用，子类应重写）"""
-        pass
+    // ---- GPIO输入配置（用于触发LED） ----
+    gpio_reset_pin(BOOT_BUTTON);
+    gpio_set_direction(BOOT_BUTTON, GPIO_MODE_INPUT);
+    gpio_set_pull_mode(BOOT_BUTTON, GPIO_PULLUP_ONLY);  // 内部上拉
 
-    def handle_event(self, pet, event):
-        """处理事件（子类应重写）"""
-        pass
-
-
-class StateMachine:
-    """状态机 -- 管理状态的切换和更新"""
-
-    def __init__(self, pet):
-        self.pet = pet              # 持有宠物引用
-        self.states = {}            # 所有注册的状态 {"name": State}
-        self.current_state = None   # 当前状态
-
-    def add_state(self, state):
-        """注册一个状态"""
-        self.states[state.name] = state
-
-    def set_initial_state(self, state_name):
-        """设置初始状态"""
-        if state_name in self.states:
-            self.current_state = self.states[state_name]
-            self.current_state.on_enter(self.pet)
-
-    def transition_to(self, state_name):
-        """切换到指定状态"""
-        if state_name not in self.states:
-            print(f"[状态机] 警告：状态 {state_name} 不存在")
-            return
-
-        if self.current_state:
-            if self.current_state.name == state_name:
-                return  # 已经是当前状态
-            self.current_state.on_exit(self.pet)
-
-        self.current_state = self.states[state_name]
-        self.current_state.on_enter(self.pet)
-
-    def update(self):
-        """更新当前状态（每帧调用）"""
-        if self.current_state:
-            self.current_state.update(self.pet)
-
-    def handle_event(self, event):
-        """将事件传递给当前状态"""
-        if self.current_state:
-            self.current_state.handle_event(self.pet, event)
-
-    def get_current_state_name(self):
-        """获取当前状态名称"""
-        return self.current_state.name if self.current_state else None
+    int led_state = 0;
+    while (1) {
+        // 简单的LED闪烁
+        led_state = !led_state;
+        gpio_set_level(LED_GPIO, led_state);
+        ESP_LOGI(TAG, "LED %s", led_state ? "ON  ●" : "OFF ○");
+        vTaskDelay(500 / portTICK_PERIOD_MS);  // 每500ms翻转一次
+    }
+}
 ```
 
-**代码解读：**
-- `State` 是抽象基类，定义了所有状态必须实现的接口
-- `on_enter` / `on_exit` 是状态的"入口/出口动作"
-- `update` 每帧被调用，用于检查是否需要转换
-- `StateMachine` 管理所有状态，负责状态的注册和切换
+**gpio_set_direction 的三种模式:**
+| 模式 | 说明 | 使用场景 |
+|------|------|----------|
+| `GPIO_MODE_OUTPUT` | 推挽输出 | LED、继电器等需要驱动电流的外设 |
+| `GPIO_MODE_INPUT` | 高阻输入 | 按键、传感器数字信号输入 |
+| `GPIO_MODE_OUTPUT_OD` | 开漏输出 | I2C总线、需要电平转换的场景 |
 
 **预期结果:**
-- 理解State基类和StateMachine类的关系
-- 能够解释"每帧调用update"的含义
+- 主板LED以1Hz频率闪烁（亮500ms，灭500ms）
+- 串口每500ms打印一次状态信息
 
-### 任务5.3: 实现第一个具体状态 (20分钟)
+**常见问题:**
+- **LED不亮**：检查GPIO引脚号是否正确（参考原理图），部分GPIO被用作PSRAM不能当普通GPIO
+- **编译错误 undefined reference to gpio_xxx**：检查CMakeLists.txt源文件名是否一致
 
-```python
-import random
+### 任务5.2: GPIO输入 -- 读取按键状态 (30分钟)
 
-class IdleState(State):
-    """待机状态 -- 宠物安静地站在原地"""
+按键输入需要处理**抖动**问题。机械按键在按下和释放的瞬间会产生几十毫秒的抖动信号，必须用软件或硬件消除。
 
-    def __init__(self):
-        super().__init__("idle")
-        self.idle_time = 0           # 已经待机了多长时间
-        self.next_walk_time = 0      # 下次走路的随机时间
+Mechanical buttons produce bouncing signals for tens of milliseconds during press and release, which must be eliminated by software or hardware.
 
-    def on_enter(self, pet):
-        """进入待机状态"""
-        super().on_enter(pet)
-        self.idle_time = 0
-        # 随机决定5-15秒后开始走路
-        self.next_walk_time = random.randint(5000, 15000)
-        # 切换到idle动画
-        if hasattr(pet, 'anim_manager'):
-            pet.anim_manager.switch_to("idle")
+```c
+#include "driver/gpio.h"
+#include "esp_log.h"
 
-    def update(self, pet):
-        """每帧检查是否该走路了"""
-        self.idle_time += 16  # 假设约60FPS，每帧约16ms
-        if self.idle_time >= self.next_walk_time:
-            # 切换到走路状态
-            pet.state_machine.transition_to("walk")
+static const char *TAG = "BUTTON";
 
-    def handle_event(self, pet, event):
-        """处理外部事件"""
-        if event == "clicked":
-            pet.state_machine.transition_to("happy")
-        elif event == "sleepy":
-            pet.state_machine.transition_to("sleep")
+#define BUTTON_GPIO     GPIO_NUM_0
+#define DEBOUNCE_MS     50     // 消抖时间（毫秒）
+
+// 按键消抖读取 -- 返回true表示按键确实被按下
+static bool button_read_debounced(void)
+{
+    // 第一次读取
+    if (gpio_get_level(BUTTON_GPIO) != 0) {
+        return false;  // 未按下（上拉，高电平）
+    }
+
+    // 延时去抖
+    vTaskDelay(pdMS_TO_TICKS(DEBOUNCE_MS));
+
+    // 再次确认
+    if (gpio_get_level(BUTTON_GPIO) != 0) {
+        return false;  // 是抖动，不是真的按下
+    }
+    return true;  // 确认按下
+}
+
+// ---- 中断方式检测按键（替代轮询） ----
+static void IRAM_ATTR button_isr_handler(void *arg)
+{
+    // 中断服务例程：只做最少的事情，通知任务处理
+    // 实际的消抖和业务逻辑在任务中完成
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    // ... 通过任务通知或队列唤醒处理任务
+}
+
+void app_main(void)
+{
+    // 配置按键GPIO
+    gpio_reset_pin(BUTTON_GPIO);
+    gpio_set_direction(BUTTON_GPIO, GPIO_MODE_INPUT);
+    gpio_set_pull_mode(BUTTON_GPIO, GPIO_PULLUP_ONLY);
+
+    // ---- 方式A: 轮询方式 ----
+    ESP_LOGI(TAG, "使用轮询方式检测按键...");
+    int press_count = 0;
+    while (1) {
+        if (button_read_debounced()) {
+            press_count++;
+            ESP_LOGI(TAG, "按键按下! 计数: %d", press_count);
+
+            // 等待按键释放（避免重复计数）
+            while (gpio_get_level(BUTTON_GPIO) == 0) {
+                vTaskDelay(pdMS_TO_TICKS(10));
+            }
+            vTaskDelay(pdMS_TO_TICKS(DEBOUNCE_MS));  // 释放消抖
+        }
+        vTaskDelay(pdMS_TO_TICKS(10));  // 10ms轮询间隔
+    }
+}
 ```
+
+**中断 vs 轮询对比:**
+| 方式 | 优点 | 缺点 | 适用场景 |
+|------|------|------|----------|
+| 轮询 | 实现简单，行为可预测 | 占用CPU、有响应延迟 | 低速按键、教学项目 |
+| 中断 | 即时响应、CPU效率高 | 代码复杂、需在ISR中注意限制 | 编码器、高速信号 |
+
+**预期结果:**
+- 按BOOT键，串口输出"按键按下!"和累计次数
+- 不会因为抖动出现一次按下输出多次的情况
+
+### 任务5.3: I2C总线 -- 读取BMI270传感器 (50分钟)
+
+ESP-IDF v5.x使用新版I2C驱动API。SparkBot使用BMI270六轴传感器（加速度计+陀螺仪），通过I2C总线连接。
+
+ESP-IDF v5.x uses the new I2C driver API. SparkBot uses the BMI270 6-axis sensor (accelerometer + gyroscope) connected via I2C bus.
+
+```c
+#include "driver/i2c_master.h"
+#include "esp_log.h"
+
+static const char *TAG = "BMI270";
+
+// I2C引脚定义 (根据SparkBot原理图)
+#define I2C_SCL_IO      GPIO_NUM_41
+#define I2C_SDA_IO      GPIO_NUM_42
+#define BMI270_ADDR     0x68        // 7位地址 (SDO接GND)
+
+// BMI270关键寄存器
+#define BMI270_CHIP_ID      0x00    // 芯片ID (应为0x24)
+#define BMI270_ACC_DATA     0x0C    // 加速度数据起始地址(6字节)
+#define BMI270_GYR_DATA     0x12    // 陀螺仪数据起始地址(6字节)
+#define BMI270_CMD          0x7E    // 命令寄存器
+#define BMI270_PWR_CTRL     0x7D    // 电源控制
+
+static i2c_master_bus_handle_t bus_handle;
+static i2c_master_dev_handle_t dev_handle;
+
+// I2C初始化 (ESP-IDF v5.x新版API)
+static esp_err_t i2c_init(void)
+{
+    // 1. 配置I2C总线
+    i2c_master_bus_config_t bus_cfg = {
+        .clk_source = I2C_CLK_SRC_DEFAULT,
+        .i2c_port = I2C_NUM_0,
+        .scl_io_num = I2C_SCL_IO,
+        .sda_io_num = I2C_SDA_IO,
+        .glitch_ignore_cnt = 7,
+        .flags.enable_internal_pullup = true,  // 启用内部上拉
+    };
+    ESP_ERROR_CHECK(i2c_new_master_bus(&bus_cfg, &bus_handle));
+
+    // 2. 添加BMI270设备
+    i2c_device_config_t dev_cfg = {
+        .dev_addr_length = I2C_ADDR_BIT_LEN_7,
+        .device_address = BMI270_ADDR,
+        .scl_speed_hz = 400000,  // 400kHz快速模式
+    };
+    ESP_ERROR_CHECK(i2c_master_bus_add_device(bus_handle, &dev_cfg, &dev_handle));
+
+    // 3. 探测设备是否存在
+    ESP_ERROR_CHECK(i2c_master_probe(bus_handle, BMI270_ADDR, 100));
+    ESP_LOGI(TAG, "I2C初始化成功，检测到BMI270 @ 0x%02X", BMI270_ADDR);
+    return ESP_OK;
+}
+
+// 写BMI270寄存器
+static esp_err_t bmi270_write_reg(uint8_t reg, uint8_t data)
+{
+    uint8_t buf[2] = {reg, data};
+    return i2c_master_transmit(dev_handle, buf, sizeof(buf), 100);
+}
+
+// 读BMI270寄存器
+static esp_err_t bmi270_read_reg(uint8_t reg, uint8_t *data, size_t len)
+{
+    return i2c_master_transmit_receive(dev_handle, &reg, 1, data, len, 100);
+}
+
+// BMI270初始化
+static esp_err_t bmi270_init(void)
+{
+    uint8_t chip_id = 0;
+    ESP_ERROR_CHECK(bmi270_read_reg(BMI270_CHIP_ID, &chip_id, 1));
+    ESP_LOGI(TAG, "BMI270 芯片ID: 0x%02X (期望: 0x24)", chip_id);
+
+    if (chip_id != 0x24) {
+        ESP_LOGE(TAG, "芯片ID不匹配! 请检查焊接");
+        return ESP_FAIL;
+    }
+
+    // 软复位
+    bmi270_write_reg(BMI270_CMD, 0xB6);
+    vTaskDelay(pdMS_TO_TICKS(50));
+
+    // 上电并设置为性能模式
+    bmi270_write_reg(BMI270_PWR_CTRL, 0x04);
+    vTaskDelay(pdMS_TO_TICKS(100));
+
+    ESP_LOGI(TAG, "BMI270初始化完成!");
+    return ESP_OK;
+}
+
+// 读取加速度数据 (单位: g)
+static void bmi270_read_accel(float *ax, float *ay, float *az)
+{
+    uint8_t data[6];
+    bmi270_read_reg(BMI270_ACC_DATA, data, 6);
+
+    // 16位有符号, 小端序 → 转换为g值 (±2g量程: LSB/16384)
+    int16_t rx = (int16_t)((data[1] << 8) | data[0]);
+    int16_t ry = (int16_t)((data[3] << 8) | data[2]);
+    int16_t rz = (int16_t)((data[5] << 8) | data[4]);
+
+    *ax = rx / 16384.0f;
+    *ay = ry / 16384.0f;
+    *az = rz / 16384.0f;
+}
+
+void app_main(void)
+{
+    ESP_LOGI(TAG, "=== SparkBot 传感器读取演示 ===");
+    i2c_init();
+    bmi270_init();
+
+    while (1) {
+        float ax, ay, az;
+        bmi270_read_accel(&ax, &ay, &az);
+        ESP_LOGI(TAG, "加速度: X=%+.2fg  Y=%+.2fg  Z=%+.2fg", ax, ay, az);
+
+        // 姿态判断
+        if (az > 0.8f)       ESP_LOGI(TAG, "  >> 正面朝上");
+        else if (az < -0.8f) ESP_LOGI(TAG, "  >> 正面朝下");
+        else if (ax > 0.8f)  ESP_LOGI(TAG, "  >> 向右倾斜");
+        else if (ax < -0.8f) ESP_LOGI(TAG, "  >> 向左倾斜");
+
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+}
+```
+
+**预期结果:**
+- 串口显示检测到BMI270芯片ID (0x24)
+- 每100ms输出三轴加速度数据
+- 转动SparkBot时数值实时变化
+- 能识别正面朝上/朝下/倾斜姿态
+
+**常见问题:**
+- **i2c_master_probe 失败**：检查SDA/SCL引脚焊接是否良好，上拉电阻是否正确
+- **芯片ID读出0xFF**：I2C通信未建立，检查引脚连接和电源
+- **数据始终为0**：传感器未完成上电初始化，检查PWR_CTRL配置
 
 ---
 
-## 下午: 完整行为状态机 | Afternoon: Complete Behavior State Machine
+## 下午: 触摸按键与任务间通信 | Afternoon: Touch Sensor & Inter-Task Comms
 
-### 任务5.4: 实现walk和sleep状态 (40分钟)
+### 任务5.4: 触摸按键编程 (30分钟)
 
-```python
-class WalkState(State):
-    """走路状态 -- 宠物在屏幕上随机走动"""
+ESP32-S3内置电容触摸传感器，SparkBot使用FPC排线上的触摸按键。手指接近/触摸焊盘时电容值变化，ADC读数下降。
 
-    def __init__(self):
-        super().__init__("walk")
-        self.target_x = 0
-        self.target_y = 0
-        self.walk_speed = 2  # 每帧移动的像素数
+The ESP32-S3 has built-in capacitive touch sensors. SparkBot uses a touch pad on the FPC cable. When a finger touches the pad, capacitance changes and the ADC reading drops.
 
-    def on_enter(self, pet):
-        """进入走路状态，随机选择目标位置"""
-        super().on_enter(pet)
-        # 随机选择屏幕上的一个位置作为目标
-        from PyQt5.QtWidgets import QApplication
-        screen = QApplication.desktop().screenGeometry()
-        self.target_x = random.randint(0, screen.width() - 200)
-        self.target_y = random.randint(0, screen.height() - 200)
-        print(f"[走路] 目标位置: ({self.target_x}, {self.target_y})")
+```c
+#include "driver/touch_pad.h"
+#include "esp_log.h"
 
-        if hasattr(pet, 'anim_manager'):
-            pet.anim_manager.switch_to("walk")
+static const char *TAG = "TOUCH";
 
-    def update(self, pet):
-        """每帧向目标位置移动"""
-        current_x = pet.x()
-        current_y = pet.y()
+// GPIO4对应TOUCH_PAD_NUM4
+#define TOUCH_PAD_CHANNEL   TOUCH_PAD_NUM4
+#define TOUCH_THRESHOLD     800     // 触摸阈值（需实际校准）
 
-        # 计算方向
-        dx = self.target_x - current_x
-        dy = self.target_y - current_y
-        distance = (dx ** 2 + dy ** 2) ** 0.5
+static void touch_callback(void *arg)
+{
+    uint32_t pad_status = 0;
+    touch_pad_get_status(&pad_status);
+    
+    if (pad_status & (1 << TOUCH_PAD_CHANNEL)) {
+        ESP_LOGI(TAG, "触摸检测: 被触摸了!");
+        // 清除中断状态
+        touch_pad_clear_status();
+    }
+}
 
-        if distance < self.walk_speed:
-            # 到达目标，回到待机
-            pet.move(self.target_x, self.target_y)
-            pet.state_machine.transition_to("idle")
-        else:
-            # 向目标移动一步
-            move_x = int(dx / distance * self.walk_speed)
-            move_y = int(dy / distance * self.walk_speed)
-            pet.move(current_x + move_x, current_y + move_y)
+void touch_init(void)
+{
+    // 1. 初始化触摸外设
+    touch_pad_init();
 
+    // 2. 配置触摸通道
+    touch_pad_config(TOUCH_PAD_CHANNEL, 0);  // threshold=0, 用滤波阈值
 
-class SleepState(State):
-    """睡觉状态 -- 宠物安静地睡觉"""
+    // 3. 启用软件滤波 (防干扰)
+    touch_pad_filter_start(10);  // 10ms滤波周期
 
-    def __init__(self):
-        super().__init__("sleep")
-        self.sleep_time = 0
-        self.sleep_duration = 0
+    // 4. 校准阈值
+    // 第一步: 读取无触摸时的基准值
+    uint32_t base_value;
+    touch_pad_read_benchmark(TOUCH_PAD_CHANNEL, &base_value);
+    // 第二步: 设置阈值 = 基准值 * 0.6 (触摸时值会降到此以下)
+    touch_pad_set_thresh(TOUCH_PAD_CHANNEL, base_value * 0.6);
 
-    def on_enter(self, pet):
-        super().on_enter(pet)
-        self.sleep_time = 0
-        # 随机睡10-30秒
-        self.sleep_duration = random.randint(10000, 30000)
-        if hasattr(pet, 'anim_manager'):
-            pet.anim_manager.switch_to("sleep")
+    // 5. 注册中断回调（可选）
+    touch_pad_isr_register(touch_callback, NULL, 0, NULL);
+    touch_pad_intr_enable(TOUCH_PAD_CHANNEL);
 
-    def update(self, pet):
-        self.sleep_time += 16
-        if self.sleep_time >= self.sleep_duration:
-            pet.state_machine.transition_to("idle")
+    ESP_LOGI(TAG, "触摸按键初始化完成 (基准值: %lu)", base_value);
+}
 
-    def handle_event(self, pet, event):
-        """被点击可以唤醒"""
-        if event == "clicked":
-            pet.state_machine.transition_to("happy")
-
-
-class HappyState(State):
-    """开心状态 -- 被点击后的开心反应"""
-
-    def __init__(self):
-        super().__init__("happy")
-        self.happy_time = 0
-
-    def on_enter(self, pet):
-        super().on_enter(pet)
-        self.happy_time = 0
-        if hasattr(pet, 'anim_manager'):
-            pet.anim_manager.switch_to("happy")
-
-    def update(self, pet):
-        self.happy_time += 16
-        if self.happy_time >= 3000:  # 开心3秒后回到待机
-            pet.state_machine.transition_to("idle")
+// 触摸阈值调试: 串口实时打印触摸值
+void touch_debug_loop(void)
+{
+    while (1) {
+        uint32_t touch_val = 0;
+        touch_pad_read_raw_data(TOUCH_PAD_CHANNEL, &touch_val);
+        
+        // 触摸时电容值下降，低于阈值
+        bool pressed = touch_val < 15000;  // 示例值，需根据实际校准
+        ESP_LOGI(TAG, "触摸原始值: %lu %s", touch_val, pressed ? "<< 触摸!" : "");
+        vTaskDelay(pdMS_TO_TICKS(200));
+    }
+}
 ```
 
-### 任务5.5: 将状态机集成到桌宠 (30分钟)
+**触摸阈值校准流程:**
+1. 不触摸时记录基准值（通常是几十万量级）
+2. 触摸时观察读数下降量（通常下降30%-60%）
+3. 将阈值设在基准值和触摸值之间
 
-```python
-# 在桌宠窗口类中集成状态机
+### 任务5.5: 综合实战 -- 传感器数据采集系统 (40分钟)
 
-class PetWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self._drag_pos = None
-        self.init_ui()
-        self.setup_animations()
-        self.setup_state_machine()
+使用FreeRTOS任务+队列构建完整的传感器数据采集流水线。两个任务分工协作：一个采集数据，一个处理显示。
 
-    def setup_state_machine(self):
-        """初始化状态机"""
-        self.state_machine = StateMachine(self)
+Build a complete sensor data pipeline using FreeRTOS tasks + queues. Two tasks divide the work: one collects data, one processes and displays it.
 
-        # 注册所有状态
-        self.state_machine.add_state(IdleState())
-        self.state_machine.add_state(WalkState())
-        self.state_machine.add_state(SleepState())
-        self.state_machine.add_state(HappyState())
+```c
+#include "freertos/queue.h"
 
-        # 设置初始状态
-        self.state_machine.set_initial_state("idle")
+// 传感器数据消息
+typedef struct {
+    float accel_x, accel_y, accel_z;
+    bool  touch_pressed;
+} sensor_data_t;
 
-        # 启动状态机更新定时器
-        self.update_timer = QTimer()
-        self.update_timer.timeout.connect(self.state_machine.update)
-        self.update_timer.start(16)  # 约60FPS
+static QueueHandle_t sensor_queue;
 
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self._drag_pos = event.globalPos() - self.frameGeometry().topLeft()
-            # 通知状态机"被点击"事件
-            self.state_machine.handle_event("clicked")
-            event.accept()
+// 任务A: 传感器采集任务 (高频率)
+void sensor_collect_task(void *pv)
+{
+    sensor_data_t data;
+    while (1) {
+        // 读加速度
+        bmi270_read_accel(&data.accel_x, &data.accel_y, &data.accel_z);
 
-    def mouseMoveEvent(self, event):
-        if self._drag_pos and event.buttons() == Qt.LeftButton:
-            self.move(event.globalPos() - self._drag_pos)
-            event.accept()
+        // 读触摸
+        uint32_t touch_val;
+        touch_pad_read_raw_data(TOUCH_PAD_CHANNEL, &touch_val);
+        data.touch_pressed = (touch_val < 15000);
 
-    def mouseReleaseEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self._drag_pos = None
-            event.accept()
+        // 发送到队列 (不等待，满了就丢弃旧数据)
+        xQueueOverwrite(sensor_queue, &data);
+
+        vTaskDelay(pdMS_TO_TICKS(20));  // 50Hz采集
+    }
+}
+
+// 任务B: LED显示任务 (根据传感器数据变化LED)
+void led_display_task(void *pv)
+{
+    sensor_data_t data;
+    TickType_t last_touch_time = 0;
+
+    while (1) {
+        // 从队列接收数据 (阻塞等待，最多等100ms)
+        if (xQueueReceive(sensor_queue, &data, pdMS_TO_TICKS(100)) == pdTRUE) {
+
+            // LED亮度反映加速度大小
+            float magnitude = sqrtf(data.accel_x * data.accel_x +
+                                    data.accel_y * data.accel_y +
+                                    data.accel_z * data.accel_z);
+            if (magnitude > 1.5f) {
+                ESP_LOGI("LED", "检测到摇晃! 幅度=%.2f", magnitude);
+                gpio_set_level(LED_GPIO, 1);   // 摇晃 → LED亮
+            } else {
+                gpio_set_level(LED_GPIO, 0);   // 静止 → LED灭
+            }
+
+            // 触摸控制LED闪烁
+            if (data.touch_pressed) {
+                ESP_LOGI("LED", "触摸→LED以2Hz闪烁");
+                for (int i = 0; i < 4; i++) {
+                    gpio_set_level(LED_GPIO, 1);
+                    vTaskDelay(pdMS_TO_TICKS(250));
+                    gpio_set_level(LED_GPIO, 0);
+                    vTaskDelay(pdMS_TO_TICKS(250));
+                }
+            }
+        }
+    }
+}
+
+void app_main(void)
+{
+    ESP_LOGI(TAG, "=== SparkBot 传感器采集系统 ===");
+
+    // 硬件初始化
+    gpio_reset_pin(LED_GPIO);
+    gpio_set_direction(LED_GPIO, GPIO_MODE_OUTPUT);
+    i2c_init();
+    bmi270_init();
+    touch_init();
+
+    // 创建队列 (深度=1, 只保留最新数据)
+    sensor_queue = xQueueCreate(1, sizeof(sensor_data_t));
+
+    // 创建任务
+    xTaskCreate(sensor_collect_task, "sensor", 4096, NULL, 2, NULL);
+    xTaskCreate(led_display_task,  "led",    4096, NULL, 1, NULL);
+
+    ESP_LOGI(TAG, "系统就绪! 摇晃或触摸SparkBot试试看");
+}
 ```
 
-**预期结果:**
-- 桌宠默认处于idle状态，播放待机动画
-- 5-15秒后自动切换到walk状态，在屏幕上随机走动
-- 到达目标后回到idle状态
-- 点击时切换到happy状态，3秒后回到idle
-- 10-30秒无操作后可能进入sleep状态
+**架构图:**
+```
+传感器采集任务 (优先级2, 50Hz)       LED显示任务 (优先级1)
+        │                                    │
+        ├─ BMI270加速度 ─┐                  ┌─ 摇晃检测→LED亮
+        ├─ 触摸按键   ─┼── Queue ──→ 接收 ──┤
+        │              │  (深度1)           └─ 触摸→LED闪烁
+        └─ 20ms周期 ───┘
+```
 
 ---
 
 ## 今日作业 | Homework
 
 ### 必做题
-1. 实现State基类和StateMachine类
-2. 实现idle、walk、happy、sleep四个状态
-3. 将状态机集成到桌宠程序中，验证状态自动切换
+1. 完成LED GPIO控制，支持按键翻转LED状态
+2. 完成I2C初始化，成功读取BMI270芯片ID (0x24)
+3. 串口持续打印三轴加速度数据，转动SparkBot数值跟随变化
+4. 实现触摸按键检测并在串口输出触摸状态
 
 ### 挑战题
-1. 添加一个新的状态"hungry"（饥饿），每隔一段时间自动触发
-2. 设计状态优先级系统：happy > walk > hungry > sleep > idle
-3. 添加状态日志功能，记录宠物的状态转换历史
+1. **LED呼吸灯**: 使用PWM (LEDC)实现LED呼吸效果（渐亮渐灭）
+2. **摇晃检测**: 当加速度矢量模长超过1.5g时触发"摇晃事件"，LED快速闪烁3次
+3. **触摸+LED联动**: 单次触摸→LED闪烁2次，双击(500ms内) → LED常亮2秒，长按(>1s) → LED呼吸
 
 ### 思考题
-1. 为什么状态机要用"每帧调用update"而不是"定时器检查"的方式？
-2. 如果两个状态同时需要触发（比如正在走路时该吃饭了），你会如何设计优先级？
+1. I2C总线为什么需要上拉电阻？去掉上拉电阻会怎样？（提示：I2C使用开漏输出）
+2. 中断方式和轮询方式读取按键各有什么优缺点？嵌入式系统中什么时候必须用中断？
+3. 触摸按键的电容检测原理是什么？为什么手指靠近会改变电容值？
 
 ---
 
 ## 明日预告 | Tomorrow's Preview
 
-明天我们将完善宠物行为系统：让走路动画与实际移动方向匹配，实现随机行为选择，添加"需求系统"（饥饿度、心情值）。你的桌宠将变得更加"智能"！
+明天我们将驱动ST7789显示屏！你将学习SPI总线通信，使用LVGL图形库创建漂亮的GUI界面，让SparkBot显示表情、文字和动画。这是SparkBot"活起来"的关键一步！
 
-Tomorrow we will enhance the pet behavior system: matching walk animations to actual movement direction, implementing random behavior selection, and adding a "needs system" (hunger, mood). Your pet will become more "intelligent"!
+Tomorrow we will drive the ST7789 display! You will learn SPI bus communication, use the LVGL graphics library to create GUI interfaces, and make SparkBot show expressions, text, and animations. This is the key step to making SparkBot "come alive"!
 
 ---
 
 ## 参考资源 | References
 
-- [状态机设计模式详解（Refactoring Guru）](https://refactoring.guru/design-patterns/state)
-- [Python 状态机实现](https://python-3-patterns-idioms-test.readthedocs.io/en/latest/StateMachine.html)
-- [游戏AI状态机（B站搜索 "游戏AI 状态机"）](https://search.bilibili.com/all?keyword=%E6%B8%B8%E6%88%8FAI%20%E7%8A%B6%E6%80%81%E6%9C%BA)
-- [VPet 虚拟桌宠模拟器（GitHub）](https://github.com/LorisYounger/VPet) -- 学习桌宠状态机的实际设计
+- [ESP-IDF GPIO 编程指南](https://docs.espressif.com/projects/esp-idf/zh_CN/stable/esp32s3/api-reference/peripherals/gpio.html)
+- [ESP-IDF I2C 新版驱动指南](https://docs.espressif.com/projects/esp-idf/zh_CN/stable/esp32s3/api-reference/peripherals/i2c_master.html)
+- [ESP-IDF 触摸传感器指南](https://docs.espressif.com/projects/esp-idf/zh_CN/stable/esp32s3/api-reference/peripherals/touch_pad.html)
+- [FreeRTOS 队列 API 文档](https://www.freertos.org/Embedded-RTOS-Queues.html)
+- [BMI270 数据手册](https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmi270-ds000.pdf)
+- [ESP32 I2C 通信详解 (B站)](https://search.bilibili.com/all?keyword=ESP32%20I2C%20%E9%80%9A%E4%BF%A1)
 
-*最后更新：2026-05-26*
+*最后更新：2026-05-27*

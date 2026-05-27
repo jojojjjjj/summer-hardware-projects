@@ -1,12 +1,13 @@
-# Day 09: 拖拽与桌面互动 | Drag & Desktop Interaction
+# Day 09: WiFi联网与天气时钟 | WiFi & Weather Clock
 
 > **今日目标:**
-> - 实现完善的拖拽系统（包含惯性抛掷）
-> - 实现屏幕边缘检测和碰撞效果
-> - 模拟简单的重力/弹跳物理效果
-> - 让桌宠能"爬墙"和"掉落"
+> - 掌握ESP32-S3 WiFi Station模式连接
+> - 使用HTTP Client获取天气API数据
+> - 实现NTP时间同步
+> - 学习JSON解析 (cJSON)
+> - 完成天气时钟功能整合
 >
-> **产出:** 桌宠支持拖拽抛掷、屏幕边缘碰撞、简单物理模拟
+> **产出:** SparkBot连接WiFi，同步网络时间，获取真实天气数据，在LVGL界面上显示完整天气时钟
 
 ---
 
@@ -14,341 +15,430 @@
 
 | 时间 | 活动类型 | 内容 |
 |------|----------|------|
-| 09:00 - 09:15 | 晨间活动 | 第二阶段回顾，介绍第三阶段目标 |
-| 09:15 - 10:30 | 知识讲解 | 物理模拟基础、碰撞检测 |
+| 09:00 - 09:15 | 晨间活动 | 音频系统验收、蓝牙音箱演示 |
+| 09:15 - 10:30 | 知识讲解 | WiFi协议栈、HTTP协议、JSON格式 |
 | 10:30 - 10:45 | 课间休息 | |
-| 10:45 - 12:00 | 动手实践 | 实现惯性拖拽和边界碰撞 |
+| 10:45 - 12:00 | 动手实践 | WiFi连接、NTP时间同步 |
 | 12:00 - 13:30 | 午餐休息 | |
-| 13:30 - 15:00 | 项目实战 | 物理效果和桌面互动 |
+| 13:30 - 15:00 | 项目实战 | HTTP Client获取天气、JSON解析 |
 | 15:00 - 15:15 | 课间休息 | |
-| 15:15 - 16:30 | 拓展练习 | 攀爬和掉落效果 |
-| 16:30 - 17:00 | 总结分享 | 物理模拟讨论 |
+| 15:15 - 16:30 | 拓展练习 | 天气时钟整合到LVGL、多API接入 |
+| 16:30 - 17:00 | 总结分享 | 天气时钟成果展示 |
 
 ---
 
-## 上午: 惯性拖拽与碰撞 | Morning: Inertial Drag & Collision
+## 上午: WiFi连接与NTP时间 | Morning: WiFi Connection & NTP Time
 
-### 为什么要学这个? | Why Learn this?
+### 为什么要学这个? | Why Learn This?
 
-你用手机时，滑动列表会继续滚动一段距离才停下。这种"惯性"效果让交互感觉更自然、更流畅。在桌宠中，如果你快速甩动宠物然后松手，它应该沿着你甩的方向继续移动一段距离再停下。
+WiFi是物联网设备最重要的联网方式。没有WiFi，SparkBot只能是一个离线玩具；有了WiFi，它就能获取时间、天气、新闻、调用AI大模型——变成一个真正的"智能"设备。
 
-When you swipe on a mobile phone, the list continues scrolling before stopping. This "inertia" effect makes interaction feel more natural and fluid. For the desktop pet, if you quickly fling it and release, it should continue moving in that direction before stopping.
+WiFi is the most important networking method for IoT devices. Without WiFi, SparkBot is just an offline toy; with WiFi, it can get time, weather, news, and call AI models -- becoming a truly "smart" device.
 
-物理模拟是游戏开发的基础知识。从愤怒的小鸟的抛物线，到赛车游戏的碰撞，再到3D游戏的刚体物理，都建立在同样的数学基础之上。
+HTTP是互联网最基础的通信协议——你每天用的浏览器、微信、抖音，底层都是HTTP。掌握嵌入式HTTP客户端编程，你的设备就能和世界上任何一个服务器通信。
 
-Physics simulation is foundational in game development. From Angry Birds' parabolas to racing game collisions to 3D rigid body physics, all build on the same mathematical foundations.
+HTTP is the most fundamental internet communication protocol. Mastering embedded HTTP client programming lets your device communicate with any server in the world.
 
-### 任务9.1: 实现惯性抛掷 (40分钟)
+### 任务9.1: WiFi Station模式连接 (40分钟)
+
+**重要: ESP32-S3仅支持2.4GHz WiFi，不支持5GHz频段！**
+
+ESP32-S3 supports only 2.4GHz WiFi, NOT 5GHz!
 
 **步骤:**
 
-创建文件 `physics.py`：
+1. **创建WiFi管理代码**
 
-```python
-import math
+```c
+#include <string.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/event_groups.h"
+#include "esp_wifi.h"
+#include "esp_event.h"
+#include "esp_log.h"
+#include "nvs_flash.h"
 
-class PhysicsBody:
-    """物理体 -- 带速度和加速度的物体"""
+static const char *TAG = "WIFI";
+static EventGroupHandle_t wifi_event_group;
+static int s_retry_num = 0;
 
-    def __init__(self, x=0, y=0):
-        self.x = x
-        self.y = y
-        self.vx = 0.0       # 水平速度
-        self.vy = 0.0       # 垂直速度
-        self.friction = 0.95  # 摩擦力（每帧速度乘以此系数）
-        self.gravity = 0.5   # 重力加速度（像素/帧²）
-        self.bounce = 0.6    # 弹跳系数（碰撞后保留的速度比例）
-        self.use_gravity = False  # 是否启用重力
+#define WIFI_CONNECTED_BIT  BIT0
+#define WIFI_FAIL_BIT       BIT1
 
-    def update(self, screen_width, screen_height, obj_width, obj_height):
-        """更新物理状态"""
-        # 应用重力
-        if self.use_gravity:
-            self.vy += self.gravity
+// WiFi配置 -- 从menuconfig或配置文件读取
+#define WIFI_SSID       "你的WiFi名"
+#define WIFI_PASSWORD   "你的WiFi密码"
 
-        # 应用摩擦力
-        self.vx *= self.friction
-        if self.use_gravity:
-            self.vy *= self.friction
+// WiFi事件处理
+static void wifi_event_handler(void *arg, esp_event_base_t event_base,
+                                int32_t event_id, void *event_data)
+{
+    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
+        esp_wifi_connect();
+    } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
+        if (s_retry_num < 5) {
+            ESP_LOGW(TAG, "WiFi断开, 重试 %d/5...", s_retry_num + 1);
+            esp_wifi_connect();
+            s_retry_num++;
+        } else {
+            xEventGroupSetBits(wifi_event_group, WIFI_FAIL_BIT);
+        }
+    } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
+        ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
+        ESP_LOGI(TAG, "获取IP: " IPSTR, IP2STR(&event->ip_info.ip));
+        s_retry_num = 0;
+        xEventGroupSetBits(wifi_event_group, WIFI_CONNECTED_BIT);
+    }
+}
 
-        # 更新位置
-        self.x += self.vx
-        self.y += self.vy
-
-        # 边界碰撞检测
-        self.check_boundary_collision(screen_width, screen_height, obj_width, obj_height)
-
-        # 速度过小时停止（避免无限微小运动）
-        if abs(self.vx) < 0.1:
-            self.vx = 0
-        if abs(self.vy) < 0.1 and not self.use_gravity:
-            self.vy = 0
-
-    def check_boundary_collision(self, screen_w, screen_h, obj_w, obj_h):
-        """边界碰撞检测与反弹"""
-        # 左边界
-        if self.x < 0:
-            self.x = 0
-            self.vx = abs(self.vx) * self.bounce
-        # 右边界
-        elif self.x > screen_w - obj_w:
-            self.x = screen_w - obj_w
-            self.vx = -abs(self.vx) * self.bounce
-
-        # 上边界
-        if self.y < 0:
-            self.y = 0
-            self.vy = abs(self.vy) * self.bounce
-
-        # 下边界（地面）
-        if self.y > screen_h - obj_h:
-            self.y = screen_h - obj_h
-            self.vy = -abs(self.vy) * self.bounce
-            # 如果弹跳速度很小，就停在地面上
-            if abs(self.vy) < 1:
-                self.vy = 0
-
-    def fling(self, vx, vy):
-        """抛掷 -- 设置初始速度"""
-        self.vx = vx
-        self.vy = vy
-
-    def stop(self):
-        """停止运动"""
-        self.vx = 0
-        self.vy = 0
-
-    def is_moving(self):
-        """是否在运动"""
-        return abs(self.vx) > 0.5 or abs(self.vy) > 0.5
-```
-
-### 任务9.2: 集成物理到桌宠 (30分钟)
-
-```python
-class PetWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self._drag_pos = None
-        self._drag_history = []  # 记录拖拽轨迹
-        self.init_ui()
-        self.setup_physics()
-
-    def setup_physics(self):
-        """设置物理系统"""
-        self.physics = PhysicsBody(self.x(), self.y())
-        self.physics.friction = 0.92
-        self.physics.bounce = 0.5
-
-        # 物理更新定时器
-        self.physics_timer = QTimer()
-        self.physics_timer.timeout.connect(self.update_physics)
-        self.physics_timer.start(16)  # 约60FPS
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self._drag_pos = event.globalPos() - self.frameGeometry().topLeft()
-            self._drag_history = [(event.globalPos().x(), event.globalPos().y())]
-            self.physics.stop()  # 拖拽时停止物理运动
-            event.accept()
-
-    def mouseMoveEvent(self, event):
-        if self._drag_pos and event.buttons() == Qt.LeftButton:
-            new_pos = event.globalPos() - self._drag_pos
-            self.move(new_pos)
-
-            # 记录拖拽轨迹（保留最近5个点）
-            self._drag_history.append((event.globalPos().x(), event.globalPos().y()))
-            if len(self._drag_history) > 5:
-                self._drag_history.pop(0)
-
-            event.accept()
-
-    def mouseReleaseEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            if len(self._drag_history) >= 2:
-                # 计算抛掷速度
-                last = self._drag_history[-1]
-                first = self._drag_history[0]
-                dx = last[0] - first[0]
-                dy = last[1] - first[1]
-                steps = len(self._drag_history)
-
-                # 速度 = 位移 / 时间，这里简化为位移 / 帧数
-                vx = dx / steps * 0.5  # 缩放系数，避免太快
-                vy = dy / steps * 0.5
-
-                # 应用抛掷
-                self.physics.x = self.x()
-                self.physics.y = self.y()
-                self.physics.fling(vx, vy)
-
-            self._drag_pos = None
-            self._drag_history = []
-            event.accept()
-
-    def update_physics(self):
-        """更新物理位置"""
-        if self.physics.is_moving():
-            screen = QApplication.desktop().screenGeometry()
-            self.physics.update(screen.width(), screen.height(), self.width(), self.height())
-            self.move(int(self.physics.x), int(self.physics.y))
+// WiFi初始化
+esp_err_t wifi_init_sta(void)
+{
+    nvs_flash_init();
+    wifi_event_group = xEventGroupCreate();
+    
+    ESP_ERROR_CHECK(esp_netif_init());
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    esp_netif_create_default_wifi_sta();
+    
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+    
+    esp_event_handler_instance_t instance_any_id;
+    esp_event_handler_instance_t instance_got_ip;
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(
+        WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, &instance_any_id));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(
+        IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler, NULL, &instance_got_ip));
+    
+    wifi_config_t wifi_config = {
+        .sta = {
+            .ssid = WIFI_SSID,
+            .password = WIFI_PASSWORD,
+            .threshold.authmode = WIFI_AUTH_WPA2_PSK,
+        },
+    };
+    
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
+    ESP_ERROR_CHECK(esp_wifi_start());
+    
+    ESP_LOGI(TAG, "WiFi初始化完成, 连接中: %s", WIFI_SSID);
+    
+    // 等待连接结果 (最多30秒)
+    EventBits_t bits = xEventGroupWaitBits(wifi_event_group,
+        WIFI_CONNECTED_BIT | WIFI_FAIL_BIT, pdFALSE, pdFALSE, pdMS_TO_TICKS(30000));
+    
+    if (bits & WIFI_CONNECTED_BIT) {
+        ESP_LOGI(TAG, "WiFi连接成功!");
+        return ESP_OK;
+    } else {
+        ESP_LOGE(TAG, "WiFi连接失败!");
+        return ESP_FAIL;
+    }
+}
 ```
 
 **预期结果:**
-- 拖拽宠物时跟随鼠标移动
-- 快速甩动后松手，宠物沿着甩动方向继续移动
-- 遇到屏幕边缘会反弹
-- 速度逐渐减小直到停止
+- 串口显示WiFi连接过程: 启动 -> 连接AP -> 获取IP
+- 最终打印IP地址(如192.168.1.100)
 
 **常见问题:**
-- **抛掷太快**：减小fling计算中的缩放系数
-- **不反弹**：检查`check_boundary_collision`的实现
-- **运动不流畅**：确认定时器间隔是16ms
+- **连接超时**：检查WiFi密码、信号强度、确认是2.4GHz WiFi
+- **反复断开重连**：电源不稳定可能导致WiFi掉线，检查DC-DC供电
+- **获取不到IP**：路由器DHCP问题
+
+### 任务9.2: NTP时间同步 (30分钟)
+
+```c
+#include "esp_sntp.h"
+#include <time.h>
+
+static const char *TAG = "TIME";
+
+// NTP时间同步
+static void ntp_time_init(void)
+{
+    ESP_LOGI(TAG, "正在同步网络时间...");
+    
+    // 设置时区为中国标准时间 (UTC+8)
+    setenv("TZ", "CST-8", 1);
+    tzset();
+    
+    // 配置NTP服务器 (国内推荐阿里云和国家授时中心)
+    esp_sntp_setoperatingmode(SNTP_OPMODE_POLL);
+    esp_sntp_setservername(0, "ntp.aliyun.com");
+    esp_sntp_setservername(1, "ntp.ntsc.ac.cn");
+    esp_sntp_init();
+    
+    // 等待同步
+    int retry = 0;
+    while (sntp_get_sync_status() == SNTP_SYNC_STATUS_RESET && retry < 15) {
+        ESP_LOGI(TAG, "等待NTP同步... (%d/15)", retry + 1);
+        vTaskDelay(pdMS_TO_TICKS(2000));
+        retry++;
+    }
+    
+    if (retry < 15) {
+        time_t now;
+        struct tm timeinfo;
+        time(&now);
+        localtime_r(&now, &timeinfo);
+        ESP_LOGI(TAG, "NTP同步成功! %d-%02d-%02d %02d:%02d:%02d",
+                 timeinfo.tm_year + 1900, timeinfo.tm_mon + 1,
+                 timeinfo.tm_mday, timeinfo.tm_hour,
+                 timeinfo.tm_min, timeinfo.tm_sec);
+    } else {
+        ESP_LOGE(TAG, "NTP同步失败!");
+    }
+}
+
+// 获取格式化的时间和日期字符串
+static void get_time_str(char *buf, size_t len)
+{
+    time_t now;
+    struct tm timeinfo;
+    time(&now);
+    localtime_r(&now, &timeinfo);
+    strftime(buf, len, "%H:%M", &timeinfo);
+}
+
+static void get_date_str(char *buf, size_t len)
+{
+    time_t now;
+    struct tm timeinfo;
+    time(&now);
+    localtime_r(&now, &timeinfo);
+    const char *wd[] = {"周日","周一","周二","周三","周四","周五","周六"};
+    strftime(buf, len, "%Y年%m月%d日", &timeinfo);
+    strcat(buf, " ");
+    strcat(buf, wd[timeinfo.tm_wday]);
+}
+```
 
 ---
 
-## 下午: 物理效果与桌面互动 | Afternoon: Physics & Desktop Interaction
+## 下午: HTTP Client与天气API | Afternoon: HTTP Client & Weather API
 
-### 任务9.3: 添加重力效果 (20分钟)
+### 任务9.3: HTTP Client获取天气数据 (40分钟)
 
-```python
-def toggle_gravity(self):
-    """切换重力模式（右键菜单选项）"""
-    self.physics.use_gravity = not self.physics.use_gravity
-    if self.physics.use_gravity:
-        self.show_bubble("好重！", 2000)
-    else:
-        self.show_bubble("轻飘飘~", 2000)
+```c
+#include "esp_http_client.h"
+#include "cJSON.h"
+
+static const char *TAG = "WEATHER";
+
+// 心知天气API配置 (需注册: seniverse.com)
+#define WEATHER_API_URL "https://api.seniverse.com/v3/weather/now.json"
+#define WEATHER_API_KEY "你的API密钥"
+#define WEATHER_CITY    "beijing"
+
+// 天气数据结构
+typedef struct {
+    char location[32];
+    char text[32];         // 晴/多云/雨
+    int  temperature;
+    int  humidity;
+    char code[8];
+} weather_data_t;
+
+// HTTP响应处理 (动态拼接)
+typedef struct {
+    char *buffer;
+    int   length;
+} http_response_t;
+
+static esp_err_t http_event_handler(esp_http_client_event_t *evt)
+{
+    if (evt->event_id == HTTP_EVENT_ON_DATA) {
+        http_response_t *resp = (http_response_t *)evt->user_data;
+        char *new_buf = realloc(resp->buffer, resp->length + evt->data_len + 1);
+        if (new_buf) {
+            resp->buffer = new_buf;
+            memcpy(resp->buffer + resp->length, evt->data, evt->data_len);
+            resp->length += evt->data_len;
+            resp->buffer[resp->length] = '\0';
+        }
+    }
+    return ESP_OK;
+}
+
+// 获取天气
+static esp_err_t fetch_weather(weather_data_t *weather)
+{
+    http_response_t resp = { .buffer = NULL, .length = 0 };
+    
+    char url[512];
+    snprintf(url, sizeof(url),
+             "%s?key=%s&location=%s&language=zh-Hans&unit=c",
+             WEATHER_API_URL, WEATHER_API_KEY, WEATHER_CITY);
+    
+    esp_http_client_config_t config = {
+        .url = url,
+        .method = HTTP_METHOD_GET,
+        .timeout_ms = 10000,
+        .event_handler = http_event_handler,
+        .user_data = &resp,
+        .skip_cert_common_name_check = true,  // 开发阶段
+    };
+    
+    esp_http_client_handle_t client = esp_http_client_init(&config);
+    esp_err_t err = esp_http_client_perform(client);
+    int status = esp_http_client_get_status_code(client);
+    esp_http_client_cleanup(client);
+    
+    ESP_LOGI(TAG, "HTTP状态: %d", status);
+    
+    if (status == 200 && resp.buffer) {
+        parse_weather_json(resp.buffer, weather);
+        free(resp.buffer);
+        return ESP_OK;
+    }
+    
+    free(resp.buffer);
+    return ESP_FAIL;
+}
 ```
+
+### 任务9.4: JSON解析 -- cJSON (30分钟)
+
+```c
+// 解析心知天气JSON响应
+esp_err_t parse_weather_json(const char *json_str, weather_data_t *weather)
+{
+    cJSON *root = cJSON_Parse(json_str);
+    if (!root) {
+        ESP_LOGE(TAG, "JSON解析失败!");
+        return ESP_FAIL;
+    }
+    
+    cJSON *results = cJSON_GetObjectItem(root, "results");
+    if (!cJSON_IsArray(results)) { cJSON_Delete(root); return ESP_FAIL; }
+    
+    cJSON *result = cJSON_GetArrayItem(results, 0);
+    if (!result) { cJSON_Delete(root); return ESP_FAIL; }
+    
+    // 城市名
+    cJSON *location = cJSON_GetObjectItem(result, "location");
+    cJSON *name = cJSON_GetObjectItem(location, "name");
+    if (name) strncpy(weather->location, name->valuestring, sizeof(weather->location) - 1);
+    
+    // 天气数据
+    cJSON *now = cJSON_GetObjectItem(result, "now");
+    cJSON *text = cJSON_GetObjectItem(now, "text");
+    cJSON *temp = cJSON_GetObjectItem(now, "temperature");
+    cJSON *code = cJSON_GetObjectItem(now, "code");
+    cJSON *hum = cJSON_GetObjectItem(now, "humidity");
+    
+    if (text) strncpy(weather->text, text->valuestring, sizeof(weather->text) - 1);
+    if (temp) weather->temperature = atoi(temp->valuestring);
+    if (code) strncpy(weather->code, code->valuestring, sizeof(weather->code) - 1);
+    if (hum)  weather->humidity = atoi(hum->valuestring);
+    
+    cJSON_Delete(root);
+    
+    ESP_LOGI(TAG, "天气: %s %s %d°C 湿度:%d%%",
+             weather->location, weather->text,
+             weather->temperature, weather->humidity);
+    
+    return ESP_OK;
+}
+```
+
+### 任务9.5: 天气时钟整合到LVGL (30分钟)
+
+```c
+// 天气更新任务
+static void weather_update_task(void *pvParameters)
+{
+    weather_data_t weather;
+    char time_buf[16], date_buf[32];
+    
+    // 等待WiFi连接
+    xEventGroupWaitBits(wifi_event_group, WIFI_CONNECTED_BIT, pdFALSE, pdTRUE, portMAX_DELAY);
+    ntp_time_init();
+    
+    while (1) {
+        // 每秒更新时间
+        get_time_str(time_buf, sizeof(time_buf));
+        get_date_str(date_buf, sizeof(date_buf));
+        lv_label_set_text(time_label, time_buf);
+        lv_label_set_text(date_label, date_buf);
+        
+        // 每30分钟更新天气
+        static int counter = 0;
+        if (counter % 30 == 0 && fetch_weather(&weather) == ESP_OK) {
+            char temp_str[16];
+            snprintf(temp_str, sizeof(temp_str), "%d°C", weather.temperature);
+            lv_label_set_text(temp_label, temp_str);
+            lv_label_set_text(weather_desc, weather.text);
+            lv_label_set_text(city_label, weather.location);
+        }
+        counter++;
+        
+        vTaskDelay(pdMS_TO_TICKS(60000));  // 每分钟刷新
+    }
+}
+```
+
+**常用的免费天气API:**
+
+| API | 中文支持 | 免费额度 | 注册地址 |
+|-----|---------|---------|----------|
+| 心知天气 | 好 | 400次/小时 | seniverse.com |
+| 和风天气 | 好 | 1000次/天 | dev.qweather.com |
+| OpenWeatherMap | 一般 | 60次/分钟 | openweathermap.org |
+| 高德天气 | 好 | 5000次/天 | lbs.amap.com |
 
 **预期结果:**
-- 开启重力后，宠物会"掉落"到屏幕底部
-- 掉落后会弹跳几次然后静止
-- 拖拽并抛掷时有抛物线效果
+- SparkBot屏幕实时显示时间 (时:分, 每分钟刷新)
+- 显示日期和星期
+- 显示天气图标、温度、城市名
+- 每30分钟自动更新天气数据
 
-### 任务9.4: 屏幕边缘行为 (30分钟)
-
-```python
-class EdgeBehavior:
-    """屏幕边缘行为 -- 让宠物在屏幕边缘有特殊反应"""
-
-    def __init__(self, pet_window):
-        self.pet = pet_window
-
-    def check_edge(self):
-        """检查宠物是否在屏幕边缘"""
-        screen = QApplication.desktop().screenGeometry()
-        x, y = self.pet.x(), self.pet.y()
-        w, h = self.pet.width(), self.pet.height()
-
-        edges = []
-
-        if x <= 0:
-            edges.append("left")
-        elif x >= screen.width() - w:
-            edges.append("right")
-
-        if y <= 0:
-            edges.append("top")
-        elif y >= screen.height() - h:
-            edges.append("bottom")
-
-        return edges
-
-    def on_edge(self, edges):
-        """到达边缘时的反应"""
-        if not edges:
-            return
-
-        if "bottom" in edges:
-            # 落到地面
-            reactions = ["着陆！", "安全着地~", "砰！"]
-            self.pet.show_bubble(random.choice(reactions), 2000)
-
-        elif "left" in edges or "right" in edges:
-            # 撞到侧墙
-            reactions = ["哎呀，到头了！", "碰壁了~", "这里走不通"]
-            self.pet.show_bubble(random.choice(reactions), 2000)
-
-        elif "top" in edges:
-            # 撞到天花板
-            reactions = ["好高！", "飞起来了！"]
-            self.pet.show_bubble(random.choice(reactions), 2000)
-```
-
-### 任务9.5: 完善拖拽状态管理 (20分钟)
-
-```python
-class DragState(State):
-    """拖拽状态 -- 被用户拖拽时的状态"""
-
-    def __init__(self):
-        super().__init__("dragged")
-
-    def on_enter(self, pet):
-        super().on_enter(pet)
-        if hasattr(pet, 'anim_manager'):
-            # 切换到被拖拽的动画（如惊恐表情）
-            if "dragged" in pet.anim_manager.animations:
-                pet.anim_manager.switch_to("dragged")
-            else:
-                pet.anim_manager.switch_to("walk")
-        pet.show_bubble("啊~别拽我！", 1500)
-
-    def on_exit(self, pet):
-        super().on_exit(pet)
-
-    def handle_event(self, pet, event):
-        if event == "released":
-            # 被释放后，进入抛掷状态或idle
-            if pet.physics.is_moving():
-                pass  # 让物理系统处理
-            else:
-                pet.state_machine.transition_to("idle")
-```
-
-### 任务9.6: 整合所有功能 (10分钟)
-
-确保以下交互流程正常工作：
-1. 拖拽宠物 -> 切换到dragged状态 -> 播放拖拽动画/音效
-2. 甩动松手 -> 惯性抛掷 -> 边界反弹 -> 最终停止
-3. 停止后 -> 自动回到idle状态 -> 播放idle动画
-4. 右键菜单可以切换重力模式
+**常见问题:**
+- **天气API返回错误**：检查API Key是否正确，确认免费API调用次数未超限
+- **JSON解析崩溃**：确认响应是合法JSON；打印原始响应调试
+- **时间不对**：检查时区设置(CST-8)
+- **HTTPS错误**：开发阶段用 `skip_cert_common_name_check = true`
 
 ---
 
 ## 今日作业 | Homework
 
 ### 必做题
-1. 实现PhysicsBody类，支持速度、摩擦力和边界碰撞
-2. 实现惯性抛掷效果，拖拽甩动后宠物继续移动
-3. 边界碰撞时显示不同的反应文字
+1. 完成WiFi STA模式连接，串口打印成功连接的IP地址
+2. 实现NTP时间同步，在屏幕上显示当前时间
+3. 获取天气API数据并解析JSON，显示温度和天气描述
+4. 将时间和天气整合到LVGL天气时钟界面
 
 ### 挑战题
-1. 实现宠物"自动走回屏幕中央"的功能（当用户长时间不操作时）
-2. 添加"弹跳"动画效果（碰撞时图片缩小再恢复）
-3. 实现多个桌宠之间的碰撞检测
+1. 添加未来3天天气预报 (需不同的API端点)
+2. 根据天气代码自动切换天气图标 (晴/多云/雨/雪)
+3. 实现WiFi断线自动重连 + 界面显示连接状态
 
 ### 思考题
-1. `friction`（摩擦力）和`bounce`（弹跳系数）这两个参数如何影响宠物的运动？试着调出不同的效果。
-2. 为什么在`mouseReleaseEvent`中要用最近几个点的速度而不是单个点的位移？
+1. HTTP和HTTPS有什么区别？为什么ESP32-S3的HTTPS需要额外配置证书？
+2. NTP时间同步的原理是什么？为什么网络时间比本地晶振更准确？
+3. JSON为什么成为物联网数据交换的标准格式？
 
 ---
 
 ## 明日预告 | Tomorrow's Preview
 
-明天是一个令人兴奋的日子！我们将给桌宠添加AI对话功能，让它能理解你说的话并做出回应。你将学习如何调用LLM（大语言模型）API，实现真正的智能对话。
+明天是最激动人心的一天！我们将给SparkBot接入AI大模型，让它能真正"对话"。实现语音输入->文字识别->AI回复->TTS输出的完整流水线！
 
-Tomorrow is exciting! We add AI dialogue capability so the pet can understand what you say and respond. You will learn to call LLM (Large Language Model) APIs for real intelligent conversation.
+Tomorrow is the most exciting day! We integrate AI large models into SparkBot for real conversation. Full pipeline: voice -> ASR -> AI reply -> TTS!
 
 ---
 
 ## 参考资源 | References
 
-- [游戏物理基础教程](https://zhuanlan.zhihu.com/p/26241987)
-- [碰撞检测算法简介](https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection)
-- [Qt 物理动画（QPropertyAnimation）](https://doc.qt.io/qt-5/qpropertyanimation.html)
-- [Shimeji桌宠制作教程（B站）](https://www.bilibili.com/video/BV1q441127zw/) -- 学习Shimeji的桌面互动机制
+- [ESP-IDF WiFi 驱动指南](https://docs.espressif.com/projects/esp-idf/zh_CN/stable/esp32s3/api-reference/network/esp_wifi.html)
+- [ESP-IDF HTTP Client 指南](https://docs.espressif.com/projects/esp-idf/zh_CN/stable/esp32s3/api-reference/protocols/esp_http_client.html)
+- [ESP-IDF SNTP 时间同步](https://docs.espressif.com/projects/esp-idf/zh_CN/stable/esp32s3/api-reference/system/system_time.html)
+- [cJSON GitHub](https://github.com/DaveGamble/cJSON)
+- [心知天气 API 文档](https://seniverse.yuque.com/hyper_data/api_v3)
 
-*最后更新：2026-05-26*
+*最后更新：2026-05-27*

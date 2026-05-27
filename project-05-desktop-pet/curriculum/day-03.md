@@ -1,12 +1,13 @@
-# Day 03: 帧动画与Sprite系统 | Sprite Animation System
+# Day 03: PCB焊接与硬件组装(上) | PCB Soldering & Assembly Part 1
 
 > **今日目标:**
-> - 理解帧动画的工作原理
-> - 使用QTimer实现帧动画播放
-> - 构建Sprite管理器，支持多套动画切换
-> - 制作或编辑帧动画素材
+> - 完成主板电源电路焊接（DC-DC降压、充电管理）
+> - 完成ESP32-S3模组焊接
+> - 上电测试：测量各电压测试点，烧录测试固件
+> - 完成BMI270传感器焊接
+> - 阅读和理解SparkBot原理图
 >
-> **产出:** 一个会播放帧动画的桌宠（待机动画：呼吸/眨眼）
+> **产出:** 主板电源和核心电路焊接完成，上电测试通过，blink程序成功运行
 
 ---
 
@@ -14,412 +15,424 @@
 
 | 时间 | 活动类型 | 内容 |
 |------|----------|------|
-| 09:00 - 09:15 | 晨间活动 | 回顾Day 2作业，透明窗口效果展示 |
-| 09:15 - 10:30 | 知识讲解 | 帧动画原理、QTimer、Sprite Sheet |
+| 09:00 - 09:15 | 晨间活动 | 焊接练习板检查，工具准备 |
+| 09:15 - 10:30 | 知识讲解 | 原理图阅读、电源电路分析 |
 | 10:30 - 10:45 | 课间休息 | |
-| 10:45 - 12:00 | 动手实践 | 实现基本帧动画播放器 |
+| 10:45 - 12:00 | 动手实践 | 焊接DC-DC、充电电路、ESP32-S3模组 |
 | 12:00 - 13:30 | 午餐休息 | |
-| 13:30 - 15:00 | 项目实战 | 构建多状态Sprite管理器 |
+| 13:30 - 15:00 | 项目实战 | 上电测试、烧录blink |
 | 15:00 - 15:15 | 课间休息 | |
-| 15:15 - 16:30 | 拓展练习 | 制作像素画动画素材 |
-| 16:30 - 17:00 | 总结分享 | 动画系统设计讨论 |
+| 15:15 - 16:30 | 拓展练习 | 焊接BMI270、初级调试 |
+| 16:30 - 17:00 | 总结分享 | 焊接质量互检、经验交流 |
 
 ---
 
-## 上午: 帧动画基础 | Morning: Frame Animation Basics
+## 上午: 原理图阅读与主板焊接 | Morning: Schematic Reading & Main Board Soldering
 
-### 为什么要学这个? | Why Learn This?
+### 为什么要学原理图? | Why Learn Schematics?
 
-你玩过的每一款2D游戏 -- 从超级马里奥到空洞骑士 -- 角色的行走、跳跃、攻击动画，都是"帧动画"实现的。原理很简单：快速切换一组静态图片，利用人眼的视觉残留效应，看起来就像在动。
+原理图（Schematic）是电子工程师的"地图"。它用符号表示各个元器件和它们之间的连接关系。学会阅读原理图，你就能理解任何一块电路板是怎么工作的——这比照着图片焊接要靠谱得多。
 
-Every 2D game you have played -- from Super Mario to Hollow Knight -- uses frame animation for character movement. The principle is simple: rapidly switch between a set of static images, exploiting the persistence of vision to create the illusion of motion.
+A schematic is the electronics engineer's "map". It uses symbols to represent components and their connections. Learning to read schematics lets you understand how any circuit board works -- much more reliable than soldering by looking at pictures.
 
-帧动画是游戏开发、动画制作、UI动效的基础技术。学会了帧动画，你不仅能做桌宠，还能做简单的游戏。
+### 任务3.1: 原理图阅读入门 (30分钟)
 
-Frame animation is foundational for game development, animation production, and UI effects. Mastering it opens the door to making simple games as well.
-
-### 帧动画原理 | Frame Animation Theory
+**原理图基本符号:**
 
 ```
-帧序列：  [帧1] -> [帧2] -> [帧3] -> [帧4] -> [帧1] -> ...
-时间间隔：  100ms    100ms    100ms    100ms
+常用原理图符号速查:
 
-播放效果：
-帧1: 眼睛睁开
-帧2: 眼睛半闭
-帧3: 眼睛闭上  -> 看起来就像在眨眼！
-帧4: 眼睛半闭
+电源符号:              接地符号:
+  VCC  ───┬───           GND ───┬───
+          │                      │
+          ▼                      ▼
+         ─┴─ 3.3V                ═══  (三条横线)
+
+电阻:      电容(无极性):    电容(有极性):
+  ──[R]──   ──||──           ──|(──  (曲线端为负极)
+  
+LED:        二极管:         电感:
+  ──▶|──     ──▶|──           ──(((──
+
+芯片/IC:     连接点:          不连接(交叉):
+  ┌──────┐       │              ──┼──
+  │      │   ────●────           (无点)
+  └──────┘
 ```
 
-**关键参数：**
-- **帧率（FPS）**：每秒切换多少帧。8-12 FPS适合像素画风格，24+ FPS适合流畅动画
-- **帧间隔**：每帧显示多长时间（毫秒）。1000ms / FPS = 帧间隔
-- **Sprite Sheet**：把所有帧排列在一张大图上，方便加载和切割
+**SparkBot主板原理图关键部分阅读:**
 
-### 任务3.1: 用QTimer实现简单帧动画 (30分钟)
+```
+电源部分 (Power Section):
+  
+  VBUS(USB 5V) ──┬──[D1 防反接]──┬── TP4054 ──┬── 电池
+                  │               │  充电管理   │
+                  │               │             │
+                  └── SY8089 ─────┴── 3.3V输出 ── ESP32-S3
+                      DC-DC降压                    + 所有外设
+
+关键测试点:
+  - VBUS: 5V (±0.25V)
+  - VCC_3V3: 3.3V (±0.1V)
+  - VBAT: 3.7-4.2V (锂电池电压)
+  - VCHG: 4.2V (充电时)
+```
+
+**阅读原理图的三个步骤:**
+1. **找电源**：从输入（USB 5V）出发，追踪电源经过哪些芯片变成了什么电压
+2. **找主控**：找到ESP32-S3模组，看它的电源引脚连到哪里，GPIO连到了哪些外设
+3. **按模块追踪**：逐个外设阅读，看它用了哪些GPIO，是什么通信接口
+
+### 任务3.2: 焊接DC-DC电源电路 (30分钟)
+
+**焊接顺序非常重要！先电源，后主控，最后外设。这样每焊一部分就能测试，及早发现问题。**
+
+Soldering order matters! Power first, then the main controller, then peripherals. This way you can test each section and catch problems early.
 
 **步骤:**
 
-创建文件 `animation_basic.py`：
+1. **准备工具和物料**
+   - 电烙铁（无铅调350°C / 有铅调310°C）
+   - 焊锡丝 (0.6mm)
+   - 镊子
+   - 助焊剂
+   - 主板PCB
+   - 物料清单(BOM)中电源部分的元器件
 
-```python
-import sys
-import os
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import Qt, QTimer
+2. **焊接SY8089 DC-DC降压芯片 (SOT-23-5封装)**
+   ```
+   SY8089引脚识别:
+          ┌─────┐
+    EN  ──┤1   5├── VIN(5V)
+   GND  ──┤2   4├── SW(电感连接点)
+    FB  ──┤3   │
+          └─────┘
+          (底视图)
+   
+   焊接步骤:
+   1. 在PCB上找到U1(SY8089)的位置，注意方向(芯片上的点和PCB上的标记对齐)
+   2. 在1个焊盘上预加锡
+   3. 用镊子放好芯片，焊接预加锡的焊盘定位
+   4. 检查芯片方向和引脚对齐
+   5. 逐个焊接其余4个引脚
+   ```
 
-class AnimatedPetWindow(QWidget):
-    """带帧动画的桌宠窗口"""
+3. **焊接DC-DC外围元件**
+   - 输入电容(C1): 10uF，注意极性！有极性电容正极接VIN
+   - 输出电容(C2, C3): 10uF + 0.1uF
+   - 电感(L1): 2.2uH，无极性
+   - 反馈电阻(R1, R2): 设置输出电压
 
-    def __init__(self):
-        super().__init__()
-        self.current_frame = 0  # 当前帧索引
-        self.frames = []        # 动画帧列表
-        self.init_ui()
-        self.load_animation()
-        self.start_animation()
+4. **焊接TP4054充电管理 (SOT-23-5)**
+   ```
+   TP4054引脚:
+          ┌─────┐
+   CHRG ──┤1   5├── VCC (5V)
+   GND  ──┤2   4├── BAT (接电池)
+   PROG ──┤3   │  (充电电流设置)
+          └─────┘
+   
+   注意: 
+   - R3(PROG电阻)决定充电电流: I_charge = 1000V/R_prog
+   - 1.6kΩ = 约625mA, 2kΩ = 约500mA
+   - 检查BAT端是否正确连接到电池接口
+   ```
 
-    def init_ui(self):
-        """初始化透明窗口"""
-        self.setWindowFlags(
-            Qt.FramelessWindowHint |
-            Qt.WindowStaysOnTopHint |
-            Qt.Tool
-        )
-        self.setAttribute(Qt.WA_TranslucentBackground)
-        self.resize(200, 200)
+5. **焊接电源指示灯**
+   - D2: 充电指示灯（红色LED），限流电阻R4(1kΩ)
+   - D3: 电源指示灯（绿色LED），限流电阻R5(1kΩ)
+   - 注意LED极性：长脚为正，短脚为负，PCB上通常有标记
 
-        # 宠物图片标签
-        self.pet_label = QLabel(self)
-        self.pet_label.setGeometry(0, 0, 200, 200)
-        self.pet_label.setAlignment(Qt.AlignCenter)
-
-        self.show()
-
-    def load_animation(self):
-        """加载帧动画图片"""
-        sprite_dir = "assets/sprites/idle"  # 待机动画帧目录
-
-        # 加载目录中所有PNG图片
-        if os.path.exists(sprite_dir):
-            files = sorted([
-                f for f in os.listdir(sprite_dir)
-                if f.endswith('.png')
-            ])
-            for f in files:
-                pixmap = QPixmap(os.path.join(sprite_dir, f))
-                if not pixmap.isNull():
-                    scaled = pixmap.scaled(
-                        200, 200,
-                        Qt.KeepAspectRatio,
-                        Qt.SmoothTransformation
-                    )
-                    self.frames.append(scaled)
-        else:
-            print(f"警告：动画目录 {sprite_dir} 不存在")
-
-    def start_animation(self):
-        """启动动画定时器"""
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.next_frame)
-        self.timer.start(100)  # 每100ms切换一帧（约10 FPS）
-
-    def next_frame(self):
-        """切换到下一帧"""
-        if self.frames:
-            self.current_frame = (self.current_frame + 1) % len(self.frames)
-            self.pet_label.setPixmap(self.frames[self.current_frame])
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = AnimatedPetWindow()
-    sys.exit(app.exec_())
-```
-
-**素材目录结构：**
-```
-assets/sprites/idle/
-├── idle_01.png    # 第1帧
-├── idle_02.png    # 第2帧
-├── idle_03.png    # 第3帧
-└── idle_04.png    # 第4帧
-```
-
-**预期结果:**
-- 桌宠每100ms切换一帧，播放待机动画
-- 动画循环播放，看起来角色在"呼吸"或"眨眼"
+6. **电源部分检查**
+   ```
+   焊接后检查清单:
+   [ ] SY8089方向正确
+   [ ] TP4054方向正确
+   [ ] 电解电容极性正确(正极接高电压)
+   [ ] LED极性正确
+   [ ] 所有焊点无连锡
+   [ ] 电感焊接牢固(大焊盘需要足够热量)
+   
+   用万用表蜂鸣档检查:
+   [ ] VCC_5V和GND之间不通(不短路!)
+   [ ] VCC_3V3和GND之间不通(不短路!)
+   ```
 
 **常见问题:**
-- **动画不播放**：检查定时器是否启动（`self.timer.start()`），检查帧列表是否为空
-- **动画太快/太慢**：调整`start(100)`中的数字，数字越小越快
-- **只显示第一帧**：确认`next_frame`方法被正确连接到定时器
+- **SOT-23-5太小不好焊**：先固定一个引脚，检查对齐，再焊其余引脚。使用助焊剂帮助流动
+- **电感焊不上**：电感焊盘大，散热快。提高烙铁温度到370°C，烙铁头接触时间延长到3-4秒
+- **LED不亮**：极性焊反了。拆下来换个方向重焊
 
-### 任务3.2: Sprite Sheet切割 (30分钟)
+### 任务3.3: 焊接ESP32-S3模组 (30分钟)
 
-在实际项目中，动画帧通常排列在一张大图上（Sprite Sheet），而不是单独的图片文件：
+**这是最关键的一步！ESP32-S3模组有40+个引脚，间距1.27mm，需要耐心和技巧。**
 
-```python
-class SpriteSheet:
-    """Sprite Sheet切割工具"""
+This is the most critical step! The ESP32-S3 module has 40+ pins at 1.27mm pitch -- patience and skill required.
 
-    def __init__(self, image_path, frame_width, frame_height):
-        """
-        参数:
-            image_path: Sprite Sheet图片路径
-            frame_width: 每帧的宽度
-            frame_height: 每帧的高度
-        """
-        self.sheet = QPixmap(image_path)
-        self.frame_width = frame_width
-        self.frame_height = frame_height
+**步骤:**
 
-    def get_frame(self, col, row):
-        """获取指定位置的帧"""
-        x = col * self.frame_width
-        y = row * self.frame_height
-        return self.sheet.copy(x, y, self.frame_width, self.frame_height)
+1. **识别模组方向**
+   ```
+   ESP32-S3模组底部视图 (WROOM-1):
+   ┌─────────────────────────────┐
+   │ GND                        │  ─┐
+   │ 3V3                        │   ├── 左侧引脚
+   │ EN                         │   │
+   │ IO4 ~ IO7                  │   │
+   │ ...                        │  ─┘
+   │                   IO8~IO13 │  ─┐
+   │                   IO14~IO21│   ├── 右侧引脚
+   │                   ...      │   │
+   │                   GND      │  ─┘
+   └─────────────────────────────┘
+   
+   PCB丝印上的天线区域标记指示模组方向
+   天线部分应朝向PCB边缘(远离其他电路)
+   ```
 
-    def get_row(self, row, num_frames):
-        """获取一整行的帧（一个动画序列）"""
-        frames = []
-        for col in range(num_frames):
-            frame = self.get_frame(col, row)
-            if not frame.isNull():
-                frames.append(frame)
-        return frames
-```
+2. **焊接模组**
+   ```
+   方法一: 逐个引脚焊接 (推荐给新手)
+   1. 先在对角位置的两个焊盘上加少量锡
+   2. 放好模组，对齐所有引脚
+   3. 焊接两个对角定位引脚
+   4. 检查对齐情况，必要时调整
+   5. 逐个焊接其余所有引脚
+   6. 注意相邻引脚不要连锡
+   
+   方法二: 拖焊 (需要技巧)
+   1. 定位两个对角引脚(同上)
+   2. 在所有引脚上均匀涂助焊剂
+   3. 烙铁头带较多锡，沿引脚根部匀速拖动
+   4. 助焊剂会使连锡自动分离
+   5. 如有连锡: 加助焊剂，用干净烙铁头重新拖一遍
+   ```
 
-**使用示例：**
-```python
-# 假设Sprite Sheet是4列2行，每帧64x64
-sheet = SpriteSheet("assets/sprites/pet_sheet.png", 64, 64)
-
-# 第0行是idle动画（4帧）
-idle_frames = sheet.get_row(0, 4)
-
-# 第1行是walk动画（4帧）
-walk_frames = sheet.get_row(1, 4)
-```
-
-**Sprite Sheet布局示例：**
-```
-┌──────┬──────┬──────┬──────┐
-│idle1 │idle2 │idle3 │idle4 │  第0行：待机动画
-├──────┼──────┼──────┼──────┤
-│walk1 │walk2 │walk3 │walk4 │  第1行：行走动画
-├──────┼──────┼──────┼──────┤
-│sleep1│sleep2│sleep3│sleep4│  第2行：睡觉动画
-└──────┴──────┴──────┴──────┘
-  64px   64px   64px   64px
-```
+3. **焊接后检查**
+   ```
+   [ ] 模组方向正确(天线区域朝向PCB边缘)
+   [ ] 所有引脚无虚焊(用镊子轻轻拨动测试)
+   [ ] 无引脚间连锡(用放大镜检查每对相邻引脚)
+   [ ] 模组贴合PCB, 无明显翘起
+   
+   万用表检查:
+   [ ] 3.3V和GND之间无短路(阻抗应>100Ω)
+   [ ] EN引脚和3.3V之间的上拉电阻存在
+   ```
 
 ---
 
-## 下午: 多状态动画管理 | Afternoon: Multi-State Animation Manager
+## 下午: 上电测试与传感器焊接 | Afternoon: Power-up Test & Sensor Soldering
 
-### 为什么要学这个? | Why Learn This?
+### 任务3.4: 首次上电测试 (40分钟)
 
-一个真正的桌宠不会只有一个动画。它需要：待机动画、行走动画、睡觉动画、吃东西动画、被点击动画......我们需要一个"动画管理器"来管理这些不同的动画状态，并在它们之间切换。
+**这是最激动人心的时刻！但在通电之前，必须通过各种检查。**
 
-A real desktop pet needs more than one animation: idle, walking, sleeping, eating, clicked reactions, etc. We need an "animation manager" to handle these different animation states and switch between them.
+**步骤:**
 
-这就是游戏引擎中"动画状态机"的核心思想，也是我们Day 5要深入学习的状态机设计模式的预演。
+1. **上电前检查**
+   ```powershell
+   用万用表蜂鸣档检查(断电状态):
+   
+   1. VCC_5V <-> GND: 应不通 (阻抗>1kΩ)
+   2. VCC_3V3 <-> GND: 应不通 (阻抗>500Ω)
+   3. VBAT <-> GND: 应不通 (阻抗>1kΩ)
+   
+   如果任何一对是通的(蜂鸣器响)，说明有短路！
+   立即停止，检查所有焊接点，找到短路位置。
+   ```
 
-This is the core idea behind "animation state machines" in game engines, and a preview of the state machine design pattern we will study in depth on Day 5.
+2. **连接USB线，测量各点电压**
+   ```powershell
+   档位: DC 20V
+   
+   测量点1: VBUS (USB 5V输入)
+   预期值: 4.75V ~ 5.25V ✓
+   
+   测量点2: VCC_3V3 (DC-DC输出)
+   预期值: 3.23V ~ 3.37V ✓
+   
+   测量点3: TP4054 BAT引脚
+   预期值: 0V (未接电池时) / 3.7-4.2V (接电池时) ✓
+   
+   测量点4: ESP32-S3模组3V3引脚
+   预期值: 3.23V ~ 3.37V ✓
+   
+   如果某点电压不对:
+   - 无电压: 检查电源通路，可能是虚焊
+   - 电压偏低: 可能有短路或高阻抗焊点
+   - 电压偏高: DC-DC反馈电阻可能焊错值
+   ```
 
-### 任务3.3: 构建AnimationManager (40分钟)
+3. **检查LED指示灯**
+   - 电源指示灯(绿色)应亮起
+   - 充电指示灯(红色): 不接电池时可能微亮或全亮(正常)
 
-创建文件 `animation_manager.py`：
+4. **连接串口，检查芯片是否响应**
+   ```powershell
+   # 在VS Code终端或PowerShell中
+   idf.py -p COM3 monitor
+   
+   # 按一下RST按钮(或EN按钮)
+   # 应该看到类似输出:
+   # ESP-ROM:esp32s3-20210327
+   # Build:Mar 27 2021
+   # ...
+   # 之后可能不断重启(因为没有烧录有效固件)
+   ```
+   如果看到这个输出，说明ESP32-S3芯片焊接成功、供电正常！
 
-```python
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import Qt, QTimer
-import os
-
-class AnimationManager:
-    """动画管理器 -- 管理多套动画的加载和切换"""
-
-    def __init__(self, label, frame_size=200):
-        """
-        参数:
-            label: 显示动画的QLabel控件
-            frame_size: 帧显示大小
-        """
-        self.label = label
-        self.frame_size = frame_size
-        self.animations = {}    # 存储所有动画 {"状态名": [帧列表]}
-        self.current_state = None
-        self.current_frame = 0
-
-        # 动画定时器
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.next_frame)
-
-    def load_animation(self, state_name, sprite_dir, fps=10):
-        """从目录加载一套动画"""
-        frames = []
-        if os.path.exists(sprite_dir):
-            files = sorted([
-                f for f in os.listdir(sprite_dir)
-                if f.endswith('.png')
-            ])
-            for f in files:
-                pixmap = QPixmap(os.path.join(sprite_dir, f))
-                if not pixmap.isNull():
-                    scaled = pixmap.scaled(
-                        self.frame_size, self.frame_size,
-                        Qt.KeepAspectRatio,
-                        Qt.SmoothTransformation
-                    )
-                    frames.append(scaled)
-
-        if frames:
-            self.animations[state_name] = {
-                "frames": frames,
-                "fps": fps
-            }
-            print(f"已加载动画 '{state_name}'：{len(frames)} 帧，{fps} FPS")
-
-    def switch_to(self, state_name):
-        """切换到指定动画状态"""
-        if state_name not in self.animations:
-            print(f"警告：动画 '{state_name}' 不存在")
-            return
-
-        if state_name == self.current_state:
-            return  # 已经是当前状态，不重复切换
-
-        self.current_state = state_name
-        self.current_frame = 0
-
-        # 获取该动画的FPS
-        fps = self.animations[state_name]["fps"]
-        interval = int(1000 / fps)
-
-        # 重启定时器
-        self.timer.stop()
-        self.timer.start(interval)
-
-        # 立即显示第一帧
-        self.show_frame(0)
-
-    def show_frame(self, index):
-        """显示指定帧"""
-        frames = self.animations[self.current_state]["frames"]
-        if 0 <= index < len(frames):
-            self.label.setPixmap(frames[index])
-
-    def next_frame(self):
-        """切换到下一帧"""
-        if self.current_state is None:
-            return
-        frames = self.animations[self.current_state]["frames"]
-        self.current_frame = (self.current_frame + 1) % len(frames)
-        self.show_frame(self.current_frame)
-
-    def stop(self):
-        """停止动画"""
-        self.timer.stop()
-
-    def get_current_state(self):
-        """获取当前动画状态"""
-        return self.current_state
-```
-
-### 任务3.4: 将AnimationManager集成到窗口 (20分钟)
-
-```python
-class AnimatedPetWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self._drag_pos = None
-        self.init_ui()
-        self.setup_animations()
-
-    def init_ui(self):
-        self.setWindowFlags(
-            Qt.FramelessWindowHint |
-            Qt.WindowStaysOnTopHint |
-            Qt.Tool
-        )
-        self.setAttribute(Qt.WA_TranslucentBackground)
-        self.resize(200, 200)
-
-        self.pet_label = QLabel(self)
-        self.pet_label.setGeometry(0, 0, 200, 200)
-
-        self.show()
-
-    def setup_animations(self):
-        """加载并启动动画"""
-        self.anim_manager = AnimationManager(self.pet_label, frame_size=200)
-
-        # 加载不同状态的动画
-        self.anim_manager.load_animation("idle", "assets/sprites/idle", fps=8)
-        self.anim_manager.load_animation("walk", "assets/sprites/walk", fps=10)
-        self.anim_manager.load_animation("sleep", "assets/sprites/sleep", fps=4)
-
-        # 默认播放idle动画
-        self.anim_manager.switch_to("idle")
-
-    def mousePressEvent(self, event):
-        """点击宠物切换到walk动画"""
-        if event.button() == Qt.LeftButton:
-            self.anim_manager.switch_to("walk")
-            self._drag_pos = event.globalPos() - self.frameGeometry().topLeft()
-
-    def mouseReleaseEvent(self, event):
-        """松开鼠标回到idle动画"""
-        self.anim_manager.switch_to("idle")
-        self._drag_pos = None
-
-    def mouseMoveEvent(self, event):
-        """拖拽移动"""
-        if self._drag_pos and event.buttons() == Qt.LeftButton:
-            self.move(event.globalPos() - self._drag_pos)
-```
+5. **烧录blink测试程序**
+   ```c
+   // main/blink_test.c
+   #include "freertos/FreeRTOS.h"
+   #include "freertos/task.h"
+   #include "driver/gpio.h"
+   #include "esp_log.h"
+   
+   static const char *TAG = "blink";
+   
+   // 主板上的LED引脚（根据实际原理图确认）
+   #define LED_GPIO GPIO_NUM_48  // ESP32-S3内置LED或外接LED的GPIO
+   
+   void app_main(void)
+   {
+       ESP_LOGI(TAG, "SparkBot 主板测试开始!");
+       
+       // 配置GPIO为输出
+       gpio_reset_pin(LED_GPIO);
+       gpio_set_direction(LED_GPIO, GPIO_MODE_OUTPUT);
+       
+       while (1) {
+           ESP_LOGI(TAG, "LED ON");
+           gpio_set_level(LED_GPIO, 1);
+           vTaskDelay(1000 / portTICK_PERIOD_MS);
+           
+           ESP_LOGI(TAG, "LED OFF");
+           gpio_set_level(LED_GPIO, 0);
+           vTaskDelay(1000 / portTICK_PERIOD_MS);
+       }
+   }
+   ```
+   
+   ```powershell
+   # 编译烧录
+   idf.py set-target esp32s3
+   idf.py build
+   idf.py -p COM3 flash monitor
+   ```
 
 **预期结果:**
-- 默认播放idle（待机）动画
-- 点击或拖拽时切换到walk动画
-- 松开后回到idle动画
+- 各测试点电压正常
+- ESP32-S3识别到，有启动输出
+- blink程序成功烧录，串口输出LED状态
+- 如果外接LED，可以看到LED闪烁
+
+**常见问题:**
+- **串口无输出**：检查USB线是否支持数据传输，尝试不同USB口
+- **芯片不断重启**：检查EN引脚是否通过上拉电阻连接到3.3V（通常10kΩ）
+- **电压为0**：DC-DC可能焊接有问题，重新检查SY8089及外围元件
+- **电源灯不亮但电压正常**：LED焊反了
+- **烧录失败**：可能需要手动进入下载模式（按住BOOT -> 按RST -> 松开RST -> 松开BOOT）
+
+### 任务3.5: 焊接BMI270传感器 (20分钟)
+
+**步骤:**
+
+1. **认识BMI270**
+   ```
+   BMI270: 6轴惯性测量单元(IMU)
+   ┌──────────┐
+   │   BMI270  │  LGA-14封装 (14个焊盘在底部)
+   │           │  尺寸: 2.5×3.0×0.8mm
+   │   ┌─┐     │  测量: 3轴加速度 + 3轴陀螺仪
+   │   └─┘     │  接口: I2C (地址0x68)
+   └──────────┘
+   
+   这是一个底部焊盘(LGA)的元件，焊接需要热风枪或技巧
+   ```
+
+2. **焊接方法(LGA/无引脚封装)**
+   ```
+   方法一: 热风枪焊接 (推荐)
+   1. 在焊盘上涂薄薄一层锡浆/助焊剂
+   2. 用镊子精确放置BMI270，对准PCB丝印方向
+   3. 热风枪设置280°C，中低风速
+   4. 均匀加热芯片区域，约20-30秒
+   5. 看到芯片轻微"复位"动作(锡熔化后表面张力自动对齐)
+   6. 冷却1分钟后检查
+   
+   方法二: 烙铁焊接
+   1. 在PCB焊盘上薄薄上一层锡
+   2. 涂助焊剂
+   3. 放置芯片对准
+   4. 烙铁接触PCB焊盘边缘(不直接接触芯片)
+   5. 热量传到焊盘，锡熔化固定芯片
+   6. 逐个焊盘处理
+   ```
+
+3. **焊接后检查**
+   ```
+   [ ] 芯片方向正确(芯片上的标记和PCB丝印一致)
+   [ ] 无连锡(LGA封装不易连锡，但仍需检查)
+   [ ] 芯片贴合PCB，无明显歪斜
+   
+   万用表检查:
+   [ ] VDDIO和GND之间无短路(阻抗>10kΩ)
+   [ ] SDA/SCL上拉电压正常(3.3V)
+   ```
+
+**常见问题:**
+- **热风枪把旁边的小元件吹跑了**：风速调小，或先用高温胶带保护周围元件
+- **芯片没对正**：重新加热，用镊子轻轻推动校正
+- **虚焊(LGA特别容易虚焊)**：BMI270底部焊盘是否都有接触，必要时重新热风焊接
+
+### 任务3.6: 原理图追踪练习 (20分钟)
+
+拿出SparkBot原理图，完成以下追踪练习：
+
+1. **找到GPIO48**：从原理图中找到GPIO48连到了哪个元器件(LED)
+2. **追踪I2C总线**：找到BMI270的SDA和SCL分别连到了ESP32的哪个GPIO
+3. **追踪电源**：从USB VBUS出发，经过哪些元件到了ESP32的3V3供电
+4. **找到BOOT和EN**：找到BOOT按钮和EN按钮分别连到哪些GPIO
 
 ---
 
 ## 今日作业 | Homework
 
 ### 必做题
-1. 实现帧动画播放器，至少有idle和walk两套动画
-2. 构建AnimationManager，支持动画状态切换
-3. 使用Piskel制作或编辑至少一套4帧的待机动画
+1. 确保主板电源正常：测量并记录各测试点的电压值
+2. 确保ESP32-S3模组焊接正确：成功烧录blink程序并看到LED闪烁
+3. 完成BMI270传感器焊接
+4. 在原理图上标注出5个关键测试点的位置
 
 ### 挑战题
-1. 制作一套8帧的行走动画（包含角色左右移动）
-2. 实现动画播放完毕后自动回到idle状态的功能
-3. 尝试用Sprite Sheet替代单独的图片文件
+1. 用手机微距拍一张ESP32-S3模组的焊接照片，检查每个引脚的对齐和焊点质量
+2. 阅读SY8089数据手册，计算R1/R2的值如何得到3.3V输出 (公式: Vout = 0.6 × (1 + R1/R2))
+3. 研究BMI270的I2C地址：为什么是0x68？如果SDO引脚接高电平会变成什么地址？
 
 ### 思考题
-1. 为什么用QTimer而不是Python的`time.sleep()`来实现帧动画？
-2. 如果让你设计一个"被摸头"动画，你会设计几帧？每帧分别是什么动作？
+1. DC-DC降压和线性稳压(LDO)有什么区别？为什么SparkBot用DC-DC而不用LDO？
+2. 为什么焊接顺序是"电源 -> 主控 -> 外设"？如果反过来先焊传感器再焊电源会有什么问题？
+3. ESP32-S3正常工作时EN引脚应该是什么电平？如果没有上拉电阻会怎样？
 
 ---
 
 ## 明日预告 | Tomorrow's Preview
 
-明天我们将深入学习事件处理，让桌宠对各种鼠标操作做出不同的反应 -- 点击、双击、拖拽、悬停。同时开始学习如何判断宠物在屏幕上的位置。
+明天我们将完成SparkBot的剩余硬件组装——焊接显示屏、摄像头、音频电路、触摸FPC和3D打印外壳安装。明天结束时，你将拥有一台外壳完整、所有硬件就位的SparkBot！
 
-Tomorrow we dive deeper into event handling, making the pet react differently to clicks, double-clicks, drags, and hover. We will also learn how to track the pet's position on screen.
+Tomorrow we complete the remaining hardware assembly -- soldering the display, camera, audio circuit, touch FPC, and mounting the 3D-printed case. By end of day, you will have a fully assembled SparkBot!
 
 ---
 
 ## 参考资源 | References
 
-- [Piskel 在线像素画编辑器](https://www.piskelapp.com/) -- 制作帧动画素材
-- [帧动画基础原理（MDN Canvas动画）](https://developer.mozilla.org/zh-CN/docs/Web/API/Canvas_API/Tutorial/Basic_animations)
-- [QTimer 官方文档](https://www.riverbankcomputing.com/static/Docs/PyQt5/api/qtcore/qtimer.html)
-- [itch.io 像素画素材](https://itch.io/game-assets/free/tag-pixel-art)
-- [虚拟桌宠模拟器VPET动画制作（B站）](https://www.bilibili.com/video/BV18z4y1u7wi/)
+- [原理图阅读入门（B站搜索）](https://search.bilibili.com/all?keyword=%E5%8E%9F%E7%90%86%E5%9B%BE%E9%98%85%E8%AF%BB%E5%85%A5%E9%97%A8)
+- [SY8089 数据手册](https://datasheet.lcsc.com/lcsc/2108132002_Shenzhen-Silergy-Corp-SY8089A1AAC_C2775958.pdf)
+- [TP4054 数据手册](https://datasheet.lcsc.com/lcsc/1810101113_TPOWER-TP4054_C325651.pdf)
+- [BMI270 数据手册](https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmi270-ds000.pdf)
+- [ESP32-S3-WROOM-1 模组规格书](https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-1_wroom-1u_datasheet_cn.pdf)
+- [【保姆级教程】手把手教你焊接ESP32开发板](https://www.bilibili.com/video/BV1jM4y1S7Nf/)
 
-*最后更新：2026-05-26*
+*最后更新：2026-05-27*

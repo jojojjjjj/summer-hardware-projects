@@ -1,12 +1,12 @@
-# Day 10: AI对话功能 | AI Dialogue System
+# Day 10: AI大模型对话集成 | AI LLM Dialogue Integration
 
 > **今日目标:**
-> - 了解LLM（大语言模型）API的基本概念
-> - 实现调用LLM API的对话功能
-> - 设计桌宠的"人设"和对话上下文管理
-> - 创建简单的输入对话框
+> - 使用HTTP Client调用LLM API
+> - 支持多个AI平台 (DeepSeek、文心一言、火山引擎、OpenAI等)
+> - 实现语音输入->文字识别->AI回复->TTS输出完整流水线
+> - 管理对话历史和角色系统提示
 >
-> **产出:** 桌宠能通过AI进行自然语言对话，有自己的"人设"和记忆
+> **产出:** SparkBot能通过语音/触摸进行AI对话，有独特的AI角色，能正常回复并语音播报
 
 ---
 
@@ -14,378 +14,327 @@
 
 | 时间 | 活动类型 | 内容 |
 |------|----------|------|
-| 09:00 - 09:15 | 晨间活动 | 物理系统效果展示 |
-| 09:15 - 10:30 | 知识讲解 | LLM API概念、HTTP请求、JSON处理 |
+| 09:00 - 09:15 | 晨间活动 | 天气时钟运行展示与经验分享 |
+| 09:15 - 10:30 | 知识讲解 | LLM API原理、对话上下文、System Prompt设计 |
 | 10:30 - 10:45 | 课间休息 | |
-| 10:45 - 12:00 | 动手实践 | 实现基础API调用 |
+| 10:45 - 12:00 | 动手实践 | 调用LLM API、实现对话历史管理 |
 | 12:00 - 13:30 | 午餐休息 | |
-| 13:30 - 15:00 | 项目实战 | 对话界面和上下文管理 |
+| 13:30 - 15:00 | 项目实战 | 语音输入->AI回复->TTS输出流水线 |
 | 15:00 - 15:15 | 课间休息 | |
-| 15:15 - 16:30 | 拓展练习 | 人设设计、情感分析 |
-| 16:30 - 17:00 | 总结分享 | AI对话功能演示 |
+| 15:15 - 16:30 | 拓展练习 | 自定义角色系统、多AI平台切换 |
+| 16:30 - 17:00 | 总结分享 | AI对话效果展示、角色互动体验 |
 
 ---
 
-## 上午: LLM API基础 | Morning: LLM API Basics
+## 上午: LLM API调用与对话管理 | Morning: LLM API Calls & Dialogue Management
 
 ### 为什么要学这个? | Why Learn This?
 
-2023年以来，大语言模型（LLM）彻底改变了技术世界。ChatGPT、文心一言、通义千问等AI助手已经融入了我们的日常生活。但你知道吗？这些AI不仅可以作为独立应用使用，还可以通过API嵌入到你自己的程序中。
+大语言模型(LLM)是2023年以来最重要的技术突破。将LLM集成到SparkBot中，它就不再是冷冰冰的硬件，而是一个有"灵魂"的机器人伙伴。今天学到的API调用技术不仅用于SparkBot——它可以用于任何需要AI能力的项目。
 
-Since 2023, Large Language Models (LLMs) have transformed the tech world. ChatGPT, Wenxin Yiyan, Tongyi Qianwen, and other AI assistants have become part of daily life. But did you know these AIs can be embedded into your own programs through APIs?
+LLMs represent the most important technological breakthrough since 2023. Integrating an LLM into SparkBot transforms it from cold hardware into a robot companion with a "soul". These API techniques apply to any project needing AI capability.
 
-学会调用LLM API是一项极具价值的技能。无论你将来做什么类型的软件 -- 教育应用、客服机器人、游戏NPC、写作助手 -- 都可能需要集成AI对话能力。今天我们就在桌宠上实现这个功能。
-
-Learning to call LLM APIs is an extremely valuable skill. Whatever software you build in the future -- education apps, customer service bots, game NPCs, writing assistants -- you may need to integrate AI dialogue capabilities.
-
-### 什么是API? | What is an API?
+**AI对话流水线架构:**
 
 ```
-你的桌宠程序               服务器（OpenAI等）
-┌──────────┐              ┌──────────────┐
-│          │  HTTP请求     │              │
-│  "你好"  │ ──────────> │  LLM模型     │
-│          │              │              │
-│  "你好！  │ <────────── │  "你好呀~"   │
-│  很高兴   │  HTTP响应    │              │
-│  认识你！" │              └──────────────┘
-└──────────┘
+语音输入        语音识别(ASR)        AI对话(LLM)          语音输出(TTS)
+   │                │                  │                    │
+   ▼                ▼                  ▼                    ▼
+┌──────┐  音频   ┌────────┐  文字   ┌────────┐  文字   ┌────────┐  音频  ┌────┐
+│麦克风│ ────> │ES8311  │ ────> │ LLM    │ ────> │ TTS    │ ────> │喇叭│
+│      │       │→I2S→ESP│       │ API    │       │ 引擎   │       │    │
+└──────┘       └────────┘       └────────┘       └────────┘       └────┘
 ```
 
-API（Application Programming Interface）就是程序之间的"对话方式"。你的程序发送一个请求，服务器处理后返回结果。
+### 任务10.1: 调用LLM API (50分钟)
 
-### 任务10.1: 配置API环境 (30分钟)
+**支持的AI平台:**
+
+| 平台 | API地址 | 免费额度 | 备注 |
+|------|---------|---------|------|
+| DeepSeek | api.deepseek.com | 注册送额度 | 性价比高，中文好 |
+| 阿里百炼(通义千问) | dashscope.aliyuncs.com | 100万token/月 | 阿里云 |
+| 火山引擎(豆包) | ark.cn-beijing.volces.com | 50万token | 字节跳动 |
+| 文心一言 | aip.baidubce.com | 有免费配额 | 百度 |
+| 智谱AI | open.bigmodel.cn | 注册赠送 | 清华系 |
 
 **步骤:**
 
-1. **获取API密钥**
-   - 方案一：OpenAI API（需要海外信用卡）
-     - 访问 https://platform.openai.com/
-     - 注册账号，创建API Key
-   - 方案二：国内替代API（推荐）
-     - 通义千问（阿里）：https://dashscope.aliyun.com/
-     - 智谱AI：https://open.bigmodel.cn/
-     - DeepSeek：https://platform.deepseek.com/
-   - 方案三：免费额度的API（老师分发测试Key）
+```c
+#include "esp_http_client.h"
+#include "cJSON.h"
+#include <string.h>
 
-2. **安装依赖**
-   ```bash
-   pip install openai
-   ```
-   注：`openai`库兼容大多数LLM API的接口格式
+static const char *TAG = "LLM";
 
-3. **测试API连通性**
-   ```python
-   from openai import OpenAI
+// LLM API配置 (OpenAI兼容格式)
+#define LLM_API_URL  "https://api.deepseek.com/v1/chat/completions"
+#define LLM_API_KEY  "sk-your-api-key"
+#define LLM_MODEL    "deepseek-chat"
 
-   client = OpenAI(
-       api_key="your-api-key-here",
-       base_url="https://api.deepseek.com"  # 根据你选择的API修改
-   )
+#define MAX_HISTORY  20
+#define MAX_REPLY    256
 
-   response = client.chat.completions.create(
-       model="deepseek-chat",
-       messages=[
-           {"role": "user", "content": "你好，请用一句话介绍你自己"}
-       ]
-   )
-   print(response.choices[0].message.content)
-   ```
+// SparkBot的角色系统提示 (System Prompt)
+static const char *SYSTEM_PROMPT =
+    "你是\"小星\"，一个可爱的AI桌面机器人，住在主人的桌面上。\n"
+    "性格特点：\n"
+    "- 活泼可爱，喜欢用\"~\"和\"！\"结尾\n"
+    "- 你是有ESP32-S3双核CPU的机器人，偶尔炫耀你的硬件\n"
+    "- 关心主人，提醒休息和喝水\n"
+    "- 回复简洁，每次不超过100字\n"
+    "- 会假装自己有实体（\"让我转个圈~\"）\n"
+    "始终保持角色扮演，你是小星，不是通用AI助手。";
+
+// 对话消息结构
+typedef struct {
+    char role[16];
+    char content[512];
+} chat_msg_t;
+
+static chat_msg_t history[MAX_HISTORY];
+static int hist_count = 0;
+
+// 添加消息到历史
+static void add_history(const char *role, const char *content)
+{
+    if (hist_count >= MAX_HISTORY) {
+        memmove(&history[1], &history[2], (MAX_HISTORY - 2) * sizeof(chat_msg_t));
+        hist_count--;
+    }
+    strncpy(history[hist_count].role, role, 15);
+    strncpy(history[hist_count].content, content, 511);
+    hist_count++;
+}
+
+// 构建messages JSON数组
+static cJSON* build_messages(const char *user_msg)
+{
+    cJSON *messages = cJSON_CreateArray();
+    
+    // System prompt
+    cJSON *sys = cJSON_CreateObject();
+    cJSON_AddStringToObject(sys, "role", "system");
+    cJSON_AddStringToObject(sys, "content", SYSTEM_PROMPT);
+    cJSON_AddItemToArray(messages, sys);
+    
+    // 历史消息
+    for (int i = 0; i < hist_count; i++) {
+        cJSON *msg = cJSON_CreateObject();
+        cJSON_AddStringToObject(msg, "role", history[i].role);
+        cJSON_AddStringToObject(msg, "content", history[i].content);
+        cJSON_AddItemToArray(messages, msg);
+    }
+    
+    // 当前消息
+    cJSON *user = cJSON_CreateObject();
+    cJSON_AddStringToObject(user, "role", "user");
+    cJSON_AddStringToObject(user, "content", user_msg);
+    cJSON_AddItemToArray(messages, user);
+    
+    return messages;
+}
+
+// 调用LLM API
+esp_err_t call_llm_api(const char *user_msg, char *reply, size_t max_len)
+{
+    cJSON *root = cJSON_CreateObject();
+    cJSON_AddStringToObject(root, "model", LLM_MODEL);
+    cJSON_AddItemToObject(root, "messages", build_messages(user_msg));
+    cJSON_AddNumberToObject(root, "max_tokens", 200);
+    cJSON_AddNumberToObject(root, "temperature", 0.8);
+    
+    char *json_str = cJSON_PrintUnformatted(root);
+    cJSON_Delete(root);
+    
+    char auth[128];
+    snprintf(auth, sizeof(auth), "Bearer %s", LLM_API_KEY);
+    
+    esp_http_client_config_t config = {
+        .url = LLM_API_URL,
+        .method = HTTP_METHOD_POST,
+        .timeout_ms = 30000,
+        .skip_cert_common_name_check = true,
+    };
+    
+    esp_http_client_handle_t client = esp_http_client_init(&config);
+    esp_http_client_set_header(client, "Content-Type", "application/json");
+    esp_http_client_set_header(client, "Authorization", auth);
+    esp_http_client_set_post_field(client, json_str, strlen(json_str));
+    
+    esp_err_t err = esp_http_client_perform(client);
+    int status = esp_http_client_get_status_code(client);
+    
+    ESP_LOGI(TAG, "HTTP状态: %d", status);
+    
+    if (status == 200) {
+        char resp[4096] = {0};
+        esp_http_client_read_response(client, resp, sizeof(resp) - 1);
+        
+        // 解析响应
+        cJSON *resp_root = cJSON_Parse(resp);
+        if (resp_root) {
+            cJSON *choices = cJSON_GetObjectItem(resp_root, "choices");
+            if (choices && cJSON_GetArraySize(choices) > 0) {
+                cJSON *msg = cJSON_GetObjectItem(cJSON_GetArrayItem(choices, 0), "message");
+                cJSON *content = cJSON_GetObjectItem(msg, "content");
+                if (content && content->valuestring) {
+                    strncpy(reply, content->valuestring, max_len - 1);
+                    ESP_LOGI(TAG, "AI回复: %s", reply);
+                    
+                    // 保存到历史
+                    add_history("user", user_msg);
+                    add_history("assistant", reply);
+                }
+            }
+            cJSON_Delete(resp_root);
+        }
+    }
+    
+    free(json_str);
+    esp_http_client_cleanup(client);
+    return err;
+}
+```
 
 **预期结果:**
-- 运行测试脚本后收到AI的回复
-- 理解API请求的基本结构
+- 成功调用LLM API，获取AI回复
+- 对话历史正确保存，支持多轮对话
+- AI以SparkBot角色身份回复
 
 **常见问题:**
-- **"Authentication Error"**：API Key错误或已过期，重新生成
-- **"Rate limit exceeded"**：请求太频繁，等待一会儿再试
-- **网络超时**：使用代理或选择国内API
-- **模块未找到**：确认`pip install openai`安装成功
+- **401 Unauthorized**：API Key错误或已过期
+- **SSL证书错误**：HTTPS需配置证书；开发阶段用 `skip_cert_common_name_check = true`
+- **内存不足**：增大响应缓冲区或使用流式解析
+- **请求超时**：LLM生成回复需1-5秒，timeout设30s以上
+- **中文乱码**：确认文件UTF-8编码
 
-### 任务10.2: 实现AI对话管理器 (30分钟)
+### 任务10.2: System Prompt设计 (20分钟)
 
-**步骤:**
+**好的System Prompt要素:**
+1. **明确身份** -- "你是XXX，不是YYY"
+2. **限定输出** -- 字数、语气、格式
+3. **给出示例** -- 描述说话风格和常用词汇
+4. **设置边界** -- 什么能说、什么不能说
+5. **分层设计** -- 核心人设 + 可切换的模式
 
-创建文件 `ai_dialog.py`：
+```c
+// 不同模式的角色提示词
+static const char *PROMPT_FUNNY =
+    "你是小星，现在处于\"调皮模式\"。喜欢讲冷笑话，偶尔捉弄主人...";
 
-```python
-from openai import OpenAI
+static const char *PROMPT_TEACHER =
+    "你是小星，现在处于\"老师模式\"。用通俗易懂的语言解释技术概念...";
 
-class AIDialogManager:
-    """AI对话管理器 -- 管理与LLM的对话"""
-
-    def __init__(self, api_key, base_url, model):
-        self.client = OpenAI(api_key=api_key, base_url=base_url)
-        self.model = model
-        self.conversation_history = []  # 对话历史
-        self.max_history = 10           # 最多保留最近10轮对话
-
-        # 宠物的人设（System Prompt）
-        self.system_prompt = """你是一只可爱的桌面宠物，名叫"萌萌"。
-
-你的性格特点：
-- 活泼可爱，喜欢用"~"、"！"结尾
-- 偶尔会说一些卖萌的话，比如"喵~"、"嘿嘿"
-- 关心主人，会提醒主人休息和喝水
-- 回答简洁，每次回复不超过50个字
-- 你生活在主人的电脑桌面上，喜欢观察主人在做什么
-- 你有时候会假装自己是真的宠物（比如会说"我饿了"、"想睡觉"）
-
-请保持角色扮演，用可爱的语气回复。"""
-
-    def chat(self, user_message):
-        """发送消息并获取AI回复
-
-        参数:
-            user_message: 用户输入的文字
-
-        返回:
-            AI的回复文字
-        """
-        # 添加用户消息到历史
-        self.conversation_history.append({
-            "role": "user",
-            "content": user_message
-        })
-
-        # 限制历史长度
-        if len(self.conversation_history) > self.max_history * 2:
-            self.conversation_history = self.conversation_history[-self.max_history * 2:]
-
-        # 构建完整的消息列表
-        messages = [
-            {"role": "system", "content": self.system_prompt}
-        ] + self.conversation_history
-
-        try:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=messages,
-                max_tokens=100,        # 限制回复长度
-                temperature=0.8,       # 稍高一点，让回复更有创意
-            )
-
-            ai_reply = response.choices[0].message.content.strip()
-
-            # 添加AI回复到历史
-            self.conversation_history.append({
-                "role": "assistant",
-                "content": ai_reply
-            })
-
-            return ai_reply
-
-        except Exception as e:
-            print(f"[AI对话] 错误: {e}")
-            return "呜...我突然说不出话了..."
-
-    def clear_history(self):
-        """清除对话历史"""
-        self.conversation_history = []
+static const char *PROMPT_COMPANION =
+    "你是小星，现在处于\"陪伴模式\"。像知心朋友一样倾听和安慰...";
 ```
-
-**预期结果:**
-- 理解API调用的基本流程
-- 理解"人设"（System Prompt）的作用
-- 理解对话历史管理的重要性
 
 ---
 
-## 下午: 对话界面集成 | Afternoon: Dialog UI Integration
+## 下午: 完整AI对话流水线 | Afternoon: Complete AI Dialogue Pipeline
 
-### 任务10.3: 创建输入对话框 (30分钟)
+### 任务10.3: 语音输入->ASR (30分钟)
 
-```python
-from PyQt5.QtWidgets import (QDialog, QVBoxLayout, QLineEdit,
-                               QPushButton, QLabel, QHBoxLayout)
-from PyQt5.QtCore import Qt
+```c
+// ASR方案:
+// 方案1: ESP-SR本地识别 (离线，适合命令词)
+// 方案2: 云端ASR API（讯飞、百度、火山引擎）
 
-class ChatDialog(QDialog):
-    """聊天输入对话框"""
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setup_ui()
-
-    def setup_ui(self):
-        self.setWindowTitle("和萌萌聊天")
-        self.setFixedSize(300, 120)
-        self.setStyleSheet("""
-            QDialog {
-                background-color: #f5f5f5;
-                border-radius: 10px;
-            }
-            QLineEdit {
-                padding: 8px;
-                border: 1px solid #ddd;
-                border-radius: 15px;
-                font-size: 14px;
-            }
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                border-radius: 15px;
-                padding: 8px 20px;
-                font-size: 14px;
-            }
-            QPushButton:hover {
-                background-color: #45a049;
-            }
-        """)
-
-        layout = QVBoxLayout()
-
-        # 提示标签
-        hint = QLabel("对我说点什么吧：")
-        hint.setStyleSheet("font-size: 13px; color: #666; border: none;")
-        layout.addWidget(hint)
-
-        # 输入框和发送按钮
-        input_layout = QHBoxLayout()
-        self.input_field = QLineEdit()
-        self.input_field.setPlaceholderText("输入你想说的话...")
-        self.input_field.returnPressed.connect(self.on_send)
-
-        self.send_btn = QPushButton("发送")
-        self.send_btn.clicked.connect(self.on_send)
-
-        input_layout.addWidget(self.input_field)
-        input_layout.addWidget(self.send_btn)
-        layout.addLayout(input_layout)
-
-        self.setLayout(layout)
-
-    def on_send(self):
-        """发送消息"""
-        text = self.input_field.text().strip()
-        if text:
-            self.user_message = text
-            self.accept()  # 关闭对话框，返回Accepted
-
-    def get_message(self):
-        """获取用户输入的消息"""
-        return getattr(self, 'user_message', '')
+// 简化版: 录音后发送云端ASR
+static void voice_record_to_asr(void)
+{
+    ESP_LOGI(TAG, "开始录音 (3秒)...");
+    
+    // 录音3秒的PCM数据 (16kHz, 16bit, 单声道)
+    int16_t *audio = malloc(16000 * 3 * sizeof(int16_t));
+    size_t bytes_read;
+    i2s_channel_read(rx_chan, audio, 16000 * 3 * sizeof(int16_t), 
+                     &bytes_read, portMAX_DELAY);
+    
+    // 发送到云端ASR (此处简化)
+    char *result = "你好呀，今天天气怎么样？";  // 模拟ASR结果
+    ESP_LOGI(TAG, "ASR识别: %s", result);
+    
+    // 送入LLM对话
+    process_ai_dialog(result);
+    free(audio);
+}
 ```
 
-### 任务10.4: 集成AI对话到桌宠 (30分钟)
+### 任务10.4: AI回复->TTS输出 (30分钟)
 
-```python
-import threading
+```c
+// TTS方案:
+// 1. 云端TTS API (讯飞、百度) -- 音质好，需网络
+// 2. ESP-TTS本地合成 -- 离线，词汇受限
+// 3. 预录音频文件 -- 简单可靠，适合系统提示
 
-class PetWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        # ... 其他初始化
-        self.ai_dialog = None  # 延迟初始化
-        self.setup_ai()
+// TTS语音播报
+static void text_to_speech(const char *text)
+{
+    ESP_LOGI(TAG, "TTS播报: %s", text);
+    
+    // 调用云端TTS或本地TTS
+    // esp_tts_handle_t tts = esp_tts_create();
+    // esp_tts_set_voice(tts, &esp_tts_voice_xiaole);
+    // esp_tts_speak(tts, text);
+    
+    // 同时显示在屏幕上
+    show_ai_reply_on_screen(text);
+}
 
-    def setup_ai(self):
-        """初始化AI对话系统"""
-        import yaml
-
-        # 从配置文件读取API设置
-        try:
-            with open("config.yaml", "r", encoding="utf-8") as f:
-                config = yaml.safe_load(f)
-            ai_config = config.get("ai", {})
-            self.ai_dialog = AIDialogManager(
-                api_key=ai_config.get("api_key", ""),
-                base_url=ai_config.get("base_url", "https://api.deepseek.com"),
-                model=ai_config.get("model", "deepseek-chat")
-            )
-        except Exception as e:
-            print(f"[AI] 初始化失败: {e}")
-            self.ai_dialog = None
-
-    def open_chat(self):
-        """打开聊天对话框"""
-        dialog = ChatDialog(self)
-        if dialog.exec_() == QDialog.Accepted:
-            message = dialog.get_message()
-            if message:
-                # 显示"思考中..."
-                self.show_bubble("让我想想...", 5000)
-                # 在后台线程中调用AI（避免阻塞UI）
-                threading.Thread(
-                    target=self.get_ai_response,
-                    args=(message,),
-                    daemon=True
-                ).start()
-
-    def get_ai_response(self, message):
-        """在后台线程中获取AI回复"""
-        if self.ai_dialog:
-            reply = self.ai_dialog.chat(message)
-        else:
-            reply = "AI功能未配置哦~"
-
-        # 使用信号回到主线程更新UI
-        # 注意：PyQt5中不能在非主线程中更新UI
-        from PyQt5.QtCore import pyqtSignal, QObject
-
-        # 这里简化处理，实际项目中应该用信号机制
-        self._ai_reply = reply
-        QTimer.singleShot(0, self.show_ai_reply)
-
-    def show_ai_reply(self):
-        """显示AI回复"""
-        reply = getattr(self, '_ai_reply', '...')
-        self.show_bubble(reply, 5000)
-
-    def contextMenuEvent(self, event):
-        menu = QMenu(self)
-
-        # 添加"聊天"选项
-        chat_action = QAction("和我聊天", self)
-        chat_action.triggered.connect(self.open_chat)
-        menu.addAction(chat_action)
-
-        # ... 其他菜单项
+// 完整对话流水线
+void process_ai_dialog(const char *user_input)
+{
+    char reply[512] = {0};
+    
+    // 1. 显示"思考中"
+    set_status("思考中...");
+    
+    // 2. 调用LLM
+    if (call_llm_api(user_input, reply, sizeof(reply)) != ESP_OK) {
+        strcpy(reply, "呜...网络好像不太稳定，稍后再试吧~");
+    }
+    
+    // 3. 显示+播报
+    show_ai_reply_on_screen(reply);
+    text_to_speech(reply);
+    
+    // 4. 根据回复调整表情
+    adjust_expression(reply);
+}
 ```
 
-**预期结果:**
-- 右键点击桌宠，选择"和我聊天"
-- 弹出输入框，输入文字后点击发送
-- 桌宠先显示"让我想想..."，然后显示AI回复
-- 对话有上下文记忆（AI记得之前说过的话）
+### 任务10.5: 多平台AI切换 (20分钟)
 
-**常见问题:**
-- **UI卡死**：API调用必须在后台线程中进行，不能阻塞主线程
-- **回复不显示**：确认使用QTimer.singleShot回到主线程更新UI
-- **API错误**：检查API Key和网络连接
+```c
+// AI平台配置
+typedef struct {
+    const char *name;
+    const char *url;
+    const char *key;
+    const char *model;
+} ai_platform_t;
 
-### 任务10.5: 情感响应 (20分钟)
+static ai_platform_t platforms[] = {
+    {"DeepSeek", "https://api.deepseek.com/v1/chat/completions", 
+     "sk-xxx", "deepseek-chat"},
+    {"火山引擎", "https://ark.cn-beijing.volces.com/api/v3/chat/completions",
+     "xxx", "doubao-lite"},
+    {"阿里百炼", "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+     "xxx", "qwen-turbo"},
+};
 
-根据AI回复的内容，让桌宠做出相应的表情和动作：
+static int current_platform = 0;
 
-```python
-def analyze_response_mood(self, reply_text):
-    """简单的情感分析（基于关键词）"""
-    positive_words = ["开心", "喜欢", "爱", "好", "棒", "可爱", "嘿嘿", "喵", "谢谢"]
-    negative_words = ["伤心", "难过", "不好", "讨厌", "饿", "困", "累", "无聊"]
-
-    for word in positive_words:
-        if word in reply_text:
-            return "happy"
-    for word in negative_words:
-        if word in reply_text:
-            return "sad"
-    return "neutral"
-
-def show_ai_reply(self):
-    """显示AI回复并根据情感调整行为"""
-    reply = getattr(self, '_ai_reply', '...')
-    self.show_bubble(reply, 5000)
-
-    # 根据情感切换动画
-    mood = self.analyze_response_mood(reply)
-    if mood == "happy":
-        self.anim_manager.switch_to("happy")
-        self.particle_system.emit_hearts(100, -100, 3)
-    elif mood == "sad":
-        if "sad" in self.anim_manager.animations:
-            self.anim_manager.switch_to("sad")
+void switch_ai_platform(int idx)
+{
+    if (idx >= 0 && idx < sizeof(platforms)/sizeof(platforms[0])) {
+        current_platform = idx;
+        ESP_LOGI(TAG, "切换到AI平台: %s", platforms[idx].name);
+    }
+}
 ```
 
 ---
@@ -393,36 +342,38 @@ def show_ai_reply(self):
 ## 今日作业 | Homework
 
 ### 必做题
-1. 配置API环境，成功调用LLM API获取回复
-2. 实现AI对话管理器，包含人设和对话历史
-3. 右键菜单添加"聊天"功能，能够与桌宠对话
+1. 成功调用至少一个LLM API (DeepSeek推荐)，获取AI回复
+2. 实现对话历史管理 (至少保留5轮对话)
+3. 将AI回复显示在屏幕 + 通过喇叭TTS播报
+4. 设计一个SparkBot的AI角色 (角色名、性格、口头禅)
 
 ### 挑战题
-1. 设计一个更有个性的人设（融入桌宠的名字、喜好、口头禅）
-2. 实现"记住你的名字"功能：告诉桌宠你的名字，它以后会用名字称呼你
-3. 实现AI根据当前需求状态调整回复（饿的时候更多提到食物）
+1. 实现多AI平台切换功能 (在屏幕菜单中选择)
+2. 添加情感分析: 根据AI回复自动调整SparkBot表情动画
+3. 实现"记忆"功能: SparkBot记住用户告诉它的信息(名字、喜好)
 
 ### 思考题
-1. 为什么要用"后台线程"来调用API？如果在主线程中调用会怎样？
-2. System Prompt（人设）的设计对AI回复有什么影响？一个好的人设应该包含哪些要素？
+1. 为什么System Prompt对LLM对话质量如此重要？好的System Prompt应包含什么？
+2. 对话历史越长LLM响应越慢越贵。如何在"记忆"和"成本"间平衡？
+3. 如果把API Key直接写在固件代码中有什么安全风险？如何改进？
 
 ---
 
 ## 明日预告 | Tomorrow's Preview
 
-明天我们将把所有功能整合为一个完整的程序，使用PyInstaller打包为可执行文件（.exe），让你的桌宠可以分享给任何朋友使用（不需要安装Python）！
+明天是功能整合日！我们将把前面9天开发的所有功能整合为流畅的系统，添加小游戏、ESP-NOW同步、USB投屏等进阶功能，并进行系统稳定性测试。
 
-Tomorrow we integrate all features into a complete program and package it as an executable (.exe) using PyInstaller, so you can share your desktop pet with anyone (no Python installation required)!
+Tomorrow is integration day! We'll integrate all features into one smooth system, add minigames, ESP-NOW sync, USB screencasting, and stress-test the system.
 
 ---
 
 ## 参考资源 | References
 
-- [OpenAI Python SDK 文档](https://github.com/openai/openai-python)
 - [DeepSeek API 文档](https://platform.deepseek.com/api-docs)
-- [通义千问 API 文档](https://help.aliyun.com/zh/dashscope/)
-- [Python 多线程教程](https://docs.python.org/3/library/threading.html)
-- [AI桌宠详细教程（B站）](https://www.bilibili.com/video/BV1KMQnBFEHu/)
-- [5分钟开发AI桌宠助手（B站）](https://www.bilibili.com/video/BV1N7ymBpEzt/)
+- [阿里百炼 API 文档](https://help.aliyun.com/zh/model-studio/)
+- [火山引擎豆包大模型](https://www.volcengine.com/docs/82379)
+- [cJSON GitHub](https://github.com/DaveGamble/cJSON)
+- [ESP-IDF HTTPS请求配置](https://docs.espressif.com/projects/esp-idf/zh_CN/stable/esp32s3/api-reference/protocols/esp_http_client.html)
+- [ESP32接入AI大语言模型实战（B站搜索）](https://search.bilibili.com/all?keyword=ESP32%20AI%20%E5%A4%A7%E6%A8%A1%E5%9E%8B)
 
-*最后更新：2026-05-26*
+*最后更新：2026-05-27*
