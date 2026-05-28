@@ -1,5 +1,18 @@
 # 桌面气象站 "天气魔方" | Desktop Weather Station "Weather Cube"
 
+> **本项目基于开源项目 [ESP_weather_Cube](https://github.com/bilibilifmk/ESP_weather_Cube)（原作者：[发明控/bilibilifmk](https://github.com/bilibilifmk)）进行教学化改编，代码与资源与原仓库一致。**
+>
+> **This project is an educational adaptation of the open-source project [ESP_weather_Cube](https://github.com/bilibilifmk/ESP_weather_Cube) by [bilibilifmk](https://github.com/bilibilifmk). Code and resources are identical to the original repository.**
+
+| 链接 Link | 说明 Description |
+|-----------|-----------------|
+| **GitHub 开源仓库** | [github.com/bilibilifmk/ESP_weather_Cube](https://github.com/bilibilifmk/ESP_weather_Cube) |
+| **B站制作教程视频** | [bilibili.com/video/BV1WC4y1h7k4](https://www.bilibili.com/video/BV1WC4y1h7k4/?spm_id_from=333.1391.0.0&vd_source=6140074911db12a31084ad734129ee49) |
+| **B站 v4 固件视频** | [bilibili.com/video/BV1N54y1B7WW](https://www.bilibili.com/video/BV1N54y1B7WW/) |
+| **B站 量产版视频** | [bilibili.com/video/BV1T54y1S7PU](https://www.bilibili.com/video/BV1T54y1S7PU/) |
+| **WiFi 配网工具库** | [github.com/bilibilifmk/wifi_link_tool](https://github.com/bilibilifmk/wifi_link_tool) |
+| **量产版 PCB 工程** | [oshwhub.com/hbk444/qi-xiang-zhan01](https://oshwhub.com/hbk444/qi-xiang-zhan01) |
+
 > 面向高中生的暑期IoT实践项目 | A Summer IoT Practicum Project for High School Students
 
 ---
