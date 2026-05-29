@@ -1,0 +1,314 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{ctex}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+\title{高中生暑期硬件项目概述}
+\author{}
+\date{2026年5月}
+
+\begin{document}
+
+\maketitle
+
+\section{项目总览}
+
+本课程包含9个硬件项目，难度从简单到高级不等。学生将通过复刻开源项目来学习嵌入式开发、物联网、机器人等领域的核心知识和技能。项目周期为10-20天，每天投入6-8小时。
+
+\section{核心学习理念}
+
+本课程的核心目标是让学生\textbf{跟随开源项目进行复刻}，在此过程中：
+\begin{itemize}
+    \item 遇到各种技术困难并学习如何解决
+    \item 了解从硬件选型到软件开发的完整流程
+    \item 掌握基础的电子电路、微控制器编程、传感器通信等技能
+    \item 体验真实项目的开发全流程
+\end{itemize}
+
+\textbf{不要求深入掌握}，而是注重广度接触和动手实践。
+
+\newpage
+
+\section{项目详情}
+
+\subsection{项目一：双目手机热成像仪"ThermalEyes" - 难度：中等/高}
+
+\textbf{项目类型}：热成像与计算机视觉
+
+\textbf{预计周期}：约15-20天
+
+\textbf{基础要求}：有STM32或嵌入式开发基础更佳
+
+\textbf{开源资源}：
+\begin{itemize}
+    \item PCB设计：\url{https://oshwhub.com/colourfate/binocular_thermal_imager}
+    \item 固件代码：\url{https://github.com/colourfate/thermal_bridge}
+    \item Android APP：\url{https://github.com/colourfate/ThermalEyes}
+\end{itemize}
+
+\textbf{项目描述}：
+基于可见光和热成像传感器的双目手机热成像仪。设备具有普通可见光摄像头和热成像传感器，通过MCU读取数据后通过USB传输到手机端，借助手机算力进行图像处理和融合，最终在手机屏幕上显示高质量的热成像图像。支持高低温跟踪、算法参数调整、融合模式切换等功能。
+
+\textbf{可学到的知识}：
+\begin{itemize}
+    \item STM32F411开发（ARM Cortex-M4）
+    \item I2C通信协议与MLX90640热成像传感器驱动
+    \item USB CDC/HS通信
+    \item Android APP开发（Java/C++）
+    \item OpenCV图像处理与融合算法
+    \item 图像高频/低频信息提取与叠加
+    \item 伪彩色色彩映射
+    \item PCB设计基础
+    \item 嵌入式固件开发流程
+\end{itemize}
+
+\textbf{核心技术栈}：STM32CubeIDE、I2C、USB、UVC摄像头、Android、OpenCV、图像融合
+
+\textbf{难度说明}：本项目涉及硬件（PCB设计、焊接）、固件（STM32）、软件（Android APP）三部分，需要有一定的嵌入式开发基础才能完成。
+
+---
+
+\subsection{项目二：环境感知监测站"空气管家" - 难度：中等}
+
+\textbf{项目类型}：物联网环境监测
+
+\textbf{预计周期}：约12天
+
+\textbf{基础要求}：略有编程基础更佳
+
+\textbf{项目描述}：
+实时环境质量监测站，可监测温度、湿度、气压、空气质量（CO₂/TVOC）、PM2.5/PM10等指标，通过MQTT协议上传数据，在Web仪表盘上实时可视化展示。
+
+\textbf{可学到的知识}：
+\begin{itemize}
+    \item ESP32微控制器开发
+    \item I2C/UART通信协议
+    \item 多传感器整合
+    \item MicroPython编程
+    \item MQTT物联网协议
+    \item 数据可视化
+    \item 电路焊接基础
+\end{itemize}
+
+---
+
+\subsection{项目三：宏键盘"键界" - 难度：中等}
+
+\textbf{项目类型}：外设开发
+
+\textbf{预计周期}：约12天
+
+\textbf{基础要求}：有编程基础
+
+\textbf{项目描述}：
+模块化客制化宏键盘，集成旋钮、OLED显示屏和RGB灯效。从原理图绘制、PCB设计、固件开发到焊接组装全流程。
+
+\textbf{可学到的知识}：
+\begin{itemize}
+    \item 键盘矩阵扫描原理
+    \item I2C/SPI通信协议
+    \item USB HID协议
+    \item PCB设计（嘉立创EDA）
+    \item 焊接技术
+    \item QMK固件基础
+    \item WS2812B可寻址LED控制
+\end{itemize}
+
+---
+
+\subsection{项目四：口袋信号发生器"TinyAWG" - 难度：高}
+
+\textbf{项目类型}：测量仪器
+
+\textbf{预计周期}：约20天
+
+\textbf{基础要求}：有电子基础和编程经验
+
+\textbf{项目描述}：
+基于Xilinx ZYNQ7010的专业级任意波形发生器，200MSa/s采样率、35MHz带宽、10Vpp输出，配合触摸屏GUI。
+
+\textbf{可学到的知识}：
+\begin{itemize}
+    \item FPGA数字设计基础
+    \item ZYNQ异构系统（ARM + FPGA）
+    \item DDS（直接数字合成）原理
+    \item 模拟电路设计
+    \item 高速DAC使用
+    \item 嵌入式C编程
+    \item LVGL图形界面
+\end{itemize}
+
+---
+
+\subsection{项目五：桌宠机器人 - 难度：中等/进阶}
+
+\textbf{项目类型}：机器人
+
+\textbf{预计周期}：约12天
+
+\textbf{基础要求}：略有编程基础
+
+\textbf{项目描述}：
+提供两个平行轨道：
+\begin{itemize}
+    \item \textbf{Track A（基础版）}：ESP-SparkBot，基于ESP32-S3的AI桌面机器人
+    \item \textbf{Track B（进阶版）}：AICat，接入Qwen 3.5多模态大模型
+\end{itemize}
+
+\textbf{可学到的知识}：
+\begin{itemize}
+    \item ESP32开发
+    \item 传感器数据采集
+    \item WiFi/蓝牙通信
+    \item 舵机控制
+    \item LVGL GUI开发
+    \item AI模型部署（语音/视觉）
+    \item PCB焊接（Track A）
+\end{itemize}
+
+---
+
+\subsection{项目六：桌面气象站"天气魔方" - 难度：简单}
+
+\textbf{项目类型}：物联网气象站
+
+\textbf{预计周期}：约10天
+
+\textbf{基础要求}：零基础可入门
+
+\textbf{项目描述}：
+桌面迷你气象站时钟，使用ESP8266驱动OLED显示屏，通过网络API获取实时天气数据，展示时间、日期、天气图标、体感温度、PM2.5等信息。
+
+\textbf{可学到的知识}：
+\begin{itemize}
+    \item ESP8266开发
+    \item WiFi联网
+    \item HTTP API调用
+    \item JSON数据解析
+    \item I2C OLED显示驱动
+    \item NTP时间同步
+    \item Arduino编程基础
+\end{itemize}
+
+---
+
+\subsection{项目七：轮足机器人"轮行者" - 难度：高}
+
+\textbf{项目类型}：机器人
+
+\textbf{预计周期}：约12天
+
+\textbf{基础要求}：有C/C++编程经验
+
+\textbf{项目描述}：
+两轮自平衡轮足机器人，使用ESP32驱动无刷直流电机，通过MPU6050感知姿态，运用PID控制算法实现自主平衡与运动控制。
+
+\textbf{可学到的知识}：
+\begin{itemize}
+    \item ESP32微控制器
+    \item 无刷直流电机控制
+    \item FOC（磁场定向控制）原理
+    \item MPU6050姿态感知
+    \item PID控制算法
+    \item 传感器融合
+    \item 蓝牙/WiFi遥控
+    \item 倒立摆物理模型
+\end{itemize}
+
+---
+
+\subsection{项目八：ElectronBot - 难度：最高级}
+
+\textbf{项目类型}：桌面机器人
+
+\textbf{预计周期}：约20天
+
+\textbf{基础要求}：有嵌入式开发经验和PCB焊接能力
+
+\textbf{项目描述}：
+稚晖君设计的迷你桌面机器人，拥有圆形LCD脸部屏幕、6自由度舵机系统、手势传感器、摄像头和IMU，配合Unity桌面软件实现人体姿态跟随、表情交互、手势识别。
+
+\textbf{可学到的知识}：
+\begin{itemize}
+    \item STM32固件开发
+    \item USB高速通信
+    \item 6自由度舵机控制
+    \item OpenCV/OpenPose人体姿态识别
+    \item Unity上位机开发
+    \item 完整的硬件+软件全栈开发
+    \item 精细的PCB焊接技术
+\end{itemize}
+
+---
+
+\subsection{项目九：桌面卫星气象站 - 难度：高}
+
+\textbf{项目类型}：物联网气象站
+
+\textbf{预计周期}：约15天
+
+\textbf{基础要求}：有电子基础
+
+\textbf{项目描述}：
+桌面迷你卫星气象站，使用ESP32-C3驱动TFT彩色显示屏，通过WiFi获取NTP网络时间，搭配SHT31-D传感器采集温湿度。铜线+黄铜管手工制作卫星造型外壳，支持太阳能充电。
+
+\textbf{可学到的知识}：
+\begin{itemize}
+    \item ESP32-C3开发
+    \item TFT彩色显示驱动
+    \item I2C传感器通信
+    \item WiFi联网和NTP同步
+    \item 太阳能充电系统设计
+    \item 手工焊接与结构组装
+    \item 锂电池管理
+\end{itemize}
+
+\newpage
+
+\section{难度等级总结}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|l|}
+\hline
+项目名称 & 难度 & 预计周期 & 基础要求 \\
+\hline
+天气魔方 & 简单 & 10天 & 零基础 \\
+\hline
+ThermalEyes热成像 & 中等/高 & 15-20天 & STM32/嵌入式基础 \\
+\hline
+空气管家 & 中等 & 12天 & 略有基础 \\
+\hline
+宏键盘 & 中等 & 12天 & 有编程基础 \\
+\hline
+桌宠机器人 & 中等/进阶 & 12天 & 略有基础 \\
+\hline
+轮足机器人 & 高 & 12天 & C/C++经验 \\
+\hline
+卫星气象站 & 高 & 15天 & 电子基础 \\
+\hline
+TinyAWG & 高 & 20天 & 电子+编程经验 \\
+\hline
+ElectronBot & 最高级 & 20天 & 嵌入式+PCB经验 \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{学习期待}
+
+本课程对学生的期待是：
+
+\begin{enumerate}
+    \item \textbf{动手实践}：亲手搭建每一个项目，不只是观看
+    \item \textbf{过程学习}：重视复刻过程中的困难和解决方式，而非最终结果
+    \item \textbf{广泛接触}：对各种技术有基本认识和动手经验
+    \item \textbf{记录反思}：记录遇到的问题和学到的知识点
+    \item \textbf{不求深度}：无需深入掌握任何单一技术，但求了解全貌
+\end{enumerate}
+
+\end{document}
