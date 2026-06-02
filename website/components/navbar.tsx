@@ -8,6 +8,7 @@
  * 动效: CSS transition backdrop-blur — 来源: design-spec.md 动效清单
  */
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Menu, X } from "lucide-react"
@@ -54,9 +55,7 @@ export function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           {/* 渐变 Logo 标识 — 来源: Stripe.com 渐变美感 */}
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-accent">
-            <span className="text-sm font-bold text-white">HW</span>
-          </div>
+          <Image src={`${process.env.NODE_ENV === 'production' ? '/summer-hardware-projects' : ''}/logo.png`} alt="Logo" width={32} height={32} className="rounded-lg object-cover" />
           <span className="text-lg font-semibold tracking-tight text-text-primary">
             硬件夏令营
           </span>

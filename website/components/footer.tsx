@@ -5,6 +5,7 @@
  * 内容: 导航链接、社交媒体图标、版权信息
  * 来源: design-spec.md 7. Footer
  */
+import Image from "next/image"
 import Link from "next/link"
 import { Github, Tv, MessageCircle } from "lucide-react"
 
@@ -61,9 +62,7 @@ export function Footer() {
           {/* 品牌 + 简介 */}
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-accent">
-                <span className="text-sm font-bold text-white">HW</span>
-              </div>
+              <Image src={`${process.env.NODE_ENV === 'production' ? '/summer-hardware-projects' : ''}/logo.png`} alt="Logo" width={32} height={32} className="rounded-lg object-cover" />
               <span className="text-lg font-semibold tracking-tight">
                 硬件夏令营
               </span>
