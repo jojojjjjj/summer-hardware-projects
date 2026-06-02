@@ -1,0 +1,6 @@
+# 构建产物和工具
+.next/
+node_modules/
+out/
+public/audit/
+scripts/
