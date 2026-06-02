@@ -13,6 +13,7 @@
  * - 标题: Framer Motion staggerChildren
  * - 数字: Number Ticker (自定义 requestAnimationFrame)
  */
+import Image from "next/image"
 import { motion } from "framer-motion"
 import { ChevronDown, Rocket, BookOpen } from "lucide-react"
 import { NumberTicker } from "./number-ticker"
@@ -54,6 +55,17 @@ export function HeroSection() {
         initial="hidden"
         animate="visible"
       >
+        {/* 品牌 Logo */}
+        <motion.div variants={itemVariants} className="mb-8 flex justify-center">
+          <Image
+            src={`${process.env.NODE_ENV === 'production' ? '/summer-hardware-projects' : ''}/logo.png`}
+            alt="多维国际教育"
+            width={240}
+            height={240}
+            className="rounded-2xl object-cover opacity-90 hover:opacity-100 transition-opacity"
+          />
+        </motion.div>
+
         {/* 课程标签 */}
         <motion.div variants={itemVariants} className="mb-6">
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-bg-secondary/50 px-4 py-1.5 text-sm text-text-secondary backdrop-blur-sm">
