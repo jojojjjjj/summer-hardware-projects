@@ -1,0 +1,64 @@
+Date,Day,Week,Topic,Assigned,Due,Assignment Description
+Jan 14,Wed,0,L00-S26 Overview & Intro to IoT.pdf,"A00G Devices, Designs, & Diagrams S26
+ESE5160 S26 Project Teams [Public]",,"Altium tutorial will introduce students to Altium's interface.
+Students will select 1-2 sensors/actuators that they want to add to their PCB
+Students to make teams of 2 for the semester"
+Jan 19,Mon,1,MLK Day (No Classes),,,
+Jan 21,Wed,1,L01-S26 Embedded System Architecture for IoT.pdf,A01P Altium Tutorial S26,,
+Jan 26,Mon,2,[Snow day],"A01G Components, Pins, & Power S26","A00G Devices, Designs, & Diagrams","Students will do a block diagram of the system
+Also, a power architecture will be designed.
+Students to generate Altium libraries on components selected on A0.
+Students to generate MCU pinout with developer tools to verify pin assignment."
+Jan 27,Tue,2,Course Selection Period Ends,,,
+Jan 28,Wed,2,"L02-S26 Power Architecture.pdf
+L03-S26 Altium Schematic Capture I.pdf",,,
+Feb 2,Mon,3,L04-S26 Altium Schematic Capture II.pdf,A02G Schematics I S26,"A01P Altium Tutorial
+A01G Components, Pins, & Power",Students will start developing the schematics for their designs
+Feb 4,Wed,3,L05-S26 Altium Schematic Capture III.pdf,A02P Clocks & Timers S26,,
+Feb 9,Mon,4,"L06-S26 Altium Board Layout I.pdf
+[Bring laptops for in-class activity]","A03G Schematics II S26
+A03P Manufacturing S26",A02G Schematics I,Students will finalize their schematics and start on PCB Layout. Students will provide BOMDOC
+Feb 11,Wed,4,"L07-S26 Altium Board Layout II.pdf
+ECAD Best Practices - Schematic Capture.pdf",,A02P Clocks & Timers,
+Feb 16,Mon,5,"L08-S26 Altium Board Layout III.pdf
+ECAD Best Practices - PCB Layout.pdf",A04G Layout S26,"A03P Manufacturing
+A03G Schematics II",Students will integrate any feedback from A3 and continue layout
+Feb 18,Wed,5,"L09-S26 Manufacturing Release.pdf
+Group Exercise: Inspecting PCBAs",,,
+Feb 23,Mon,6,[Snow Day] PCB Layout Reviews,A05G Release S26 ,A04G Layout,Students will integrate any feedback from A4 (hopefully small changes) and wil generate the components for release
+Feb 25,Wed,6,MORE PCB Layout Reviews,,,
+Mar 2,Mon,7,L10-S26 Embedded I - Concurrency.pdf,,A05G Release [No late days!],Students will develop the CLI for the system. They will write the low level layers to send/receive data from the UART asynchronously and use FreeRTOS' CLI to make some simple CLI commands.
+Mar 4,Wed,7,L11-S26 Embedded II - FreeRTOS.pdf,Mid-semester Team Feedback [See Gradescope],,
+Mar 7,Sat,7,Spring Break (3/7-3/15),,,
+Mar 16,Mon,9,"L12-S26 Embedded III - RTOS Threads, Queues, C Talk.pdf",,,Students will develop the low level I2C layer that will allow them to generate drivers for certain I2C sensor. The drivers for the accelerometer and the temperature/humidity sensor will be used for testing.
+Mar 18,Wed,9,"L13-S26 Board Bringup.pdf
+L14-S26 Writing Portable Software FW Toolbox.pdf","A06G FreeRTOS & I2C S26
+A07G Board Bringup S26",Mid-semester Team Feedback [See Gradescope],
+Mar 23,Mon,10,"L15-S26 Embedded IV - HAL, CLI.pdf",,,
+Mar 25,Wed,10,"L14-S26 Writing Portable Software FW Toolbox.pdf
+L16-S26 Cloud Communication.pdf",A08G Cloud S26,A06G FreeRTOS & I2C,
+Mar 30,Mon,11,L17-S26 Bootloader.pdf,,,
+Apr 1,Wed,11,[Class cancelled due to department meeting],A09G Drivers & App Logic S26,,Students will develop the low level I2C layer that will allow them to generate drivers for certain I2C sensor. The drivers for the accelerometer and the temperature/humidity sensor will be used for testing.
+Apr 6,Mon,12,"L18-S26 Debugging Embedded Systems.pdf
+Board Bring-up / Final Project Work [Moore Detkin]",,,
+Apr 8,Wed,12,Board Bring-up In Class Lab [AGH 104],,A08G Cloud,
+Apr 13,Mon,13,"Bootloader Quiz
+Board Bring-up In Class Lab [Moore Detkin]",,Bootloader Quiz,
+Apr 15,Wed,13,Final Project Work [AGH Detkin],"A10G The Judgement Day S26
+A11G Final Submission S26
+A12G Exit Interview S26
+EC01G MCAD Model S26",,
+Apr 20,Mon,14,L19-S26 Class Wrap-up.pdf,,,Students will develop a bootloader for the SAMW25
+Apr 22,Wed,14,Demo Day Dry Run [Africk & Lobby],,"Assignments are due before the 8:30am dry run
+A07G Board Bringup
+A09G Drivers & App Logic",
+Apr 27,Mon,15,No Class,,,Students will develop code to download a firmware image from the internet and couple it with the bootloader to generate a complete Over the Interner Firmware Update solution.
+Apr 29,Wed,15,"Demo Day [Africk & Lobby]
+(Last day of classes)",End of Semester Teammate Feedback,A10G The Judgement Day [No late days!],
+Apr 30,Thu,15,Reading days (4/30-5/3),,,
+May 4,Mon,16,Final exams (5/4-5/12),,,"Students will work towards their final project. By now, the previous projects have been working towards that goal. In this assignment student shall develop the control thread that will tie all the functionality together (To be delivered after last day of classes, date TBD)"
+May 6,Wed,16,,,A11G Final Submission [No late days!],
+May 10,Sun,17,,,"A12G Exit Interview
+Course Survey
+End of Semester Teammate Feedback",
+May 12,Tue,17,Spring term ends,,,
