@@ -10,33 +10,52 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        /* 基础色 — 来源: design-spec.md */
-        background: "#09090b",
-        "bg-secondary": "#111113",
-        "bg-tertiary": "#18181b",
-        border: "#27272a",
-        "border-hover": "#3f3f46",
-        /* 文字色 */
-        "text-primary": "#fafafa",
-        "text-secondary": "#a1a1aa",
-        "text-tertiary": "#71717a",
-        /* 强调色 */
-        "accent-primary": "#6366f1",
-        "accent-secondary": "#06b6d4",
-        /* 语义色 */
-        success: "#22c55e",
-        warning: "#f59e0b",
-        danger: "#ef4444",
-        /* 项目主题色 — 来源: design-spec.md 项目特色色 */
-        "project-01": "#f97316",
-        "project-02": "#22c55e",
-        "project-03": "#8b5cf6",
-        "project-04": "#ec4899",
-        "project-05": "#f59e0b",
-        "project-06": "#06b6d4",
-        "project-07": "#ef4444",
-        "project-08": "#a855f7",
-        "project-09": "#3b82f6",
+        /*
+         * 设计方向: 工作台 / Workbench
+         *
+         * 色彩来源不是 "科技感渐变"，而是电子工作台的真实材质：
+         * - PCB 走线的金色 ENIG 涂层
+         * - 阻焊层的深绿色
+         * - 烙铁头的暗橙红
+         * - 焊锡的银灰色
+         */
+        /* 基础色 — 微暖深色系 */
+        background: "#0c0c0e",
+        "bg-secondary": "#141416",
+        "bg-tertiary": "#1c1c1e",
+        border: "#2a2724",
+        "border-hover": "#3d3a35",
+        /* 文字色 — 暖白/暖灰，非冷白 */
+        "text-primary": "#ede9e1",
+        "text-secondary": "#9a9590",
+        "text-tertiary": "#6b6661",
+        /* 强调色 — PCB 金色走线 + 阻焊绿 */
+        "accent-primary": "#c9944a",
+        "accent-secondary": "#3d8b5e",
+        /* 语义色 — 工作台材质映射 */
+        success: "#3d8b5e",
+        warning: "#c9944a",
+        danger: "#e85d3a",
+        /* 项目标签色 — 暖色调，替代默认的冷色蓝/青/紫 */
+        "tag-copper": { DEFAULT: "#c9944a33", text: "#c9944a" },
+        "tag-bronze": { DEFAULT: "#b8733333", text: "#b87333" },
+        "tag-gold": { DEFAULT: "#d4a85320", text: "#d4a853" },
+        "tag-solder": { DEFAULT: "#3d8b5e20", text: "#5aad7a" },
+        "tag-patina": { DEFAULT: "#5a9e8e20", text: "#5a9e8e" },
+        "tag-rust": { DEFAULT: "#c46b3a20", text: "#d4845a" },
+        "tag-clay": { DEFAULT: "#a0705020", text: "#b88868" },
+        "tag-teal": { DEFAULT: "#3a7e7e20", text: "#5a9e9e" },
+        "tag-olive": { DEFAULT: "#7a8a3a20", text: "#8a9a4a" },
+        /* 项目主题色 */
+        "project-01": "#e88a3a",
+        "project-02": "#3d8b5e",
+        "project-03": "#7c6bb5",
+        "project-04": "#d45d8a",
+        "project-05": "#c9944a",
+        "project-06": "#3a9b9b",
+        "project-07": "#d45050",
+        "project-08": "#9a6bc9",
+        "project-09": "#4a7abf",
       },
       fontFamily: {
         sans: [
@@ -47,9 +66,13 @@ const config: Config = {
           "sans-serif",
         ],
         mono: ["JetBrains Mono", "Fira Code", "monospace"],
+        display: [
+          "JetBrains Mono",
+          "Fira Code",
+          "monospace",
+        ],
       },
       fontSize: {
-        /* 字号层级 — 来源: design-spec.md */
         "text-xs": ["0.75rem", { lineHeight: "1rem" }],
         "text-sm": ["0.875rem", { lineHeight: "1.25rem" }],
         "text-base": ["1rem", { lineHeight: "1.75" }],
@@ -64,30 +87,28 @@ const config: Config = {
         "text-8xl": ["6rem", { lineHeight: "1" }],
       },
       spacing: {
-        /* 8px 网格 — 来源: design-spec.md */
         "18": "4.5rem",
         "88": "22rem",
         "128": "32rem",
       },
       borderRadius: {
-        "radius-sm": "0.375rem",
-        "radius-md": "0.5rem",
-        "radius-lg": "0.75rem",
-        "radius-xl": "1rem",
-        "radius-2xl": "1.5rem",
+        "radius-sm": "0.25rem",
+        "radius-md": "0.375rem",
+        "radius-lg": "0.5rem",
+        "radius-xl": "0.75rem",
+        "radius-2xl": "1rem",
       },
       boxShadow: {
         card: "0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2)",
         "card-hover": "0 10px 40px rgba(0,0,0,0.4)",
-        glow: "0 0 40px rgba(99,102,241,0.15)",
+        glow: "0 0 30px rgba(201,148,74,0.15)",
       },
       backgroundImage: {
-        /* 主渐变 — 来源: design-spec.md */
-        "gradient-accent": "linear-gradient(135deg, #6366f1, #06b6d4)",
-        "gradient-accent-hover": "linear-gradient(135deg, #4f46e5, #0891b2)",
+        /* 渐变 — 金色→绿色，PCB 走线感 */
+        "gradient-accent": "linear-gradient(135deg, #c9944a, #3d8b5e)",
+        "gradient-accent-hover": "linear-gradient(135deg, #b5833f, #2d6e48)",
       },
       animation: {
-        /* 动效 — 来源: design-spec.md 动效清单 */
         "gradient-flow": "gradient-flow 8s ease infinite",
         marquee: "marquee 30s linear infinite",
         "marquee-reverse": "marquee-reverse 30s linear infinite",

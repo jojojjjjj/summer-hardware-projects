@@ -1,11 +1,16 @@
 "use client"
 
 /**
- * 导航栏组件
+ * 导航栏
  *
- * 设计参考: Aceternity UI Floating Navbar + Linear.app
- * 功能: 固定顶部、滚动时添加背景模糊、响应式
- * 动效: CSS transition backdrop-blur — 来源: design-spec.md 动效清单
+ * 去掉了:
+ * - 双语导航标签 (项目 Projects)
+ * - 渐变按钮 → 实色按钮
+ *
+ * 保留:
+ * - 固定顶部
+ * - 滚动模糊
+ * - 移动端菜单
  */
 import { useState, useEffect } from "react"
 import Image from "next/image"
@@ -15,17 +20,16 @@ import { Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navLinks = [
-  { href: "#projects", label: "项目", labelEn: "Projects" },
-  { href: "#learning-path", label: "学习路径", labelEn: "Path" },
-  { href: "#testimonials", label: "学员评价", labelEn: "Reviews" },
-  { href: "#contact", label: "联系我们", labelEn: "Contact" },
+  { href: "#projects", label: "项目" },
+  { href: "#learning-path", label: "学习路径" },
+  { href: "#testimonials", label: "学员反馈" },
+  { href: "#contact", label: "联系我们" },
 ]
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  // 监听滚动 — 节流处理避免性能问题
   useEffect(() => {
     let ticking = false
     const handleScroll = () => {
@@ -54,14 +58,13 @@ export function Navbar() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          {/* 渐变 Logo 标识 — 来源: Stripe.com 渐变美感 */}
-          <Image src={`${process.env.NODE_ENV === 'production' ? '/summer-hardware-projects' : ''}/logo.png`} alt="Logo" width={32} height={32} className="rounded-lg object-cover" />
+          <Image src={`${process.env.NODE_ENV === 'production' ? '/summer-hardware-projects' : ''}/logo.png`} alt="Logo" width={28} height={28} className="rounded-md object-cover" />
           <span className="text-base font-semibold tracking-tight text-text-primary sm:text-lg">
             硬件夏令营
           </span>
         </Link>
 
-        {/* 桌面导航链接 */}
+        {/* 桌面导航 */}
         <div className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => (
             <a
@@ -74,13 +77,13 @@ export function Navbar() {
           ))}
         </div>
 
-        {/* CTA 按钮 */}
+        {/* CTA 按钮 — 实色 */}
         <div className="hidden items-center gap-3 md:flex">
           <a
             href="#projects"
-            className="rounded-lg bg-gradient-accent px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+            className="rounded-md bg-accent-primary px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-accent-primary/90"
           >
-            探索项目
+            查看项目
           </a>
         </div>
 
@@ -114,10 +117,10 @@ export function Navbar() {
             ))}
             <a
               href="#projects"
-              className="mt-2 flex min-h-[44px] items-center justify-center rounded-lg bg-gradient-accent px-4 py-2 text-base font-medium text-white sm:text-sm"
+              className="mt-2 flex min-h-[44px] items-center justify-center rounded-md bg-accent-primary px-4 py-2 text-base font-medium text-white sm:text-sm"
               onClick={() => setMobileMenuOpen(false)}
             >
-              探索项目
+              查看项目
             </a>
           </div>
         </motion.div>

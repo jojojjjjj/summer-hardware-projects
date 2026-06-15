@@ -15,3 +15,10 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+
+# Node
+node_modules/
+
+# Verify / testing temp
+verify/
+verify-screenshot.js

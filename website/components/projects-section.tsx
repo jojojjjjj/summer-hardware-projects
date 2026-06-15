@@ -1,22 +1,18 @@
 "use client"
 
 /**
- * 项目展示 Section — 核心区域
+ * 项目展示 Section
  *
- * 设计参考:
- * - Framer.com: 网格瀑布流卡片
- * - Nothing.tech: 产品中心布局
+ * 去掉了:
+ * - "Explore Projects" 英文眉标
+ * - ⭐ 难度筛选标签中的星号
  *
- * 功能:
- * - 难度筛选标签栏
- * - 9 个项目卡片网格（响应式：桌面3列/平板2列/手机1列）
- * - Framer Motion layout animation 筛选切换动画
- *
- * 来源: design-spec.md 3.3 项目展示 Section
+ * 保留:
+ * - 难度筛选
+ * - 项目卡片网格
  */
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Search } from "lucide-react"
 import { projects, difficultyFilters } from "@/lib/projects-data"
 import { ProjectCard } from "./project-card"
 import { cn } from "@/lib/utils"
@@ -24,7 +20,6 @@ import { cn } from "@/lib/utils"
 export function ProjectsSection() {
   const [activeFilter, setActiveFilter] = useState(0)
 
-  // 筛选逻辑
   const filteredProjects =
     activeFilter === 0
       ? projects
@@ -38,29 +33,23 @@ export function ProjectsSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
           className="mb-8 md:mb-12 text-center"
         >
-          <div className="mb-3 inline-flex items-center gap-2 text-accent-primary">
-            <Search size={18} />
-            <span className="text-sm font-medium uppercase tracking-widest">
-              Explore Projects
-            </span>
-          </div>
           <h2 className="text-responsive-section font-bold tracking-tighter">
-            探索 9 个硬件项目
+            9 个硬件项目
           </h2>
-          <p className="mt-3 text-base sm:text-lg text-text-secondary">
+          <p className="mt-2 text-sm text-text-tertiary">
             从入门到高级，总有一个适合你
           </p>
         </motion.div>
 
-        {/* 难度筛选标签栏 */}
+        {/* 难度筛选 — 无 ⭐ */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.4, delay: 0.2 }}
+          transition={{ duration: 0.4, delay: 0.15 }}
           className="mb-8 md:mb-10 flex flex-wrap items-center justify-center gap-2"
         >
           {difficultyFilters.map((filter) => (
@@ -68,10 +57,10 @@ export function ProjectsSection() {
               key={filter.value}
               onClick={() => setActiveFilter(filter.value)}
               className={cn(
-                "rounded-radius-lg px-4 py-2 text-sm font-medium transition-all",
+                "rounded-radius-md px-3.5 py-1.5 text-xs font-medium font-mono transition-all",
                 activeFilter === filter.value
-                  ? "bg-accent-primary text-white shadow-glow"
-                  : "border border-border bg-bg-secondary text-text-secondary hover:border-border-hover hover:text-text-primary"
+                  ? "bg-accent-primary text-white"
+                  : "border border-border bg-bg-secondary text-text-tertiary hover:border-border-hover hover:text-text-secondary"
               )}
             >
               {filter.label}
@@ -79,10 +68,10 @@ export function ProjectsSection() {
           ))}
         </motion.div>
 
-        {/* 项目卡片网格 — AnimatePresence 实现筛选动画 */}
+        {/* 项目卡片网格 */}
         <motion.div
           layout
-          className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
         >
           <AnimatePresence mode="popLayout">
             {filteredProjects.map((project, index) => (
@@ -97,7 +86,7 @@ export function ProjectsSection() {
 
         {/* 空状态 */}
         {filteredProjects.length === 0 && (
-          <div className="py-20 text-center text-text-tertiary">
+          <div className="py-20 text-center text-sm text-text-tertiary">
             该难度暂无项目
           </div>
         )}

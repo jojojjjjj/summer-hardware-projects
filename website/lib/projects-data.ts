@@ -75,14 +75,14 @@ export interface Project {
   coreTech: string     // 核心技术简述（1行）
 }
 
-/** 难度筛选选项 */
+/** 难度筛选选项 — 无星号，纯文字 + 色点 */
 export const difficultyFilters = [
   { value: 0, label: "全部", labelEn: "All" },
-  { value: 1, label: "⭐ 入门", labelEn: "⭐ Beginner" },
-  { value: 2, label: "⭐⭐ 基础", labelEn: "⭐⭐ Basic" },
-  { value: 3, label: "⭐⭐⭐ 中等", labelEn: "⭐⭐⭐ Intermediate" },
-  { value: 4, label: "⭐⭐⭐⭐ 进阶", labelEn: "⭐⭐⭐⭐ Advanced" },
-  { value: 5, label: "⭐⭐⭐⭐⭐ 高级", labelEn: "⭐⭐⭐⭐⭐ Expert" },
+  { value: 1, label: "入门", labelEn: "Beginner" },
+  { value: 2, label: "基础", labelEn: "Basic" },
+  { value: 3, label: "中等", labelEn: "Intermediate" },
+  { value: 4, label: "进阶", labelEn: "Advanced" },
+  { value: 5, label: "高级", labelEn: "Expert" },
 ] as const
 
 /** 9 个项目数据 — 来源: 各项目 README.md */
@@ -110,9 +110,9 @@ export const projects: Project[] = [
     mcu: "STM32F411",
     coreTech: "STM32 + MLX90640 + OpenCV + USB",
     tags: [
-      { label: "STM32", color: "bg-blue-500/20 text-blue-400" },
-      { label: "OpenCV", color: "bg-green-500/20 text-green-400" },
-      { label: "USB", color: "bg-purple-500/20 text-purple-400" },
+      { label: "STM32", color: "bg-tag-bronze text-tag-bronze-text" },
+      { label: "OpenCV", color: "bg-tag-solder text-tag-solder-text" },
+      { label: "USB", color: "bg-tag-copper text-tag-copper-text" },
     ],
     skills: {
       hardware: ["STM32 开发", "I2C 通信", "USB CDC/HS", "PCB 设计"],
@@ -163,9 +163,9 @@ export const projects: Project[] = [
     mcu: "ESP32",
     coreTech: "ESP32 + MQTT + Web 仪表盘",
     tags: [
-      { label: "ESP32", color: "bg-cyan-500/20 text-cyan-400" },
-      { label: "MQTT", color: "bg-orange-500/20 text-orange-400" },
-      { label: "Grafana", color: "bg-yellow-500/20 text-yellow-400" },
+      { label: "ESP32", color: "bg-tag-teal text-tag-teal-text" },
+      { label: "MQTT", color: "bg-tag-rust text-tag-rust-text" },
+      { label: "Grafana", color: "bg-tag-gold text-tag-gold-text" },
     ],
     skills: {
       hardware: ["ESP32 微控制器", "I2C/UART 通信", "多传感器整合", "面包板原型"],
@@ -213,9 +213,9 @@ export const projects: Project[] = [
     mcu: "ESP32-S3 ×3",
     coreTech: "ESP32-S3 + FOC + USB HID + 4模通信",
     tags: [
-      { label: "ESP32-S3", color: "bg-cyan-500/20 text-cyan-400" },
-      { label: "FOC 电机", color: "bg-red-500/20 text-red-400" },
-      { label: "USB HID", color: "bg-purple-500/20 text-purple-400" },
+      { label: "ESP32-S3", color: "bg-tag-teal text-tag-teal-text" },
+      { label: "FOC 电机", color: "bg-tag-rust text-tag-rust-text" },
+      { label: "USB HID", color: "bg-tag-copper text-tag-copper-text" },
     ],
     skills: {
       hardware: ["SPI 按键扫描", "FOC 电机控制", "PCB 四层板设计", "音频电路"],
@@ -267,9 +267,9 @@ export const projects: Project[] = [
     mcu: "ZYNQ7010 (ARM+FPGA)",
     coreTech: "FPGA + DDS + 14位DAC + LVGL",
     tags: [
-      { label: "FPGA", color: "bg-pink-500/20 text-pink-400" },
-      { label: "ZYNQ", color: "bg-violet-500/20 text-violet-400" },
-      { label: "LVGL", color: "bg-green-500/20 text-green-400" },
+      { label: "FPGA", color: "bg-tag-clay text-tag-clay-text" },
+      { label: "ZYNQ", color: "bg-tag-bronze text-tag-bronze-text" },
+      { label: "LVGL", color: "bg-tag-solder text-tag-solder-text" },
     ],
     skills: {
       hardware: ["FPGA 数字设计", "高速 DAC 驱动", "模拟电路设计", "电源设计"],
@@ -318,9 +318,9 @@ export const projects: Project[] = [
     mcu: "ESP32-S3",
     coreTech: "ESP32-S3 + LLM API + 语音/视觉",
     tags: [
-      { label: "ESP32-S3", color: "bg-cyan-500/20 text-cyan-400" },
-      { label: "LLM AI", color: "bg-amber-500/20 text-amber-400" },
-      { label: "ESP-IDF", color: "bg-orange-500/20 text-orange-400" },
+      { label: "ESP32-S3", color: "bg-tag-teal text-tag-teal-text" },
+      { label: "LLM AI", color: "bg-tag-gold text-tag-gold-text" },
+      { label: "ESP-IDF", color: "bg-tag-rust text-tag-rust-text" },
     ],
     skills: {
       hardware: ["ESP32-S3 开发", "PCB 焊接", "传感器集成", "音频系统"],
@@ -370,9 +370,9 @@ export const projects: Project[] = [
     mcu: "ESP8266",
     coreTech: "ESP8266 + OLED + WiFi API",
     tags: [
-      { label: "ESP8266", color: "bg-cyan-500/20 text-cyan-400" },
-      { label: "OLED", color: "bg-blue-500/20 text-blue-400" },
-      { label: "IoT", color: "bg-green-500/20 text-green-400" },
+      { label: "ESP8266", color: "bg-tag-teal text-tag-teal-text" },
+      { label: "OLED", color: "bg-tag-patina text-tag-patina-text" },
+      { label: "IoT", color: "bg-tag-solder text-tag-solder-text" },
     ],
     skills: {
       hardware: ["ESP8266 入门", "I2C 通信", "OLED 显示驱动", "面包板接线"],
@@ -419,9 +419,9 @@ export const projects: Project[] = [
     mcu: "ESP32",
     coreTech: "ESP32 + BLDC/FOC + PID + MPU6050",
     tags: [
-      { label: "BLDC/FOC", color: "bg-red-500/20 text-red-400" },
-      { label: "PID 控制", color: "bg-orange-500/20 text-orange-400" },
-      { label: "IMU", color: "bg-blue-500/20 text-blue-400" },
+      { label: "BLDC/FOC", color: "bg-tag-rust text-tag-rust-text" },
+      { label: "PID 控制", color: "bg-tag-bronze text-tag-bronze-text" },
+      { label: "IMU", color: "bg-tag-patina text-tag-patina-text" },
     ],
     skills: {
       hardware: ["BLDC 电机驱动", "FOC 磁场定向控制", "IMU 传感器", "3D 打印结构"],
@@ -470,9 +470,9 @@ export const projects: Project[] = [
     mcu: "STM32F405 + STM32F042×6",
     coreTech: "STM32 + USB HS + Unity + OpenPose",
     tags: [
-      { label: "STM32", color: "bg-blue-500/20 text-blue-400" },
-      { label: "USB HS", color: "bg-purple-500/20 text-purple-400" },
-      { label: "Unity/C#", color: "bg-violet-500/20 text-violet-400" },
+      { label: "STM32", color: "bg-tag-bronze text-tag-bronze-text" },
+      { label: "USB HS", color: "bg-tag-copper text-tag-copper-text" },
+      { label: "Unity/C#", color: "bg-tag-clay text-tag-clay-text" },
     ],
     skills: {
       hardware: ["STM32 开发", "USB HS PHY", "QFN 焊接", "舵机 PID 闭环"],
@@ -521,9 +521,9 @@ export const projects: Project[] = [
     mcu: "ESP32-C3",
     coreTech: "ESP32-C3 + TFT + 太阳能 + SHT31",
     tags: [
-      { label: "ESP32-C3", color: "bg-cyan-500/20 text-cyan-400" },
-      { label: "TFT 显示", color: "bg-blue-500/20 text-blue-400" },
-      { label: "太阳能", color: "bg-yellow-500/20 text-yellow-400" },
+      { label: "ESP32-C3", color: "bg-tag-teal text-tag-teal-text" },
+      { label: "TFT 显示", color: "bg-tag-patina text-tag-patina-text" },
+      { label: "太阳能", color: "bg-tag-gold text-tag-gold-text" },
     ],
     skills: {
       hardware: ["ESP32-C3 RISC-V", "SPI TFT 显示", "I2C 传感器", "电源管理"],
