@@ -70,8 +70,8 @@ const cardVariants = {
 
 export function ValuePropsSection() {
   return (
-    <section id="value-props" className="relative py-24 md:py-32">
-      <div className="mx-auto max-w-7xl px-6">
+    <section id="value-props" className="relative py-16 md:py-24 lg:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* 标题区域 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -100,7 +100,7 @@ export function ValuePropsSection() {
             <motion.div
               key={item.titleZh}
               variants={cardVariants}
-              className="card-glow group rounded-radius-xl border border-border bg-bg-secondary p-8"
+              className="card-glow group rounded-radius-xl border border-border bg-bg-secondary p-6 sm:p-8"
             >
               {/* 图标 */}
               <div

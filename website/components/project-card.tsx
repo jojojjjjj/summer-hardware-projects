@@ -39,20 +39,20 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
           >
             {/* 装饰性渐变圆 */}
             <div
-              className="absolute left-1/2 top-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-20 blur-2xl"
+              className="absolute left-1/2 top-1/2 h-20 w-20 sm:h-32 sm:w-32 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-20 blur-2xl"
               style={{ backgroundColor: project.colorHex }}
             />
 
             {/* 项目编号 + 名称 */}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span
-                className="text-5xl font-extrabold opacity-10"
+                className="text-3xl sm:text-5xl font-extrabold opacity-10"
                 style={{ color: project.colorHex }}
               >
                 P{project.id}
               </span>
               <span
-                className="mt-1 text-sm font-medium opacity-40"
+                className="mt-1 text-xs sm:text-sm font-medium opacity-40"
                 style={{ color: project.colorHex }}
               >
                 {project.titleEn}
@@ -61,27 +61,27 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
           </div>
 
           {/* 卡片内容区 */}
-          <div className="p-5">
+          <div className="p-4 sm:p-5">
             {/* 项目名称 + 描述 */}
             <div className="mb-3">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
                 <span
                   className="text-xs font-mono font-bold"
                   style={{ color: project.colorHex }}
                 >
                   P{project.id}
                 </span>
-                <h3 className="text-base font-semibold tracking-tight">
+                <h3 className="text-sm sm:text-base font-semibold tracking-tight">
                   {project.titleZh}
                 </h3>
               </div>
-              <p className="mt-1 text-sm text-text-secondary line-clamp-1">
+              <p className="mt-1 text-xs sm:text-sm text-text-secondary line-clamp-1">
                 {project.subtitle}
               </p>
             </div>
 
             {/* 参数行: 难度 + 天数 + 成本 */}
-            <div className="mb-3 flex items-center gap-3 text-xs">
+            <div className="mb-3 flex flex-wrap items-center gap-2 sm:gap-3 text-xs">
               <span
                 className={cn(
                   "rounded-full px-2 py-0.5 font-medium",
@@ -101,7 +101,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
             </div>
 
             {/* 技术标签 */}
-            <div className="mb-4 flex flex-wrap gap-1.5">
+            <div className="mb-3 sm:mb-4 flex flex-wrap gap-1.5">
               {project.tags.map((tag) => (
                 <span
                   key={tag.label}

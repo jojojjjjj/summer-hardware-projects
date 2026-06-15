@@ -24,11 +24,11 @@ const partners = [
 
 export function CtaSection() {
   return (
-    <section id="contact" className="relative py-24 md:py-32">
-      <div className="section-divider mb-24" />
+    <section id="contact" className="relative py-16 md:py-24 lg:py-32">
+      <div className="section-divider mb-16 md:mb-24" />
 
       {/* 渐变背景 */}
-      <div className="relative overflow-hidden rounded-radius-2xl mx-auto max-w-7xl px-6">
+      <div className="relative overflow-hidden md:rounded-radius-2xl mx-auto max-w-7xl px-4 sm:px-6">
         <div className="absolute inset-0 bg-gradient-accent opacity-10" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.15),transparent_70%)]" />
 
@@ -55,7 +55,7 @@ export function CtaSection() {
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <a
               href="mailto:contact@example.com"
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-accent px-8 py-3.5 text-base font-semibold text-white transition-all hover:shadow-glow hover:opacity-90"
+              className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-gradient-accent px-6 sm:px-8 py-3.5 text-base font-semibold text-white transition-all hover:shadow-glow hover:opacity-90"
             >
               <Mail size={18} />
               联系我们
@@ -63,7 +63,7 @@ export function CtaSection() {
             </a>
             <a
               href="#projects"
-              className="inline-flex items-center gap-2 rounded-xl border border-border bg-bg-secondary/80 px-8 py-3.5 text-base font-semibold text-text-primary transition-colors hover:border-border-hover"
+              className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-border bg-bg-secondary/80 px-6 sm:px-8 py-3.5 text-base font-semibold text-text-primary transition-colors hover:border-border-hover"
             >
               <Rocket size={18} />
               查看项目

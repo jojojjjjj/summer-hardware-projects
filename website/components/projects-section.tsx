@@ -31,15 +31,15 @@ export function ProjectsSection() {
       : projects.filter((p) => p.difficulty === activeFilter)
 
   return (
-    <section id="projects" className="relative py-24 md:py-32">
-      <div className="mx-auto max-w-7xl px-6">
+    <section id="projects" className="relative py-16 md:py-24 lg:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* 标题 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mb-12 text-center"
+          className="mb-8 md:mb-12 text-center"
         >
           <div className="mb-3 inline-flex items-center gap-2 text-accent-primary">
             <Search size={18} />
@@ -50,7 +50,7 @@ export function ProjectsSection() {
           <h2 className="text-responsive-section font-bold tracking-tighter">
             探索 9 个硬件项目
           </h2>
-          <p className="mt-3 text-lg text-text-secondary">
+          <p className="mt-3 text-base sm:text-lg text-text-secondary">
             从入门到高级，总有一个适合你
           </p>
         </motion.div>
@@ -61,7 +61,7 @@ export function ProjectsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4, delay: 0.2 }}
-          className="mb-10 flex flex-wrap items-center justify-center gap-2"
+          className="mb-8 md:mb-10 flex flex-wrap items-center justify-center gap-2"
         >
           {difficultyFilters.map((filter) => (
             <button
@@ -82,7 +82,7 @@ export function ProjectsSection() {
         {/* 项目卡片网格 — AnimatePresence 实现筛选动画 */}
         <motion.div
           layout
-          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
         >
           <AnimatePresence mode="popLayout">
             {filteredProjects.map((project, index) => (

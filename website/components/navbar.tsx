@@ -51,12 +51,12 @@ export function Navbar() {
         scrolled ? "navbar-blur" : "bg-transparent"
       )}
     >
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           {/* 渐变 Logo 标识 — 来源: Stripe.com 渐变美感 */}
           <Image src={`${process.env.NODE_ENV === 'production' ? '/summer-hardware-projects' : ''}/logo.png`} alt="Logo" width={32} height={32} className="rounded-lg object-cover" />
-          <span className="text-lg font-semibold tracking-tight text-text-primary">
+          <span className="text-base font-semibold tracking-tight text-text-primary sm:text-lg">
             硬件夏令营
           </span>
         </Link>
@@ -86,7 +86,7 @@ export function Navbar() {
 
         {/* 移动端菜单按钮 */}
         <button
-          className="md:hidden text-text-secondary hover:text-text-primary"
+          className="flex min-h-[44px] min-w-[44px] items-center justify-center md:hidden text-text-secondary hover:text-text-primary"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label={mobileMenuOpen ? "关闭菜单" : "打开菜单"}
         >
@@ -101,12 +101,12 @@ export function Navbar() {
           animate={{ opacity: 1, y: 0 }}
           className="navbar-blur border-t border-border md:hidden"
         >
-          <div className="flex flex-col gap-4 px-6 py-4">
+          <div className="flex flex-col gap-1 px-4 py-3 sm:px-6 sm:py-4">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="text-sm text-text-secondary transition-colors hover:text-text-primary"
+                className="flex min-h-[44px] items-center text-base text-text-secondary transition-colors hover:text-text-primary sm:text-sm"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {link.label}
@@ -114,7 +114,7 @@ export function Navbar() {
             ))}
             <a
               href="#projects"
-              className="rounded-lg bg-gradient-accent px-4 py-2 text-center text-sm font-medium text-white"
+              className="mt-2 flex min-h-[44px] items-center justify-center rounded-lg bg-gradient-accent px-4 py-2 text-base font-medium text-white sm:text-sm"
               onClick={() => setMobileMenuOpen(false)}
             >
               探索项目

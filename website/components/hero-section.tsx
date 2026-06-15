@@ -41,13 +41,13 @@ const itemVariants = {
 
 export function HeroSection() {
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6">
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 sm:px-6">
       {/* 渐变流动背景 — CSS animation，无 JS 开销 */}
       <div className="hero-gradient absolute inset-0" />
 
       {/* 装饰性光晕 — 增加视觉层次 */}
-      <div className="absolute left-1/4 top-1/4 h-96 w-96 rounded-full bg-accent-primary/5 blur-[128px]" />
-      <div className="absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-accent-secondary/5 blur-[128px]" />
+      <div className="absolute left-1/4 top-1/4 h-48 w-48 sm:h-72 sm:w-72 lg:h-96 lg:w-96 rounded-full bg-accent-primary/5 blur-[64px] sm:blur-[96px] lg:blur-[128px]" />
+      <div className="absolute bottom-1/4 right-1/4 h-48 w-48 sm:h-72 sm:w-72 lg:h-96 lg:w-96 rounded-full bg-accent-secondary/5 blur-[64px] sm:blur-[96px] lg:blur-[128px]" />
 
       <motion.div
         className="relative z-10 mx-auto max-w-4xl text-center"
@@ -56,19 +56,19 @@ export function HeroSection() {
         animate="visible"
       >
         {/* 品牌 Logo */}
-        <motion.div variants={itemVariants} className="mb-8 flex justify-center">
+        <motion.div variants={itemVariants} className="mb-6 sm:mb-8 flex justify-center">
           <Image
             src={`${process.env.NODE_ENV === 'production' ? '/summer-hardware-projects' : ''}/logo.png`}
             alt="多维国际教育"
             width={240}
             height={240}
-            className="rounded-2xl object-cover opacity-90 hover:opacity-100 transition-opacity"
+            className="h-32 w-32 sm:h-48 sm:w-48 lg:h-[240px] lg:w-[240px] rounded-2xl object-cover opacity-90 hover:opacity-100 transition-opacity"
           />
         </motion.div>
 
         {/* 课程标签 */}
         <motion.div variants={itemVariants} className="mb-6">
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-bg-secondary/50 px-4 py-1.5 text-sm text-text-secondary backdrop-blur-sm">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-bg-secondary/50 px-3 py-2 sm:px-4 sm:py-1.5 text-xs sm:text-sm text-text-secondary backdrop-blur-sm">
             🎓 高中生暑期硬件实践课程 · High School Summer Hardware Practicum
           </span>
         </motion.div>
@@ -86,7 +86,7 @@ export function HeroSection() {
         {/* 英文副标题 */}
         <motion.p
           variants={itemVariants}
-          className="mt-4 text-lg text-text-tertiary md:text-xl"
+          className="mt-4 text-base text-text-tertiary sm:text-lg md:text-xl"
         >
           Build 9 Real Hardware Projects from Scratch
         </motion.p>
@@ -94,35 +94,35 @@ export function HeroSection() {
         {/* 关键数字 — Number Ticker 动画 */}
         <motion.div
           variants={itemVariants}
-          className="mt-10 flex items-center justify-center gap-8 md:gap-12"
+          className="mt-8 sm:mt-10 flex items-center justify-center gap-5 sm:gap-8 md:gap-12"
         >
           <div className="text-center">
-            <div className="text-4xl font-bold md:text-5xl">
+            <div className="text-3xl font-bold sm:text-4xl md:text-5xl">
               <NumberTicker value={9} className="gradient-text" />
             </div>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 text-xs sm:text-sm text-text-secondary">
               个项目
               <br />
               <span className="text-text-tertiary">Projects</span>
             </p>
           </div>
-          <div className="h-12 w-px bg-border" />
+          <div className="h-8 w-px sm:h-12 bg-border" />
           <div className="text-center">
-            <div className="text-4xl font-bold md:text-5xl">
+            <div className="text-3xl font-bold sm:text-4xl md:text-5xl">
               <NumberTicker value={20} prefix="10-" className="gradient-text" />
             </div>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 text-xs sm:text-sm text-text-secondary">
               天完成
               <br />
               <span className="text-text-tertiary">Days</span>
             </p>
           </div>
-          <div className="h-12 w-px bg-border" />
+          <div className="h-8 w-px sm:h-12 bg-border" />
           <div className="text-center">
-            <div className="text-4xl font-bold md:text-5xl">
+            <div className="text-3xl font-bold sm:text-4xl md:text-5xl">
               <NumberTicker value={500} prefix="≤¥" className="gradient-text" />
             </div>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="mt-1 text-xs sm:text-sm text-text-secondary">
               每套成本
               <br />
               <span className="text-text-tertiary">Per Kit</span>
@@ -133,38 +133,38 @@ export function HeroSection() {
         {/* 双 CTA 按钮 — 来源: Vercel.com 双按钮模式 */}
         <motion.div
           variants={itemVariants}
-          className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
+          className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto max-w-md sm:max-w-none mx-auto"
         >
           <a
             href="#projects"
-            className="group inline-flex items-center gap-2 rounded-xl bg-gradient-accent px-8 py-3.5 text-base font-semibold text-white transition-all hover:shadow-glow hover:opacity-90"
+            className="group inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-gradient-accent px-6 sm:px-8 py-3.5 text-sm sm:text-base font-semibold text-white transition-all hover:shadow-glow hover:opacity-90"
           >
             <Rocket size={18} />
             探索项目
-            <span className="ml-1 text-sm opacity-70">Explore</span>
+            <span className="ml-1 text-xs sm:text-sm opacity-70">Explore</span>
           </a>
           <a
             href="#value-props"
-            className="inline-flex items-center gap-2 rounded-xl border border-border bg-bg-secondary/50 px-8 py-3.5 text-base font-semibold text-text-primary transition-colors hover:border-border-hover hover:bg-bg-secondary"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-border bg-bg-secondary/50 px-6 sm:px-8 py-3.5 text-sm sm:text-base font-semibold text-text-primary transition-colors hover:border-border-hover hover:bg-bg-secondary"
           >
             <BookOpen size={18} />
             了解更多
-            <span className="ml-1 text-sm opacity-70">Learn More</span>
+            <span className="ml-1 text-xs sm:text-sm opacity-70">Learn More</span>
           </a>
         </motion.div>
 
         {/* 特点标签 */}
         <motion.div
           variants={itemVariants}
-          className="mt-8 flex flex-wrap items-center justify-center gap-3 text-xs text-text-tertiary"
+          className="mt-6 sm:mt-8 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-text-tertiary"
         >
-          <span className="rounded-full border border-border px-3 py-1">
+          <span className="rounded-full border border-border px-3 py-1.5 sm:py-1">
             大学级难度
           </span>
-          <span className="rounded-full border border-border px-3 py-1">
+          <span className="rounded-full border border-border px-3 py-1.5 sm:py-1">
             全部开源
           </span>
-          <span className="rounded-full border border-border px-3 py-1">
+          <span className="rounded-full border border-border px-3 py-1.5 sm:py-1">
             完整课程体系
           </span>
         </motion.div>
@@ -172,7 +172,7 @@ export function HeroSection() {
 
       {/* 向下滚动指示器 */}
       <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 2, duration: 0.8 }}

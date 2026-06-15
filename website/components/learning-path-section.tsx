@@ -70,11 +70,11 @@ const pathStages = [
 
 export function LearningPathSection() {
   return (
-    <section id="learning-path" className="relative py-24 md:py-32">
+    <section id="learning-path" className="relative py-16 md:py-24 lg:py-32">
       {/* 分隔线 */}
-      <div className="section-divider mb-24" />
+      <div className="section-divider mb-16 md:mb-24" />
 
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* 标题 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -98,9 +98,9 @@ export function LearningPathSection() {
         {/* 路径图 — 水平时间线 */}
         <div className="relative">
           {/* 连接线 — 桌面端水平线 */}
-          <div className="absolute left-0 right-0 top-16 hidden h-px bg-gradient-to-r from-success via-warning to-danger md:block" />
+          <div className="absolute left-0 right-0 top-16 hidden h-px bg-gradient-to-r from-success via-warning to-danger lg:block" />
 
-          <div className="grid gap-6 md:grid-cols-5">
+          <div className="grid gap-6 lg:grid-cols-5">
             {pathStages.map((stage, i) => (
               <motion.div
                 key={stage.level}
@@ -111,14 +111,14 @@ export function LearningPathSection() {
                 className="relative"
               >
                 {/* 节点圆点 — 桌面端 */}
-                <div className="absolute left-1/2 top-8 z-10 hidden h-4 w-4 -translate-x-1/2 md:block">
+                <div className="absolute left-1/2 top-8 z-10 hidden h-4 w-4 -translate-x-1/2 lg:block">
                   <div
                     className={`h-full w-full rounded-full ${stage.bgColor} border-2 ${stage.borderColor}`}
                   />
                 </div>
 
                 {/* 卡片内容 */}
-                <div className="mt-12 md:mt-16">
+                <div className="mt-12 lg:mt-16">
                   <div
                     className={`rounded-radius-xl border ${stage.borderColor} bg-bg-secondary p-5`}
                   >
@@ -172,7 +172,7 @@ export function LearningPathSection() {
 
                 {/* 箭头 — 移动端 */}
                 {i < pathStages.length - 1 && (
-                  <div className="flex justify-center py-2 md:hidden">
+                  <div className="flex justify-center py-2 lg:hidden">
                     <ArrowRight
                       size={16}
                       className="rotate-90 text-text-tertiary"

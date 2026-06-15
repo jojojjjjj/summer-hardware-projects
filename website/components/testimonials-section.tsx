@@ -70,7 +70,7 @@ function TestimonialCard({
   testimonial: (typeof testimonials)[0]
 }) {
   return (
-    <div className="w-[340px] shrink-0 rounded-radius-xl border border-border bg-bg-secondary p-6">
+    <div className="w-[340px] max-w-full shrink-0 rounded-radius-xl border border-border bg-bg-secondary p-6">
       <Quote size={20} className="mb-3 text-text-tertiary opacity-30" />
 
       <p className="mb-4 text-sm leading-relaxed text-text-secondary">
@@ -109,8 +109,8 @@ function TestimonialCard({
 
 export function TestimonialsSection() {
   return (
-    <section id="testimonials" className="relative py-24 md:py-32">
-      <div className="section-divider mb-24" />
+    <section id="testimonials" className="relative py-16 md:py-24 lg:py-32">
+      <div className="section-divider mb-16 md:mb-24" />
 
       {/* 标题 */}
       <motion.div

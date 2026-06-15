@@ -57,7 +57,7 @@ const socialLinks = [
 export function Footer() {
   return (
     <footer className="border-t border-border bg-bg-secondary/30">
-      <div className="mx-auto max-w-7xl px-6 py-16">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
         <div className="grid gap-12 md:grid-cols-4">
           {/* 品牌 + 简介 */}
           <div className="md:col-span-1">
@@ -69,7 +69,7 @@ export function Footer() {
             </Link>
             <p className="mt-4 text-sm text-text-secondary">
               面向高中生的暑期硬件实践课程，
-              <br />
+              <br className="hidden sm:block" />
               9 个真实开源硬件项目。
             </p>
             {/* 社交媒体 — 图标 + 可见文字标签 */}
@@ -101,7 +101,7 @@ export function Footer() {
                   <li key={link.label}>
                     <a
                       href={link.href}
-                      className="text-sm text-text-tertiary transition-colors hover:text-text-secondary"
+                      className="flex min-h-[44px] items-center px-1 text-sm text-text-tertiary transition-colors hover:text-text-secondary sm:min-h-0 sm:px-0"
                     >
                       {link.label}
                     </a>
