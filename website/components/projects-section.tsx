@@ -1,15 +1,12 @@
 "use client"
 
 /**
- * 项目展示 Section
+ * 项目展示 Section — Apple 产品货架风格
  *
- * 去掉了:
- * - "Explore Projects" 英文眉标
- * - ⭐ 难度筛选标签中的星号
- *
- * 保留:
- * - 难度筛选
- * - 项目卡片网格
+ * 设计理念:
+ * - 打破均匀 3×3 网格：featured project 占大位置
+ * - 桌面端：第一行 1 大 + 1 小，剩余网格
+ * - 减少标签数量
  */
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -26,71 +23,94 @@ export function ProjectsSection() {
       : projects.filter((p) => p.difficulty === activeFilter)
 
   return (
-    <section id="projects" className="relative py-16 md:py-24 lg:py-32">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        {/* 标题 */}
+    <section id="projects" className="section-dark py-24 md:py-36 lg:py-44">
+      <div className="mx-auto max-w-6xl px-6">
+        {/* Apple 式 eyebrow + 大标题 */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-8 md:mb-12 text-center"
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="mb-16 text-center"
         >
-          <h2 className="text-responsive-section font-bold tracking-tighter">
-            9 个硬件项目
+          <p className="eyebrow mb-4">9 个项目</p>
+          <h2 className="text-responsive-section font-bold tracking-tight text-text-primary">
+            从入门到高级
           </h2>
-          <p className="mt-2 text-sm text-text-tertiary">
-            从入门到高级，总有一个适合你
+          <p className="mx-auto mt-5 max-w-lg text-[15px] text-text-secondary">
+            每个项目都基于真实开源硬件改编，成本 ≤¥500
           </p>
         </motion.div>
 
-        {/* 难度筛选 — 无 ⭐ */}
+        {/* 难度筛选 — 水平滚动避免拥挤 */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.4, delay: 0.15 }}
-          className="mb-8 md:mb-10 flex flex-wrap items-center justify-center gap-2"
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="mb-12 -mx-6 px-6 overflow-x-auto"
         >
-          {difficultyFilters.map((filter) => (
-            <button
-              key={filter.value}
-              onClick={() => setActiveFilter(filter.value)}
-              className={cn(
-                "rounded-radius-md px-3.5 py-1.5 text-xs font-medium font-mono transition-all",
-                activeFilter === filter.value
-                  ? "bg-accent-primary text-white"
-                  : "border border-border bg-bg-secondary text-text-tertiary hover:border-border-hover hover:text-text-secondary"
-              )}
-            >
-              {filter.label}
-            </button>
-          ))}
+          <div className="flex items-center gap-2 min-w-max">
+            {difficultyFilters.map((filter) => (
+              <button
+                key={filter.value}
+                onClick={() => setActiveFilter(filter.value)}
+                className={cn(
+                  "rounded-full px-4 py-1.5 text-[13px] font-medium transition-all duration-200 whitespace-nowrap",
+                  activeFilter === filter.value
+                    ? "bg-text-primary text-background"
+                    : "bg-white/[0.05] text-text-secondary hover:bg-white/[0.08] hover:text-text-primary"
+                )}
+              >
+                {filter.label}
+              </button>
+            ))}
+          </div>
         </motion.div>
 
-        {/* 项目卡片网格 */}
-        <motion.div
-          layout
-          className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-        >
-          <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project, index) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                index={index}
-              />
-            ))}
-          </AnimatePresence>
-        </motion.div>
+        {/* Featured 项目 + 网格 — 打破均匀布局 */}
+        <AnimatePresence mode="popLayout">
+          {filteredProjects.length > 0 && (
+            <FeaturedLayout projects={filteredProjects} />
+          )}
+        </AnimatePresence>
 
         {/* 空状态 */}
         {filteredProjects.length === 0 && (
-          <div className="py-20 text-center text-sm text-text-tertiary">
+          <div className="py-24 text-center text-[15px] text-text-tertiary">
             该难度暂无项目
           </div>
         )}
       </div>
     </section>
+  )
+}
+
+function FeaturedLayout({ projects }: { projects: typeof import("@/lib/projects-data").projects }) {
+  const [featured, ...rest] = projects
+  return (
+    <div>
+      {/* Featured 大卡 — 桌面端：横跨 2 列 */}
+      <motion.div
+        layout
+        className="mb-5"
+      >
+        <ProjectCard project={featured} index={0} featured />
+      </motion.div>
+
+      {/* 其余项目 — 2-3 列网格 */}
+      <motion.div
+        layout
+        className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+      >
+        {rest.map((project, index) => (
+          <ProjectCard
+            key={project.id}
+            project={project}
+            index={index + 1}
+          />
+        ))}
+      </motion.div>
+    </div>
   )
 }
