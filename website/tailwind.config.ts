@@ -19,16 +19,16 @@ const config: Config = {
          * - 烙铁头的暗橙红
          * - 焊锡的银灰色
          */
-        /* 基础色 — 微暖深色系 */
-        background: "#0c0c0e",
-        "bg-secondary": "#141416",
+        /* 基础色 — Apple 式纯黑底 + 微暖层次 */
+        background: "#0a0a0b",
+        "bg-secondary": "#111113",
         "bg-tertiary": "#1c1c1e",
-        border: "#2a2724",
-        "border-hover": "#3d3a35",
-        /* 文字色 — 暖白/暖灰，非冷白 */
-        "text-primary": "#ede9e1",
-        "text-secondary": "#9a9590",
-        "text-tertiary": "#6b6661",
+        border: "#2a2a2e",
+        "border-hover": "#444448",
+        /* 文字色 — Apple 式冷白/冷灰（与暖色强调形成对比） */
+        "text-primary": "#f5f5f7",
+        "text-secondary": "#86868b",
+        "text-tertiary": "#6e6e73",
         /* 强调色 — PCB 金色走线 + 阻焊绿 */
         "accent-primary": "#c9944a",
         "accent-secondary": "#3d8b5e",

@@ -1,13 +1,16 @@
 /**
- * 全局样式 — 工作台 / Workbench 主题
+ * 全局样式 — Apple Keynote × 硬件工作台
  *
- * 设计方向: 不是"科技感暗色渐变"，而是电子工作台的真实质感。
- * 色彩来自 PCB 走线金色、阻焊层绿色、焊锡银灰、烙铁暗橙。
- * 排版借鉴技术手册和元件数据表——等宽字体做标题，无衬线做正文。
+ * 设计方向:
+ * - Apple 式的极致留白和排版层次
+ * - 保留工作台暖金色调，但用 Apple 的构图书写
+ * - 更大的正文、更极端的标题/正文比例
+ * - Section 之间用背景色变化而非分隔线
+ * - 更精致的模糊和阴影
  */
 
-/* Google Fonts — @import 必须在 @tailwind 之前 */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+/* Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -16,72 +19,70 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    background-color: #0c0c0e;
-    color: #ede9e1;
+    background-color: #0a0a0b;
+    color: #f5f5f7;
   }
 
   body {
     font-family: "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei",
       sans-serif;
-    line-height: 1.75;
+    font-size: 17px;
+    line-height: 1.65;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   ::selection {
     background-color: rgba(201, 148, 74, 0.3);
-    color: #ede9e1;
+    color: #f5f5f7;
   }
 
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 5px;
   }
   ::-webkit-scrollbar-track {
-    background: #0c0c0e;
+    background: #0a0a0b;
   }
   ::-webkit-scrollbar-thumb {
-    background: #2a2724;
+    background: #1c1c1e;
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #3d3a35;
+    background: #2a2724;
   }
 }
 
 @layer components {
-  /* Hero 背景 — 深色工坊氛围，非流动渐变 */
+  /* Hero 背景 — Apple 式微光，非常克制 */
   .hero-gradient {
-    background:
-      radial-gradient(ellipse at 30% 20%, rgba(201, 148, 74, 0.06) 0%, transparent 50%),
-      radial-gradient(ellipse at 70% 80%, rgba(61, 139, 94, 0.04) 0%, transparent 50%),
-      #0c0c0e;
+    background: #0a0a0b;
   }
 
-  /* 强调文字 — 实色金色，非渐变 */
+  /* 强调文字 — 实色金色 */
   .accent-text {
     color: #c9944a;
   }
 
-  /* 卡片 hover — 克制的边框变化，不发光 */
+  /* 卡片 hover — Apple 式：轻微提升 + 边框明显变化 */
   .card-glow {
-    transition: border-color 0.2s ease, transform 0.2s ease;
+    transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   }
   @media (hover: hover) and (pointer: fine) {
     .card-glow:hover {
-      border-color: #3d3a35;
-      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
     }
   }
 
-  /* 导航栏 — 微暖色调模糊 */
+  /* 导航栏 — Apple 式通透模糊 */
   .navbar-blur {
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
-    background-color: rgba(12, 12, 14, 0.85);
-    border-bottom: 1px solid rgba(42, 39, 36, 0.5);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background-color: rgba(10, 10, 11, 0.72);
   }
 
-  /* 项目 Hero 渐变 — 保持不变但色调更新 */
+  /* 项目 Hero 渐变 */
   .project-hero-gradient {
     position: relative;
   }
@@ -97,35 +98,32 @@
     pointer-events: none;
   }
 
-  /* Section 分隔线 — 微暖色 */
-  .section-divider {
-    height: 1px;
-    background: linear-gradient(
-      to right,
-      transparent,
-      #2a2724,
-      transparent
-    );
+  /* Section 背景 — Apple 式交替 */
+  .section-dark {
+    background-color: #0a0a0b;
+  }
+  .section-elevated {
+    background-color: #111113;
   }
 
-  /* PCB 走线装饰 — 水平连接线 */
-  .trace-line {
-    height: 1px;
-    background: linear-gradient(
-      to right,
-      #c9944a40,
-      #c9944a20,
-      transparent
-    );
+  /* Apple 式 eyebrow label */
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #c9944a;
+    font-family: "Inter", sans-serif;
   }
 }
 
 @layer utilities {
-  .text-responsive-hero {
-    font-size: clamp(2.25rem, 5vw + 1rem, 4.5rem);
+  /* Apple 式标题尺寸 — 更极端的比例 */
+  .text-hero {
+    font-size: clamp(2.75rem, 6vw, 5rem);
   }
   .text-responsive-section {
-    font-size: clamp(1.5rem, 3vw + 0.5rem, 3rem);
+    font-size: clamp(2rem, 4vw, 3.5rem);
   }
 }
 
@@ -140,19 +138,15 @@ html, body {
 
 @media (max-width: 1024px) {
   .navbar-blur {
-    backdrop-filter: blur(8px) saturate(150%);
-    -webkit-backdrop-filter: blur(8px) saturate(150%);
-  }
-
-  .section-divider {
-    margin-left: 1rem;
-    margin-right: 1rem;
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
   }
 }
 
 @media (max-width: 768px) {
   body {
-    line-height: 1.6;
+    font-size: 16px;
+    line-height: 1.55;
   }
 
   .project-hero-gradient::before {
@@ -163,11 +157,6 @@ html, body {
     );
   }
 
-  .section-divider {
-    margin-left: 1rem;
-    margin-right: 1rem;
-  }
-
   .card-glow {
     min-height: 44px;
     padding: 1rem;
@@ -176,17 +165,13 @@ html, body {
 
 @media (max-width: 480px) {
   body {
+    font-size: 15px;
     line-height: 1.5;
   }
 
   .navbar-blur {
-    backdrop-filter: blur(6px) saturate(120%);
-    -webkit-backdrop-filter: blur(6px) saturate(120%);
-  }
-
-  .section-divider {
-    margin-left: 0.75rem;
-    margin-right: 0.75rem;
+    backdrop-filter: blur(8px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
   }
 }
 
