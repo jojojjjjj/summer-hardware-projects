@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import "./globals.css"
 
 /**
@@ -7,6 +7,12 @@ import "./globals.css"
  * SEO 元数据参考: design-spec.md 六、SEO & 元数据
  * 字体方案: Inter Variable (英文) + Noto Sans SC (中文) — Google Fonts CDN
  */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+}
+
 export const metadata: Metadata = {
   title: "高中生暑期硬件实践课程 — 9 个真实开源项目",
   description:
