@@ -1,125 +1,89 @@
-# 高中生暑期硬件项目库 | High School Summer Hardware Project Repository
+# CLAUDE.md
 
-## 项目定位 | Project Overview
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-本仓库是一套专为**高中生**设计的暑期实践课程资源库，每个子文件夹对应一个独立的项目模块。
+## What This Repo Is
 
-> This repository is a summer practicum resource library designed for **high school students**, where each subfolder corresponds to an independent project module.
+A curriculum-generation repository for a summer hardware practicum aimed at high school students (ages ~16, zero-to-weak technical background). It uses **Claude Code Teams mode** to auto-generate 3 complete, reproducible project course-packs — each containing daily lesson plans, hardware BOMs, code scaffolding, and grading rubrics.
 
----
-
-## 核心参数 | Core Parameters
-
-| 参数 | 说明 |
-|------|------|
-| **目标学员** | 高中生（理工科兴趣方向） |
-| **项目周期** | 10–20 天（两到三周暑期集中营） |
-| **知识难度** | 大学大二水平（Sophomore-level） |
-| **技术起点** | 零基础 / 薄弱基础，需详细分步引导 |
-| **投入强度** | 全日制，每天 6–8 小时 |
-| **硬件方向** | 桌宠机器人、智能音箱、环境感知 IoT、计算机视觉 |
-| **文档语言** | 中英双语 |
+**There is no application code to build, lint, or test.** The deliverables are Markdown documents and optional code templates inside `project-NN-[name]/` folders.
 
 ---
 
-## 设计原则 | Design Principles
+## Core Constraints (always enforce)
 
-### 1. 笨鸟先飞原则（Fine-grained Scaffolding）
-学员技术背景薄弱，因此每个项目必须提供：
-- 比普通大学课程更细粒度的分支步骤
-- 每一步的"为什么"解释，而不只是"怎么做"
-- 前置知识清单与学习资源链接
-- 常见错误与调试指南
-
-### 2. 大学课程标准（College-level Rigor）
-尽管面向高中生，课程应包含：
-- 正式的项目提案（Project Proposal）
-- 进度汇报（Weekly Check-in Reports）
-- 最终展示（Final Demo + Presentation）
-- 代码提交规范（Git workflow, PR, commit message）
-- 技术文档撰写（README, API docs, wiring diagrams）
-
-### 3. 真实可复现（Reproducible & Open-source Based）
-所有项目基于社区已验证的开源项目改编，确保：
-- 有真实的社区资源和论坛支持
-- 硬件选型成本可控（< ¥500/套）
-- 在标准暑期时间内可完成 MVP
+| Constraint | Value |
+|---|---|
+| Hardware cost per kit | < ¥500 |
+| Project duration | 10–20 days (full-time camp) |
+| Student level | High school, zero/weak foundation |
+| Documentation language | Bilingual Chinese-English |
+| Open-source basis | Must be adapted from a real community project |
+| Reproducibility | MVP completable in a standard summer camp |
 
 ---
 
-## 仓库结构 | Repository Structure
+## Repository Architecture
 
 ```
-/
-├── CLAUDE.md                     # 本文件：仓库总览与设计说明
-├── prompts/                      # Claude Code 运行提示词
-│   ├── 00_MASTER_PROMPT.md       # 主控提示词（Teams 模式入口）
-│   ├── 01_agent_roles.md         # Agent 角色定义（8个专家 Agent）
-│   ├── 02_research_phase.md      # 第一阶段：项目调研指令
-│   ├── 03_evaluation_phase.md    # 第二阶段：可行性评估指令
-│   └── 04_project_build_phase.md # 第三阶段：详细项目构建指令
-│
-├── project-01-[name]/            # 项目一（由 Agent 生成后填充）
-│   ├── README.md
-│   ├── curriculum/               # 课程大纲、每日任务
-│   ├── hardware/                 # 选型清单、接线图
-│   ├── software/                 # 代码框架
-│   └── assignments/              # 作业与评分标准
-│
-├── project-02-[name]/            # 项目二
-├── project-03-[name]/            # 项目三
-├── project-04-[name]/            # 项目四
-├── project-05-[name]/            # 项目五
-├── project-06-[name]/            # 项目六
-├── project-07-[name]/            # 项目七
-└── project-08-[name]/            # 项目八（进阶难度）
+prompts/            # Pipeline control prompts (source of truth for the generation workflow)
+  00_MASTER_PROMPT.md   # Entry point — paste into Claude Code Teams mode to kick off all 3 phases
+  01_agent_roles.md     # Defines the 8 specialist agent roles
+  02_research_phase.md  # Phase 1: parallel project research
+  03_evaluation_phase.md # Phase 2: feasibility scoring + top-3 selection
+  04_project_build_phase.md # Phase 3: generate full course-pack per selected project
+
+reports/            # Phase outputs (committed artifacts, not intermediate)
+  01_research_raw.md        # Combined raw research from both researchers
+  01a_research_desktop_speaker.md  # Researcher A: desktop pet / smart speaker
+  01b_research_iot_cv.md           # Researcher B: IoT / computer vision
+  02_feasibility_report.md         # Scored evaluation matrix
+  03_top3_selection.md             # Final top-3 recommendation
+
+project-01..08-[name]/   # Generated course-packs (created in Phase 3)
+  README.md               # Project overview
+  curriculum/             # Day-by-day lesson plan, checkpoints
+  hardware/               # BOM, wiring diagrams, sourcing links
+  software/               # Runnable code scaffold
+  assignments/            # Homework + grading rubric
+
+.claude/
+  agents/                 # 8 specialist agent definitions (project-manager, frontend-dev, backend-dev, etc.)
+  teams/summer-project/   # Team config (lead: project-manager, maxConcurrent: 3)
 ```
 
 ---
 
-## 如何使用本仓库 | How to Use
+## Three-Phase Pipeline
 
-### Step 1：启动 Claude Code Teams 模式
-打开 Claude Code，粘贴 `prompts/00_MASTER_PROMPT.md` 的全部内容作为第一条指令。
+Run by pasting `prompts/00_MASTER_PROMPT.md` into Claude Code Teams mode:
 
-### Step 2：等待调研与评估
-Teams 中的多个 Agent 将自动分工：
-- 爬取 B站、GitHub、立创开源平台等渠道的真实开源项目
-- 生成可行性评估报告
-- 投票选出最适合的前三个项目
-
-### Step 3：生成详细项目文档
-被选中的 3 个项目将自动生成完整的课程文档，包含每日任务、代码框架、硬件清单、作业题目等。
-
-### Step 4：迭代完善
-根据实际学员情况，使用各阶段专项提示词对项目内容进行调整。
+1. **Research** — Researcher A (desktop pet + smart speaker) and Researcher B (IoT + CV) each find ≥8 real open-source projects. Output → `reports/01_*.md`
+2. **Evaluation** — Feasibility Analyst scores candidates on 6 weighted dimensions (tech feasibility 25%, cost 20%, pedagogical value 20%, community 15%, fun 10%, extensibility 10%). Output → `reports/02_*.md` + `reports/03_*.md`
+3. **Build** — Curriculum Designer + Technical Architect + Hardware Expert generate full course-packs for the top 3 projects. Output → `project-01..03-[name]/`
 
 ---
 
-## 项目方向分类 | Project Categories
+## Agent Roles (in `.claude/agents/`)
 
-| 类别 | 典型项目 | 核心技术 |
-|------|---------|---------|
-| 🤖 桌宠/陪伴机器人 | 能对话的桌面小机器人 | Servo、TTS、LLM API、STT |
-| 🔊 智能音箱/语音助手 | 本地唤醒词 + LLM 对话 | Raspberry Pi、Whisper、wake word |
-| 🌡️ 环境感知 IoT | 室内空气质量监测站 | ESP32、MQTT、InfluxDB、Grafana |
-| 👁️ 视觉/CV 项目 | 实时姿态检测互动装置 | OpenCV、MediaPipe、摄像头 |
-
----
-
-## 评分标准 | Grading Rubric Template
-
-每个项目的评分维度参考大学课程标准：
-
-| 维度 | 权重 | 说明 |
-|------|------|------|
-| 技术实现 | 40% | 功能完整度、代码质量 |
-| 文档质量 | 20% | README、注释、图表 |
-| 演示展示 | 20% | Final Demo 清晰度与深度 |
-| 进度汇报 | 10% | 每周 Check-in 质量 |
-| 团队协作 | 10% | Git 提交记录、分工合理性 |
+| Agent | Role | Key constraint |
+|---|---|---|
+| project-manager | Coordination, milestone tracking | Read-only tools |
+| frontend-dev | UI/web components for projects | npm/npx access |
+| backend-dev | API, DB, server logic | Python/pip access |
+| data-engineer | Data collection, cleaning, viz | Python/pip access |
+| ml-engineer | Model training/deploy | Python/pip access |
+| qa-engineer | Testing, bug tracking | Python/npm access |
+| devops | Environment, CI/CD, deploy | Docker/npm/git access |
+| tech-writer | Documentation, reports | Read/write access |
 
 ---
 
-*本仓库由 Claude Code Teams 模式自动生成并持续维护。*
-*Generated and maintained by Claude Code Teams Mode.*
+## Working With This Repo
+
+- **Modifying the pipeline**: edit files in `prompts/` — these are the source of truth. `00_MASTER_PROMPT.md` is the orchestration entry point.
+- **Reviewing research/evaluation**: check `reports/`. Reports are committed artifacts, not scratch work.
+- **Editing generated course-packs**: each `project-NN-[name]/` folder is self-contained. Follow the folder structure in the template above.
+- **Bilingual requirement**: every deliverable must have both Chinese and English content.
+- **Scaffolding principle** ("笨鸟先飞"): every step in curriculum docs must explain *why*, not just *how*. Include prerequisite checklists, common error guides, and debugging tips.
+- **College-level rigor**: course-packs must include formal project proposals, weekly check-in reports, final demo + presentation specs, and Git workflow conventions.
