@@ -24,6 +24,23 @@ _dbg*.txt
 _debug*.txt
 _verify*.txt
 screenshot-home-desktop.png
+screenshot-final.js
+
+# AI tool cache
+.ai/
+
+# Screenshot verification outputs
+verify/
+
+# One-off screenshot files
+*.screenshot.png
+hero-screenshot.png
+lp-header.png
+lp-middle.png
+projects_hover.png
+projects_mobile.png
+projects_section_cards.png
+projects_section_full.png
 
 # Website build artifacts
 website/.nuxt/
@@ -38,3 +55,6 @@ website-old/
 
 # Claude worktrees
 .claude/worktrees/
+
+# Claude local settings (contains API keys)
+.claude/settings.local.json

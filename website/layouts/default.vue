@@ -1,6 +1,8 @@
 <template>
   <div class="min-h-screen bg-background text-text-primary">
-    <slot />
+    <SmoothScroll>
+      <slot />
+    </SmoothScroll>
   </div>
 </template>
 
