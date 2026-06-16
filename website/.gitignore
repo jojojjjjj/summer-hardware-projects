@@ -1,6 +1,21 @@
-# 构建产物和工具
-.next/
+# Nuxt dev/build
+.nuxt/
+.output/
+dist/
+
+# Node
 node_modules/
-out/
-public/audit/
-scripts/
+
+# Test/verify screenshots
+verify/
+screenshots/
+
+# Gstack
+.gstack/
+
+# Playwright
+test-results/
+
+# Temp scripts
+screenshot-all.cjs
+serve.cjs

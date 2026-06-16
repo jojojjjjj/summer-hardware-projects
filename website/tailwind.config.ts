@@ -1,135 +1,70 @@
-import type { Config } from "tailwindcss"
+import type { Config } from 'tailwindcss'
 
 const config: Config = {
   content: [
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./lib/**/*.{js,ts,jsx,tsx,mdx}",
+    './components/**/*.{js,ts,vue}',
+    './layouts/**/*.vue',
+    './pages/**/*.vue',
+    './composables/**/*.{js,ts}',
+    './plugins/**/*.{js,ts}',
+    './app.vue',
   ],
-  darkMode: "class",
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        /*
-         * 设计方向: 工作台 / Workbench
-         *
-         * 色彩来源不是 "科技感渐变"，而是电子工作台的真实材质：
-         * - PCB 走线的金色 ENIG 涂层
-         * - 阻焊层的深绿色
-         * - 烙铁头的暗橙红
-         * - 焊锡的银灰色
-         */
-        /* 基础色 — Apple 式纯黑底 + 微暖层次 */
-        background: "#0a0a0b",
-        "bg-secondary": "#111113",
-        "bg-tertiary": "#1c1c1e",
-        border: "#2a2a2e",
-        "border-hover": "#444448",
-        /* 文字色 — Apple 式冷白/冷灰（与暖色强调形成对比） */
-        "text-primary": "#f5f5f7",
-        "text-secondary": "#86868b",
-        "text-tertiary": "#6e6e73",
-        /* 强调色 — PCB 金色走线 + 阻焊绿 */
-        "accent-primary": "#c9944a",
-        "accent-secondary": "#3d8b5e",
-        /* 语义色 — 工作台材质映射 */
-        success: "#3d8b5e",
-        warning: "#c9944a",
-        danger: "#e85d3a",
-        /* 项目标签色 — 暖色调，替代默认的冷色蓝/青/紫 */
-        "tag-copper": { DEFAULT: "#c9944a33", text: "#c9944a" },
-        "tag-bronze": { DEFAULT: "#b8733333", text: "#b87333" },
-        "tag-gold": { DEFAULT: "#d4a85320", text: "#d4a853" },
-        "tag-solder": { DEFAULT: "#3d8b5e20", text: "#5aad7a" },
-        "tag-patina": { DEFAULT: "#5a9e8e20", text: "#5a9e8e" },
-        "tag-rust": { DEFAULT: "#c46b3a20", text: "#d4845a" },
-        "tag-clay": { DEFAULT: "#a0705020", text: "#b88868" },
-        "tag-teal": { DEFAULT: "#3a7e7e20", text: "#5a9e9e" },
-        "tag-olive": { DEFAULT: "#7a8a3a20", text: "#8a9a4a" },
-        /* 项目主题色 */
-        "project-01": "#e88a3a",
-        "project-02": "#3d8b5e",
-        "project-03": "#7c6bb5",
-        "project-04": "#d45d8a",
-        "project-05": "#c9944a",
-        "project-06": "#3a9b9b",
-        "project-07": "#d45050",
-        "project-08": "#9a6bc9",
-        "project-09": "#4a7abf",
+        background: '#0a0a0b',
+        'bg-secondary': '#111113',
+        'bg-elevated': '#1c1c1e',
+        border: '#2a2a2e',
+        'border-hover': '#444448',
+        'text-primary': '#f5f5f7',
+        'text-secondary': '#a1a1a6',
+        'text-tertiary': '#6e6e73',
+        'warm-peach': '#ff9a76',
+        'warm-coral': '#ff6b6b',
+        'warm-honey': '#ffd93d',
+        'accent-copper': '#c9944a',
+        'accent-patina': '#3d8b5e',
+        success: '#3d8b5e',
+        warning: '#c9944a',
+        danger: '#e85d3a',
       },
       fontFamily: {
-        sans: [
-          "Inter",
-          "Noto Sans SC",
-          "PingFang SC",
-          "Microsoft YaHei",
-          "sans-serif",
-        ],
-        mono: ["JetBrains Mono", "Fira Code", "monospace"],
-        display: [
-          "JetBrains Mono",
-          "Fira Code",
-          "monospace",
-        ],
+        sans: ['DM Sans', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+        display: ['DM Sans', 'Noto Sans SC', 'sans-serif'],
       },
       fontSize: {
-        "text-xs": ["0.75rem", { lineHeight: "1rem" }],
-        "text-sm": ["0.875rem", { lineHeight: "1.25rem" }],
-        "text-base": ["1rem", { lineHeight: "1.75" }],
-        "text-lg": ["1.125rem", { lineHeight: "1.75" }],
-        "text-xl": ["1.25rem", { lineHeight: "1.75" }],
-        "text-2xl": ["1.5rem", { lineHeight: "2rem" }],
-        "text-3xl": ["1.875rem", { lineHeight: "2.25rem" }],
-        "text-4xl": ["2.25rem", { lineHeight: "2.5rem" }],
-        "text-5xl": ["3rem", { lineHeight: "1" }],
-        "text-6xl": ["3.75rem", { lineHeight: "1" }],
-        "text-7xl": ["4.5rem", { lineHeight: "1" }],
-        "text-8xl": ["6rem", { lineHeight: "1" }],
-      },
-      spacing: {
-        "18": "4.5rem",
-        "88": "22rem",
-        "128": "32rem",
+        'hero': ['clamp(2.75rem, 6vw, 5.5rem)', { lineHeight: '1.05', letterSpacing: '-0.03em' }],
+        'section': ['clamp(2rem, 4vw, 3.5rem)', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
       },
       borderRadius: {
-        "radius-sm": "0.25rem",
-        "radius-md": "0.375rem",
-        "radius-lg": "0.5rem",
-        "radius-xl": "0.75rem",
-        "radius-2xl": "1rem",
+        '2xl': '1rem',
+        '3xl': '1.5rem',
       },
       boxShadow: {
-        card: "0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2)",
-        "card-hover": "0 10px 40px rgba(0,0,0,0.4)",
-        glow: "0 0 30px rgba(201,148,74,0.15)",
+        'glow': '0 0 60px rgba(255,154,118,0.08)',
+        'glow-strong': '0 0 80px rgba(255,154,118,0.15)',
+        'card': '0 4px 24px rgba(0,0,0,0.3)',
       },
       backgroundImage: {
-        /* 渐变 — 金色→绿色，PCB 走线感 */
-        "gradient-accent": "linear-gradient(135deg, #c9944a, #3d8b5e)",
-        "gradient-accent-hover": "linear-gradient(135deg, #b5833f, #2d6e48)",
+        'gradient-warm': 'linear-gradient(135deg, #ff9a76, #ff6b6b)',
+        'gradient-warm-hover': 'linear-gradient(135deg, #ff8a66, #ff5b5b)',
+        'gradient-accent': 'linear-gradient(135deg, #c9944a, #3d8b5e)',
       },
       animation: {
-        "gradient-flow": "gradient-flow 8s ease infinite",
-        marquee: "marquee 30s linear infinite",
-        "marquee-reverse": "marquee-reverse 30s linear infinite",
-        "fade-in": "fade-in 0.6s ease-out forwards",
+        'fade-up': 'fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) forwards',
+        'fade-in': 'fadeIn 0.6s ease-out forwards',
       },
       keyframes: {
-        "gradient-flow": {
-          "0%, 100%": { backgroundPosition: "0% 50%" },
-          "50%": { backgroundPosition: "100% 50%" },
+        fadeUp: {
+          from: { opacity: '0', transform: 'translateY(30px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
         },
-        marquee: {
-          "0%": { transform: "translateX(0%)" },
-          "100%": { transform: "translateX(-50%)" },
-        },
-        "marquee-reverse": {
-          "0%": { transform: "translateX(-50%)" },
-          "100%": { transform: "translateX(0%)" },
-        },
-        "fade-in": {
-          from: { opacity: "0", transform: "translateY(20px)" },
-          to: { opacity: "1", transform: "translateY(0)" },
+        fadeIn: {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
         },
       },
     },

@@ -1,0 +1,48 @@
+﻿// https://nuxt.com/docs/api/configuration/nuxt-config
+export default defineNuxtConfig({
+  compatibilityDate: '2025-05-15',
+  devtools: { enabled: false },
+
+  app: {
+    baseURL: process.env.NODE_ENV === 'production' ? '/summer-hardware-projects' : '/',
+    head: {
+      htmlAttrs: { lang: 'zh-CN', class: 'dark' },
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=5' },
+        { name: 'description', content: '10-20 天亲手打造热成像仪、机械键盘、轮足机器人等 9 个真实硬件项目。大学级难度，完整课程体系，全部基于开源项目。' },
+        { property: 'og:title', content: '高中生暑期硬件实践课程' },
+        { property: 'og:description', content: '9 个真实开源硬件项目 · 10-20 天完成 · 大学级难度' },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:locale', content: 'zh_CN' },
+      ],
+      link: [
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=Noto+Sans+SC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap' },
+      ],
+    },
+  },
+
+  css: ['~/assets/css/main.css'],
+
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
+
+  nitro: {
+    prerender: { crawlLinks: true },
+  },
+
+  hooks: {
+    'nitro:config'(config) {
+      config.prerender = config.prerender || {}
+      config.prerender.routes = config.prerender.routes || []
+      config.prerender.routes.push('/')
+      config.prerender.routes.push('/projects')
+    },
+  },
+})

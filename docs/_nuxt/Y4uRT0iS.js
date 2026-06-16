@@ -1,0 +1,1 @@
+import{_ as t,o as r,c as s,p as c}from"./BETiMad5.js";const o={},n={class:"min-h-screen bg-background text-text-primary"};function a(e,_){return r(),s("div",n,[c(e.$slots,"default")])}const l=t(o,[["render",a]]);export{l as default};

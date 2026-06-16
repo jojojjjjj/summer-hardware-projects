@@ -19,6 +19,22 @@ Thumbs.db
 # Node
 node_modules/
 
-# Verify / testing temp
-verify/
-verify-screenshot.js
+# Debug / temp files
+_dbg*.txt
+_debug*.txt
+_verify*.txt
+screenshot-home-desktop.png
+
+# Website build artifacts
+website/.nuxt/
+website/.output/
+website/dist/
+website/.gstack/
+website/screenshots/
+website/verify/
+
+# Old website backup (not tracked)
+website-old/
+
+# Claude worktrees
+.claude/worktrees/
