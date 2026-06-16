@@ -6,46 +6,24 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, provide } from 'vue'
-import Lenis from 'lenis'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const wrapperRef = ref<HTMLElement | null>(null)
-let lenis: Lenis | null = null
-
-function raf(time: number): void {
-  lenis?.raf(time)
-  ScrollTrigger.update()
-}
 
 onMounted(() => {
-  lenis = new Lenis({
-    // Premium smooth scroll settings
-    duration: 1.2,
-    easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    orientation: 'vertical',
-    gestureOrientation: 'vertical',
-    smoothWheel: true,
-    wheelMultiplier: 1,
-    touchMultiplier: 2,
-    infinite: false,
-  })
+  // No Lenis — native browser scrolling only.
+  // GSAP ScrollTrigger works with native scroll out of the box.
 
-  // Connect Lenis to GSAP ScrollTrigger
-  lenis.on('scroll', ScrollTrigger.update)
+  // Refresh ScrollTrigger on resize
+  window.addEventListener('resize', handleResize)
 
-  gsap.ticker.add(raf)
-  gsap.ticker.lagSmoothing(0)
-
-  // Handle anchor links
+  // Handle anchor links with smooth native scroll
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener('click', handleAnchorClick)
   })
-
-  // Handle resize
-  window.addEventListener('resize', handleResize)
 })
 
 function handleAnchorClick(e: Event): void {
@@ -57,11 +35,7 @@ function handleAnchorClick(e: Event): void {
   if (!el) return
 
   e.preventDefault()
-  lenis?.scrollTo(el, {
-    offset: -80,
-    duration: 1.2,
-    easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-  })
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
 function handleResize(): void {
@@ -69,26 +43,23 @@ function handleResize(): void {
 }
 
 onUnmounted(() => {
-  gsap.ticker.remove(raf)
-  lenis?.destroy()
-  lenis = null
-
+  window.removeEventListener('resize', handleResize)
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.removeEventListener('click', handleAnchorClick)
   })
-  window.removeEventListener('resize', handleResize)
 })
 
-// Expose scrollTo for programmatic use
-function scrollTo(target: string | HTMLElement, options?: { offset?: number; duration?: number }) {
-  lenis?.scrollTo(target, {
-    offset: options?.offset ?? -80,
-    duration: options?.duration ?? 1.2,
-    easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-  })
+// Programmatic scrollTo using native smooth scroll
+function scrollTo(target: string | HTMLElement, options?: { offset?: number }) {
+  const el = typeof target === 'string' ? document.querySelector(target) : target
+  if (!el) return
+
+  const offset = options?.offset ?? -80
+  const top = el.getBoundingClientRect().top + window.scrollY + offset
+  window.scrollTo({ top, behavior: 'smooth' })
 }
 
 provide('smoothScrollTo', scrollTo)
 
-defineExpose({ scrollTo, lenis })
+defineExpose({ scrollTo })
 </script>
