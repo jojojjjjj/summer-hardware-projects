@@ -9,8 +9,6 @@
     <div class="h-16 md:h-24"><ScrollDivider /></div>
     <LearningPath />
     <div class="h-16 md:h-24"><ScrollDivider /></div>
-    <TestimonialsSection />
-    <div class="h-16 md:h-24"><ScrollDivider /></div>
     <CtaSection />
     <AppFooter />
   </main>

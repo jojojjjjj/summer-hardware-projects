@@ -13,7 +13,7 @@
         </span>
       </div>
       <p ref="subRef" class="mx-auto max-w-lg text-body-lg text-text-secondary opacity-0 translate-y-6">
-        20 天，5 个阶段，从第一次焊接到最后一次展示
+        12–15 天，5 个阶段，从第一次焊接到最后一次展示
       </p>
     </div>
 
@@ -311,7 +311,7 @@ const steps: {
     bullets: ['开源项目调研', '可行性评估', '技术方案确定'],
   },
   {
-    days: 'Day 4–7',
+    days: 'Day 4–6',
     title: '硬件搭建与调试',
     description: '元器件选型、电路搭建、接线调试，让硬件跑起来',
     color: '#3b82f6',
@@ -319,7 +319,7 @@ const steps: {
     bullets: ['元器件选型', '电路搭建', '接线调试'],
   },
   {
-    days: 'Day 8–12',
+    days: 'Day 7–9',
     title: '软件开发与集成',
     description: '固件编写、传感器集成、模块调试，让系统联动起来',
     color: '#8b5cf6',
@@ -327,7 +327,7 @@ const steps: {
     bullets: ['固件编写', '传感器集成', '模块调试'],
   },
   {
-    days: 'Day 13–16',
+    days: 'Day 10–12',
     title: '系统优化与完善',
     description: '性能调优、边界测试、细节打磨，让产品稳定可靠',
     color: '#9aa3d4',
@@ -335,7 +335,7 @@ const steps: {
     bullets: ['性能调优', '边界测试', '细节打磨'],
   },
   {
-    days: 'Day 17–20',
+    days: 'Day 13–15',
     title: '文档撰写与展示',
     description: '技术文档、最终演示、项目答辩，完成从做到讲的全闭环',
     color: '#a5aceb',

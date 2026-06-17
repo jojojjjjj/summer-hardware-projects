@@ -136,7 +136,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted, type Component } from 'vue'
 import { useReducedMotion } from '~/composables/useReducedMotion'
-import { Code2, Layers, Wallet, Users } from 'lucide-vue-next'
+import { Code2, Layers, Users } from 'lucide-vue-next'
 
 const values: {
   eyebrow: string
@@ -172,19 +172,6 @@ const values: {
     accent: '#6366f1',
     icon: Layers,
     dataPoint: { value: '5', label: '大维度评分标准' },
-  },
-  {
-    eyebrow: '成本可控',
-    title: '每套硬件不超 ¥500',
-    description: '硬件选型经过成本优化，确保每个项目套件都在可承受范围内，让更多学生参与。',
-    points: [
-      '硬件选型成本 < ¥500/套',
-      '常用模块可跨项目复用',
-      '提供多家供应商比价参考',
-    ],
-    accent: '#3b82f6',
-    icon: Wallet,
-    dataPoint: { value: '≤¥500', label: '每套成本' },
   },
   {
     eyebrow: '社区支持',

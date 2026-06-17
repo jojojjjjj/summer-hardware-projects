@@ -22,6 +22,11 @@
     <div class="relative z-10 mx-auto w-full max-w-6xl px-6">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
         <div class="lg:col-span-7 text-left">
+          <!-- Brand logo -->
+          <div ref="logoRef" class="mb-8 md:mb-10">
+            <img src="/logo.png" alt="暑期硬件实践课程" class="h-14 md:h-20 w-auto object-contain" />
+          </div>
+
           <!-- Eyebrow -->
           <div ref="eyebrowRef" class="mb-6">
             <span class="eyebrow inline-flex items-center rounded-full px-4 py-1.5" style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.16);">2026 暑期</span>
@@ -64,26 +69,21 @@
           </div>
         </div>
 
-        <!-- Specs — right column (desktop), full-width row (mobile) -->
+        <!-- Specs — right column: two stacked stats -->
         <div ref="specsRef" class="lg:col-span-5 lg:pl-8" style="perspective: 900px;">
-          <div ref="specsGridRef" class="grid grid-cols-3 gap-6 sm:gap-8 lg:border-l lg:border-white/[0.06] lg:pl-8" style="transform-origin: center top; will-change: transform;">
-            <div class="text-left">
-              <div class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gradient-accent tabular-nums font-mono tracking-tighter">
+          <div ref="specsGridRef" class="flex flex-col gap-8 lg:border-l lg:border-white/[0.06] lg:pl-10" style="transform-origin: center top; will-change: transform;">
+            <div>
+              <div class="text-5xl sm:text-6xl lg:text-7xl font-bold text-gradient-accent tabular-nums font-mono tracking-tighter leading-none">
                 {{ countUp.projects }}
               </div>
-              <p class="mt-2 text-[11px] text-text-tertiary uppercase tracking-[0.2em] font-semibold">项目</p>
+              <p class="mt-3 text-[11px] text-text-tertiary uppercase tracking-[0.22em] font-semibold">真实项目</p>
             </div>
-            <div class="text-left">
-              <div class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gradient-accent tabular-nums font-mono tracking-tighter">
-                10–20
+            <div class="h-px w-14 bg-white/[0.08]" />
+            <div>
+              <div class="text-5xl sm:text-6xl lg:text-7xl font-bold text-gradient-accent tabular-nums font-mono tracking-tighter leading-none">
+                12–15
               </div>
-              <p class="mt-2 text-[11px] text-text-tertiary uppercase tracking-[0.2em] font-semibold">天</p>
-            </div>
-            <div class="text-left">
-              <div class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gradient-accent tabular-nums font-mono tracking-tighter">
-                ≤¥500
-              </div>
-              <p class="mt-2 text-[11px] text-text-tertiary uppercase tracking-[0.2em] font-semibold">每套</p>
+              <p class="mt-3 text-[11px] text-text-tertiary uppercase tracking-[0.22em] font-semibold">天完成</p>
             </div>
           </div>
         </div>
@@ -117,6 +117,7 @@ const bgLayer1 = ref<HTMLElement | null>(null)
 const bgLayer2 = ref<HTMLElement | null>(null)
 const bgLayer3 = ref<HTMLElement | null>(null)
 const orbRef = ref<HTMLElement | null>(null)
+const logoRef = ref<HTMLElement | null>(null)
 const eyebrowRef = ref<HTMLElement | null>(null)
 const titleRef = ref<HTMLElement | null>(null)
 const titleParallaxRef = ref<HTMLElement | null>(null)
@@ -190,7 +191,7 @@ onMounted(() => {
 
   if (reduce.value) {
     // Snap everything to final state — no motion
-    gsap.set([eyebrowRef.value, titleRef.value, subtitleRef.value, ctaRef.value, specsRef.value].filter(Boolean), { opacity: 1, y: 0 })
+    gsap.set([logoRef.value, eyebrowRef.value, titleRef.value, subtitleRef.value, ctaRef.value, specsRef.value].filter(Boolean), { opacity: 1, y: 0 })
     gsap.set(scrollIndicatorRef.value, { opacity: 0.3 })
     gsap.set(specsGridRef.value, { rotateX: 0 })
     countUp.projects = 9
@@ -198,6 +199,7 @@ onMounted(() => {
   }
 
   // Set initial states
+  gsap.set(logoRef.value, { opacity: 0, y: 20 })
   gsap.set(eyebrowRef.value, { opacity: 0, y: 20 })
   gsap.set(lines, { opacity: 0, y: 50 })
   gsap.set(subtitleRef.value, { opacity: 0, y: 25 })
@@ -208,7 +210,8 @@ onMounted(() => {
   // Build timeline
   tl = gsap.timeline({ delay: 0.3 })
 
-  tl.to(eyebrowRef.value, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
+  tl.to(logoRef.value, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
+    .to(eyebrowRef.value, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.4')
     .to(lines, { opacity: 1, y: 0, duration: 0.9, stagger: 0.15, ease: 'power3.out' }, '-=0.3')
     .to(subtitleRef.value, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.4')
     .to(ctaRef.value, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.35')
@@ -266,11 +269,10 @@ function startCountUp() {
   const start = performance.now()
   function tick(now: number) {
     const progress = Math.min((now - start) / duration, 1)
+    if (progress >= 1) { countUp.projects = 9; return }
     const eased = 1 - Math.pow(2, -10 * progress)
     countUp.projects = Math.floor(eased * 9)
-    if (progress < 1) {
-      rafId = requestAnimationFrame(tick)
-    }
+    rafId = requestAnimationFrame(tick)
   }
   rafId = requestAnimationFrame(tick)
 }

@@ -10,9 +10,9 @@ export default defineNuxtConfig({
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=5' },
-        { name: 'description', content: '10-20 天亲手打造热成像仪、机械键盘、轮足机器人等 9 个真实硬件项目。大学级难度，完整课程体系，全部基于开源项目。' },
+        { name: 'description', content: '12-15 天亲手打造热成像仪、机械键盘、轮足机器人等 9 个真实硬件项目。大学级难度，完整课程体系，全部基于开源项目。' },
         { property: 'og:title', content: '高中生暑期硬件实践课程' },
-        { property: 'og:description', content: '9 个真实开源硬件项目 · 10-20 天完成 · 大学级难度' },
+        { property: 'og:description', content: '9 个真实开源硬件项目 · 12-15 天完成 · 大学级难度' },
         { property: 'og:type', content: 'website' },
         { property: 'og:locale', content: 'zh_CN' },
       ],

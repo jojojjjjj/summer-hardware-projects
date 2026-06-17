@@ -58,7 +58,6 @@
               <p class="mt-1.5 text-[13px] text-text-secondary">{{ project.subtitle }}</p>
               <div class="mt-3 flex items-center gap-4 text-[12px] text-text-tertiary">
                 <span>{{ project.duration }}{{ project.durationUnit }}</span>
-                <span>{{ project.cost }}</span>
                 <span>{{ project.mcu }}</span>
               </div>
               <div class="mt-3 flex flex-wrap gap-1.5">

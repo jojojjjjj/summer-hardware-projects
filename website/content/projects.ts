@@ -19,7 +19,6 @@ export interface Skills {
 export interface HardwareItem {
   name: string
   spec: string
-  price: string
   note?: string
 }
 
@@ -56,7 +55,6 @@ export interface Project {
   difficultyLabel: string
   duration: number
   durationUnit: string
-  cost: string
   color: string
   colorHex: string
   icon: string
@@ -86,7 +84,7 @@ export const projects: Project[] = [
     subtitle: '基于 STM32 的手机热成像设备', subtitleEn: 'STM32-based mobile phone thermal imager',
     description: '基于可见光和热成像传感器的双目手机热成像仪。通过 STM32F411 读取传感器数据，经 USB 传输到手机端，借助 OpenCV 进行图像融合，在手机屏幕中显示热成像叠加图像。',
     descriptionEn: 'A binocular thermal imager for smartphones with visible-light and infrared sensors.',
-    difficulty: 3, difficultyLabel: '中等', duration: 15, durationUnit: '天', cost: '~¥200',
+    difficulty: 3, difficultyLabel: '中等', duration: 15, durationUnit: '天',
     color: 'text-project-01', colorHex: '#f97316', icon: 'ScanEye',
     mcu: 'STM32F411', coreTech: 'STM32 + MLX90640 + OpenCV + USB',
     tags: [
@@ -96,11 +94,11 @@ export const projects: Project[] = [
     ],
     skills: { hardware: ['STM32 开发', 'I2C 通信', 'USB CDC/HS', 'PCB 设计'], software: ['C 语言', 'Android 开发', 'OpenCV 图像处理', 'USB 协议'], system: ['传感器数据融合', '实时图像处理', 'USB 通信架构'], engineering: ['焊接技能', '系统调试', '文档撰写', '项目演示'] },
     hardware: [
-      { name: 'STM32F411CEU6', spec: 'Cortex-M4 MCU', price: '¥15' },
-      { name: 'MLX90640', spec: '32×24 热成像传感器', price: '¥80-120' },
-      { name: 'OV2640/OV5640', spec: '可见光摄像头模块', price: '¥15-25' },
-      { name: 'USB Type-C', spec: '连接器', price: '¥2' },
-      { name: 'PCB', spec: '嘉立创打样', price: '¥5-20' },
+      { name: 'STM32F411CEU6', spec: 'Cortex-M4 MCU' },
+      { name: 'MLX90640', spec: '32×24 热成像传感器' },
+      { name: 'OV2640/OV5640', spec: '可见光摄像头模块' },
+      { name: 'USB Type-C', spec: '连接器' },
+      { name: 'PCB', spec: '嘉立创打样' },
     ],
     timeline: [
       { days: 'Day 1-3', title: '基础准备', titleEn: 'Fundamentals', description: '项目介绍、STM32 基础与 GPIO、I2C 通信协议', descriptionEn: 'Project intro, STM32 basics, I2C protocol' },
@@ -116,7 +114,7 @@ export const projects: Project[] = [
     subtitle: '室内空气质量监测与可视化平台', subtitleEn: 'Indoor air quality monitoring and visualization',
     description: '基于 ESP32 的室内环境监测站，使用 MQTT 协议上传传感器数据至 InfluxDB，通过 Grafana 实时可视化。支持 PM2.5、CO2、温湿度多参数监测。',
     descriptionEn: 'ESP32-based indoor environment monitoring station with MQTT, InfluxDB, and Grafana.',
-    difficulty: 2, difficultyLabel: '基础', duration: 10, durationUnit: '天', cost: '~¥150',
+    difficulty: 2, difficultyLabel: '基础', duration: 10, durationUnit: '天',
     color: 'text-project-02', colorHex: '#3d8b5e', icon: 'CloudSun',
     mcu: 'ESP32', coreTech: 'ESP32 + MQTT + InfluxDB + Grafana',
     tags: [
@@ -126,10 +124,10 @@ export const projects: Project[] = [
     ],
     skills: { hardware: ['ESP32 开发', 'I2C/SPI 通信', '传感器选型', '电源设计'], software: ['MicroPython', 'MQTT 协议', 'InfluxDB', 'Grafana'], system: ['IoT 系统架构', '数据流水线', 'Web 仪表盘'], engineering: ['需求分析', '系统调试', '文档撰写', '项目演示'] },
     hardware: [
-      { name: 'ESP32 开发板', spec: 'WiFi+BT, 4MB Flash', price: '¥15-25' },
-      { name: 'PMS5003', spec: 'PM2.5 激光粉尘传感器', price: '¥35-50' },
-      { name: 'SCD40', spec: 'CO2 温湿度传感器', price: '¥40-60' },
-      { name: 'OLED SSD1306', spec: '0.96" I2C 显示', price: '¥8-12' },
+      { name: 'ESP32 开发板', spec: 'WiFi+BT, 4MB Flash' },
+      { name: 'PMS5003', spec: 'PM2.5 激光粉尘传感器' },
+      { name: 'SCD40', spec: 'CO2 温湿度传感器' },
+      { name: 'OLED SSD1306', spec: '0.96" I2C 显示' },
     ],
     timeline: [
       { days: 'Day 1-3', title: '嵌入式基础', titleEn: 'Embedded Basics', description: 'ESP32 入门、MicroPython、传感器驱动', descriptionEn: 'ESP32 intro, MicroPython, sensor drivers' },
@@ -144,7 +142,7 @@ export const projects: Project[] = [
     subtitle: 'USB/蓝牙/2.4G/Type-C 四模机械键盘', subtitleEn: 'Quad-mode mechanical keyboard',
     description: '基于 STM32 的四模机械键盘，支持 USB 有线、蓝牙 5.0、2.4G 无线和 Type-C 直连。自定义键位映射，支持 QMK/VIA 兼容固件。',
     descriptionEn: 'STM32-based quad-mode mechanical keyboard with USB, Bluetooth 5.0, 2.4G, and Type-C.',
-    difficulty: 4, difficultyLabel: '进阶', duration: 18, durationUnit: '天', cost: '~¥300',
+    difficulty: 4, difficultyLabel: '进阶', duration: 18, durationUnit: '天',
     color: 'text-project-03', colorHex: '#7c6bb5', icon: 'Keyboard',
     mcu: 'STM32F103', coreTech: 'STM32 + BLE + 2.4G + USB HID',
     tags: [
@@ -154,11 +152,11 @@ export const projects: Project[] = [
     ],
     skills: { hardware: ['STM32 开发', '四层 PCB 设计', 'USB HID', '射频天线'], software: ['C 语言', 'HID 协议栈', 'BLE 协议', 'QMK 固件'], system: ['多协议切换', '电源管理', '键位映射引擎'], engineering: ['PCB 布线', '结构设计', '固件调试', '项目演示'] },
     hardware: [
-      { name: 'STM32F103C6T6', spec: 'Cortex-M3 MCU', price: '¥8-12' },
-      { name: 'nRF51822', spec: 'BLE 5.0 模块', price: '¥15-20' },
-      { name: 'CH582F', spec: '2.4G 无线芯片', price: '¥8-12' },
-      { name: '机械轴体', spec: 'Cherry 兼容 × 65', price: '¥60-120' },
-      { name: 'PCB', spec: '四层板', price: '¥30-50' },
+      { name: 'STM32F103C6T6', spec: 'Cortex-M3 MCU' },
+      { name: 'nRF51822', spec: 'BLE 5.0 模块' },
+      { name: 'CH582F', spec: '2.4G 无线芯片' },
+      { name: '机械轴体', spec: 'Cherry 兼容 × 65' },
+      { name: 'PCB', spec: '四层板' },
     ],
     timeline: [
       { days: 'Day 1-4', title: '基础开发', titleEn: 'Fundamentals', description: 'STM32 入门、USB HID、矩阵扫描', descriptionEn: 'STM32 intro, USB HID, matrix scan' },
@@ -174,7 +172,7 @@ export const projects: Project[] = [
     subtitle: '基于 FPGA 的便携式信号发生器', subtitleEn: 'FPGA-based portable signal generator',
     description: '基于 Lattice iCE40 FPGA 的便携式信号发生器，支持正弦波、方波、三角波等多种波形输出，频率范围 1Hz-10MHz，TFT 彩屏显示与旋转编码器交互。',
     descriptionEn: 'Lattice iCE40 FPGA portable signal generator with multi-waveform output.',
-    difficulty: 5, difficultyLabel: '高级', duration: 20, durationUnit: '天', cost: '~¥350',
+    difficulty: 5, difficultyLabel: '高级', duration: 20, durationUnit: '天',
     color: 'text-project-04', colorHex: '#d45d8a', icon: 'Radio',
     mcu: 'iCE40 FPGA', coreTech: 'FPGA/Verilog + DAC + TFT',
     tags: [
@@ -184,11 +182,11 @@ export const projects: Project[] = [
     ],
     skills: { hardware: ['FPGA 开发', 'Verilog HDL', '高速 DAC', 'PCB 设计'], software: ['Verilog', '约束文件', '仿真验证', 'C 嵌入式'], system: ['DDS 算法', '时钟管理', '信号完整性'], engineering: ['FPGA 调试', '信号测量', '文档撰写', '项目演示'] },
     hardware: [
-      { name: 'iCE40-HX8K', spec: 'FPGA 开发板', price: '¥60-80' },
-      { name: 'DAC904', spec: '14-bit 高速 DAC', price: '¥25-35' },
-      { name: 'ST7735 TFT', spec: '1.8" SPI 彩屏', price: '¥12-18' },
-      { name: 'EC11', spec: '旋转编码器', price: '¥5-8' },
-      { name: 'PCB', spec: '四层板', price: '¥30-50' },
+      { name: 'iCE40-HX8K', spec: 'FPGA 开发板' },
+      { name: 'DAC904', spec: '14-bit 高速 DAC' },
+      { name: 'ST7735 TFT', spec: '1.8" SPI 彩屏' },
+      { name: 'EC11', spec: '旋转编码器' },
+      { name: 'PCB', spec: '四层板' },
     ],
     timeline: [
       { days: 'Day 1-5', title: 'FPGA 基础', titleEn: 'FPGA Basics', description: 'iCE40 开发环境、Verilog 语法、LED/按键', descriptionEn: 'iCE40 setup, Verilog, LED/button' },
@@ -204,7 +202,7 @@ export const projects: Project[] = [
     subtitle: '能对话的桌面小机器人', subtitleEn: 'Chat-capable desktop companion robot',
     description: '基于 ESP32 的桌宠机器人，集成语音识别、LLM 对话和 TTS 语音合成。3D 打印外壳 + 双舵机头部运动，可进行自然语言交互。',
     descriptionEn: 'ESP32-based desktop pet robot with STT, LLM chat, and TTS capabilities.',
-    difficulty: 3, difficultyLabel: '中等', duration: 15, durationUnit: '天', cost: '~¥200',
+    difficulty: 3, difficultyLabel: '中等', duration: 15, durationUnit: '天',
     color: 'text-project-05', colorHex: '#c9944a', icon: 'Bot',
     mcu: 'ESP32-S3', coreTech: 'ESP32-S3 + STT + LLM + TTS',
     tags: [
@@ -214,11 +212,11 @@ export const projects: Project[] = [
     ],
     skills: { hardware: ['ESP32-S3', 'I2S 音频', '舵机控制', '3D 打印'], software: ['MicroPython', 'LLM API', 'STT/TTS', 'WiFi'], system: ['音频流水线', '对话状态机', '低功耗管理'], engineering: ['3D 建模', '组装调试', '文档撰写', '项目演示'] },
     hardware: [
-      { name: 'ESP32-S3', spec: '双核 + WiFi+BT', price: '¥20-30' },
-      { name: 'INMP441', spec: 'I2S 麦克风', price: '¥8-12' },
-      { name: 'MAX98357', spec: 'I2S 功放', price: '¥6-10' },
-      { name: 'SG90 舵机', spec: '×2 头部运动', price: '¥8-12' },
-      { name: '3D 打印外壳', spec: 'PLA', price: '¥20-40' },
+      { name: 'ESP32-S3', spec: '双核 + WiFi+BT' },
+      { name: 'INMP441', spec: 'I2S 麦克风' },
+      { name: 'MAX98357', spec: 'I2S 功放' },
+      { name: 'SG90 舵机', spec: '×2 头部运动' },
+      { name: '3D 打印外壳', spec: 'PLA' },
     ],
     timeline: [
       { days: 'Day 1-4', title: '嵌入式基础', titleEn: 'Embedded Basics', description: 'ESP32-S3 入门、I2S 音频、WiFi', descriptionEn: 'ESP32-S3 intro, I2S audio, WiFi' },
@@ -233,7 +231,7 @@ export const projects: Project[] = [
     subtitle: 'ESP32 彩屏桌面天气站', subtitleEn: 'ESP32 color display desktop weather station',
     description: '使用 ESP32 驱动 TFT 彩屏，搭配温湿度传感器，支持 WiFi 天气获取与 NTP 时间同步。3D 打印立方体外壳，桌面摆件级完成度。',
     descriptionEn: 'ESP32-driven TFT weather station with 3D-printed cube enclosure.',
-    difficulty: 1, difficultyLabel: '入门', duration: 8, durationUnit: '天', cost: '~¥80',
+    difficulty: 1, difficultyLabel: '入门', duration: 8, durationUnit: '天',
     color: 'text-project-06', colorHex: '#3a9b9b', icon: 'Thermometer',
     mcu: 'ESP32', coreTech: 'ESP32 + TFT + WiFi + 传感器',
     tags: [
@@ -243,10 +241,10 @@ export const projects: Project[] = [
     ],
     skills: { hardware: ['ESP32 开发', 'SPI 显示', 'I2C 传感器', '3D 打印'], software: ['Arduino IDE', 'TFT 库', 'WiFi/NTP', 'JSON 解析'], system: ['天气 API', '数据刷新策略', 'UI 布局'], engineering: ['3D 建模', '组装调试', '文档撰写', '项目演示'] },
     hardware: [
-      { name: 'ESP32 开发板', spec: 'WiFi+BT', price: '¥15-25' },
-      { name: 'ST7789 TFT', spec: '1.54" 240×240 SPI', price: '¥12-18' },
-      { name: 'BME280', spec: '温湿压 I2C 传感器', price: '¥8-15' },
-      { name: '3D 打印外壳', spec: 'PLA 立方体', price: '¥10-20' },
+      { name: 'ESP32 开发板', spec: 'WiFi+BT' },
+      { name: 'ST7789 TFT', spec: '1.54" 240×240 SPI' },
+      { name: 'BME280', spec: '温湿压 I2C 传感器' },
+      { name: '3D 打印外壳', spec: 'PLA 立方体' },
     ],
     timeline: [
       { days: 'Day 1-2', title: '入门', titleEn: 'Getting Started', description: 'ESP32 入门、Arduino IDE、Blink', descriptionEn: 'ESP32 intro, Arduino IDE, Blink' },
@@ -261,7 +259,7 @@ export const projects: Project[] = [
     subtitle: '双足轮式平衡机器人', subtitleEn: 'Bipedal wheeled balancing robot',
     description: '基于 STM32 的轮足机器人，结合双足步态和轮式运动。使用 PID 控制实现自平衡，MPU6050 姿态检测，支持遥控与自主运动模式。',
     descriptionEn: 'STM32-based bipedal wheeled robot with PID self-balancing and MPU6050 IMU.',
-    difficulty: 4, difficultyLabel: '进阶', duration: 18, durationUnit: '天', cost: '~¥350',
+    difficulty: 4, difficultyLabel: '进阶', duration: 18, durationUnit: '天',
     color: 'text-project-07', colorHex: '#d45050', icon: 'Footprints',
     mcu: 'STM32F103', coreTech: 'STM32 + PID + MPU6050 + FOC',
     tags: [
@@ -271,11 +269,11 @@ export const projects: Project[] = [
     ],
     skills: { hardware: ['STM32 开发', 'FOC 电机控制', 'IMU 姿态解算', 'PCB 设计'], software: ['C 语言', 'PID 算法', 'FOC 控制', '遥控协议'], system: ['运动控制', '状态机', '通信架构'], engineering: ['机械设计', '系统调试', '文档撰写', '项目演示'] },
     hardware: [
-      { name: 'STM32F103C8T6', spec: 'Cortex-M3', price: '¥8-12' },
-      { name: 'MPU6050', spec: '六轴 IMU', price: '¥5-10' },
-      { name: 'GM2804', spec: '无刷电机 ×2', price: '¥60-80' },
-      { name: 'FOC 驱动板', spec: 'SimpleFOC', price: '¥40-60' },
-      { name: '3D 打印结构件', spec: 'PLA', price: '¥30-50' },
+      { name: 'STM32F103C8T6', spec: 'Cortex-M3' },
+      { name: 'MPU6050', spec: '六轴 IMU' },
+      { name: 'GM2804', spec: '无刷电机 ×2' },
+      { name: 'FOC 驱动板', spec: 'SimpleFOC' },
+      { name: '3D 打印结构件', spec: 'PLA' },
     ],
     timeline: [
       { days: 'Day 1-4', title: '嵌入式基础', titleEn: 'Embedded Basics', description: 'STM32 入门、PWM 输出、IMU 读取', descriptionEn: 'STM32 intro, PWM, IMU read' },
@@ -291,7 +289,7 @@ export const projects: Project[] = [
     subtitle: 'USB 桌面机器人 — 眼动 + 表情 + 交互', subtitleEn: 'USB desktop robot with eye tracking and expressions',
     description: '稚晖君开源的 USB 桌面机器人。双舵机控制头部运动，LCD 显示表情，支持 USB 通信与 Unity 上位机交互。可扩展 OpenCV 视觉和语音交互。',
     descriptionEn: 'Peng Zhihui\'s open-source USB desktop robot with servo head, LCD expressions, and Unity app.',
-    difficulty: 5, difficultyLabel: '高级', duration: 20, durationUnit: '天', cost: '~¥400',
+    difficulty: 5, difficultyLabel: '高级', duration: 20, durationUnit: '天',
     color: 'text-project-08', colorHex: '#9a6bc9', icon: 'Monitor',
     mcu: 'STM32F411', coreTech: 'STM32 + USB HS + Servo PID + LCD + Unity',
     tags: [
@@ -301,10 +299,10 @@ export const projects: Project[] = [
     ],
     skills: { hardware: ['STM32 开发', 'USB HS 通信', 'I2C 舵机 PID', 'LCD 显示'], software: ['C 语言', 'Unity/C#', 'OpenCV 视觉', 'USB 协议'], system: ['USB 通信架构', '表情系统', '视觉交互'], engineering: ['PCB 设计', '3D 打印', '文档撰写', '项目演示'] },
     hardware: [
-      { name: 'STM32F411CEU6', spec: 'Cortex-M4', price: '¥15' },
-      { name: 'LCD 显示屏', spec: '表情显示', price: '¥15-25' },
-      { name: 'SG90 舵机', spec: '×2 头部运动', price: '¥8-12' },
-      { name: '3D 打印外壳', spec: 'SLA 树脂', price: '¥60-100' },
+      { name: 'STM32F411CEU6', spec: 'Cortex-M4' },
+      { name: 'LCD 显示屏', spec: '表情显示' },
+      { name: 'SG90 舵机', spec: '×2 头部运动' },
+      { name: '3D 打印外壳', spec: 'SLA 树脂' },
     ],
     timeline: [
       { days: 'Day 1-4', title: '嵌入式基础', titleEn: 'Embedded Basics', description: 'STM32 入门、USB CDC、舵机控制', descriptionEn: 'STM32 intro, USB CDC, servo control' },
@@ -319,7 +317,7 @@ export const projects: Project[] = [
     subtitle: '太阳能供电的卫星造型桌面气象站', subtitleEn: 'Solar-powered satellite-shaped desktop weather station',
     description: '使用 ESP32-C3 驱动 TFT 彩屏，搭载 SHT31-D 高精度温湿度传感器，支持 WiFi NTP 时间同步、Type-C + 太阳能双充电，铜线+黄铜管手工弯制卫星造型外壳。',
     descriptionEn: 'ESP32-C3 with TFT, SHT31-D, WiFi NTP, solar + Type-C charging, copper wire satellite enclosure.',
-    difficulty: 4, difficultyLabel: '进阶', duration: 14, durationUnit: '天', cost: '~¥250',
+    difficulty: 4, difficultyLabel: '进阶', duration: 14, durationUnit: '天',
     color: 'text-project-09', colorHex: '#3b82f6', icon: 'Satellite',
     mcu: 'ESP32-C3', coreTech: 'ESP32-C3 + TFT + 太阳能 + SHT31',
     tags: [
@@ -329,11 +327,11 @@ export const projects: Project[] = [
     ],
     skills: { hardware: ['ESP32-C3 RISC-V', 'SPI TFT 显示', 'I2C 传感器', '电源管理'], software: ['Arduino IDE', 'Adafruit GFX/ST7735', 'WiFi/NTP', '低功耗设计'], system: ['太阳能充电系统', '电池管理', '触摸交互', '多屏 UI'], engineering: ['铜线结构弯制', '焊接组装', '结构设计', '项目展示'] },
     hardware: [
-      { name: 'ESP32-C3 开发板', spec: 'RISC-V, 4MB Flash', price: '¥15-25' },
-      { name: 'ST7735 TFT', spec: '0.96" 80x160 SPI 彩色', price: '¥10-15' },
-      { name: 'SHT31-D', spec: '高精度温湿度 I2C', price: '¥8-15' },
-      { name: '锂电池+充电模块', spec: '3.7V + Type-C + 太阳能', price: '¥20-30' },
-      { name: '铜线+黄铜管', spec: '卫星外壳材料', price: '¥15-20' },
+      { name: 'ESP32-C3 开发板', spec: 'RISC-V, 4MB Flash' },
+      { name: 'ST7735 TFT', spec: '0.96" 80x160 SPI 彩色' },
+      { name: 'SHT31-D', spec: '高精度温湿度 I2C' },
+      { name: '锂电池+充电模块', spec: '3.7V + Type-C + 太阳能' },
+      { name: '铜线+黄铜管', spec: '卫星外壳材料' },
     ],
     timeline: [
       { days: 'Day 1-4', title: '嵌入式基础', titleEn: 'Embedded Basics', description: 'ESP32-C3 入门、SPI TFT、I2C 传感器、WiFi NTP', descriptionEn: 'ESP32-C3 intro, SPI TFT, I2C sensor, WiFi NTP' },

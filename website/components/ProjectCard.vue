@@ -89,7 +89,7 @@
             {{ project.subtitle }}
           </p>
 
-          <!-- Duration & cost -->
+          <!-- Duration -->
           <div class="mt-4 flex items-center gap-5 text-[12px] text-text-tertiary bg-white/[0.02] rounded-xl px-3 py-1.5 -mx-3">
             <span class="flex items-center gap-1.5">
               <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="opacity-60">
@@ -97,12 +97,6 @@
                 <polyline points="12 6 12 12 16 14" />
               </svg>
               {{ project.duration }}{{ project.durationUnit }}
-            </span>
-            <span class="flex items-center gap-1.5">
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="opacity-60">
-                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-              </svg>
-              {{ project.cost }}
             </span>
           </div>
 

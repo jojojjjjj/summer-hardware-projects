@@ -33,10 +33,6 @@
                 {{ project.duration }} {{ project.durationUnit }}
               </span>
               <span class="flex items-center gap-1.5 rounded-full border border-white/[0.08] px-4 py-1.5 text-[12px] text-text-secondary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                {{ project.cost }}
-              </span>
-              <span class="flex items-center gap-1.5 rounded-full border border-white/[0.08] px-4 py-1.5 text-[12px] text-text-secondary">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>
                 {{ project.mcu }}
               </span>
@@ -90,7 +86,7 @@
         </div>
         <div class="space-y-3">
           <div v-for="(item, i) in project.hardware" :key="i"
-            class="flex items-center justify-between rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-4 inner-glow">
+            class="flex items-center rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-4 inner-glow">
             <div class="flex items-center gap-4">
               <span class="text-[13px] font-mono font-bold text-text-tertiary">{{ String(i + 1).padStart(2, '0') }}</span>
               <div>
@@ -98,7 +94,6 @@
                 <p class="text-[12px] text-text-tertiary">{{ item.spec }}</p>
               </div>
             </div>
-            <span class="text-[14px] font-mono font-semibold text-warm-peach">{{ item.price }}</span>
           </div>
         </div>
       </div>
