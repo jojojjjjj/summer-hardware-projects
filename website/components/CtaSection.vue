@@ -2,7 +2,7 @@
   <section id="contact" class="relative overflow-hidden py-24 md:py-36" style="background: linear-gradient(180deg, #0b0d12 0%, #0f1118 50%, #0b0d12 100%);">
     <!-- Directional cool wash from top + richer soft bloom pooling behind the card -->
     <div class="pointer-events-none absolute inset-0" style="background: radial-gradient(ellipse 75% 55% at 50% 0%, rgba(99,102,241,0.14) 0%, transparent 60%);" />
-    <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[115%] max-w-5xl h-[40rem]" style="background: radial-gradient(ellipse 50% 60% at 50% 42%, rgba(99,102,241,0.26) 0%, rgba(99,102,241,0.07) 45%, transparent 72%); filter: blur(48px);" />
+    <div ref="orbRef" class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[115%] max-w-5xl h-[40rem]" style="background: radial-gradient(ellipse 50% 60% at 50% 42%, rgba(99,102,241,0.26) 0%, rgba(99,102,241,0.07) 45%, transparent 72%); filter: blur(48px);" />
 
     <div class="mx-auto max-w-4xl px-6">
       <div
@@ -13,7 +13,7 @@
         <div class="absolute inset-x-0 top-0 h-px" style="background: linear-gradient(90deg, transparent, rgba(99,102,241,0.5), transparent);" />
 
         <div class="relative z-10 px-8 py-20 sm:px-16 sm:py-28 md:py-32 text-center">
-          <h2 ref="headingRef" class="text-[2.5rem] md:text-[3.75rem] font-bold tracking-[-0.04em] text-text-primary opacity-0 translate-y-8 leading-[1.05]">
+          <h2 ref="headingRef" class="text-[2.5rem] md:text-[3.75rem] font-semibold tracking-[-0.04em] text-text-primary opacity-0 translate-y-8 leading-[1.05]">
             准备好开始了吗？
           </h2>
           <p ref="subRef" class="mx-auto mt-6 max-w-md text-body-lg text-text-secondary opacity-0 translate-y-6">
@@ -54,9 +54,12 @@ const subRef = ref<HTMLElement | null>(null)
 const ctaWrapperRef = ref<HTMLElement | null>(null)
 const ctaBtnRef = ref<HTMLElement | null>(null)
 const rippleRef = ref<HTMLElement | null>(null)
+const orbRef = ref<HTMLElement | null>(null)
 
 const reduce = useReducedMotion()
 let gsapInstance: any = null
+let orbScrollHandler: (() => void) | null = null
+let ticking = false
 
 function onBtnEnter() {
   if (!gsapInstance || !ctaBtnRef.value || reduce.value) return
@@ -79,7 +82,7 @@ function onBtnLeave() {
 }
 
 function onBtnClick(e: MouseEvent) {
-  if (!gsapInstance || !rippleRef.value || !ctaBtnRef.value) return
+  if (!gsapInstance || !rippleRef.value || !ctaBtnRef.value || reduce.value) return
   const rect = ctaBtnRef.value.getBoundingClientRect()
   const x = e.clientX - rect.left
   const y = e.clientY - rect.top
@@ -129,9 +132,30 @@ onMounted(async () => {
     )
     if (cardRef.value) observer.observe(cardRef.value)
   }
+
+  // Orb scroll parallax
+  if (!reduce.value && orbRef.value) {
+    const section = document.getElementById('contact')
+    orbScrollHandler = () => {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(() => {
+        ticking = false
+        if (!orbRef.value || !section) return
+        const rect = section.getBoundingClientRect()
+        const offset = (rect.top + rect.height / 2 - window.innerHeight / 2) * -0.04
+        // Clamp to max +-20px drift
+        const clamped = Math.max(-20, Math.min(20, offset))
+        orbRef.value.style.transform = `translate(-50%, calc(-50% + ${clamped}px))`
+      })
+    }
+    window.addEventListener('scroll', orbScrollHandler, { passive: true })
+    orbScrollHandler()
+  }
 })
 
 onUnmounted(() => {
   gsapInstance = null
+  if (orbScrollHandler) window.removeEventListener('scroll', orbScrollHandler)
 })
 </script>

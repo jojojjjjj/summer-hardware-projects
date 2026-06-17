@@ -3,8 +3,7 @@
     <div class="mx-auto max-w-4xl px-6">
       <!-- Header (left-aligned, not centered) -->
       <div class="mb-16 md:mb-24">
-        <p ref="eyebrowRef" class="eyebrow mb-5 opacity-0 translate-y-6">学员反馈</p>
-        <h2 ref="headingRef" class="text-section font-bold tracking-tight text-text-primary opacity-0 translate-y-8">
+        <h2 ref="headingRef" class="text-section font-semibold tracking-tight text-text-primary opacity-0 translate-y-8">
           听听他们怎么说
         </h2>
       </div>
@@ -59,6 +58,7 @@
               'h-2 rounded-full transition-all duration-500 ease-out-expo focus:outline-none focus-visible:ring-2 focus-visible:ring-cool-indigo/50',
               activeIndex === i ? 'w-8 bg-cool-indigo' : 'w-2 bg-white/[0.14] hover:bg-white/[0.24]'
             ]"
+            :style="activeIndex === i ? { boxShadow: '0 0 12px rgba(99,102,241,0.5)' } : {}"
             :aria-label="`查看第 ${i + 1} 条反馈`"
           />
         </div>
@@ -71,7 +71,6 @@
 import { ref, onMounted } from 'vue'
 import { useReducedMotion } from '~/composables/useReducedMotion'
 
-const eyebrowRef = ref<HTMLElement | null>(null)
 const headingRef = ref<HTMLElement | null>(null)
 const cardRef = ref<HTMLElement | null>(null)
 const activeIndex = ref(0)
@@ -104,7 +103,7 @@ onMounted(async () => {
   const gsap = (await import('gsap')).default
 
   // Animate header
-  const headerEls = [eyebrowRef.value, headingRef.value].filter(Boolean) as HTMLElement[]
+  const headerEls = [headingRef.value].filter(Boolean) as HTMLElement[]
   if (headerEls.length) {
     if (reduce.value) {
       gsap.set(headerEls, { opacity: 1, y: 0 })

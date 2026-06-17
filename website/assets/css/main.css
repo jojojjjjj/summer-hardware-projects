@@ -123,7 +123,9 @@
   }
 
   /* Double-layer glass: frosted outer (40px) + inner-highlight edge + 1px border.
-     Wrap inner content in .glass-card__inner (12px) for true layered depth. */
+     Wrap inner content in .glass-card__inner (12px) for true layered depth.
+     ::after paints a faint chromatic-dispersion edge (indigo→violet, 2-stop cool)
+     via a masked 1px gradient ring — reads as glass refraction, never a rainbow. */
   .glass-card {
     position: relative;
     border: 1px solid rgba(255, 255, 255, 0.07);
@@ -135,10 +137,46 @@
       inset 0 0 0 1px rgba(255,255,255,0.025),
       0 2px 10px rgba(0,0,0,0.18);
   }
+  .glass-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1px solid transparent;
+    background: linear-gradient(135deg, rgba(99,102,241,0.10) 0%, rgba(255,255,255,0.02) 38%, rgba(139,92,246,0.06) 100%) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 0;
+  }
   .glass-card__inner {
     backdrop-filter: blur(12px) saturate(120%);
     -webkit-backdrop-filter: blur(12px) saturate(120%);
   }
+
+  /* Ambient orb — static soft light bloom for spatial depth. NEVER animated. */
+  .ambient-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.06;
+    pointer-events: none;
+  }
+
+  /* Scroll divider — hairline that grows from the center on in-view (toggled via .is-in
+     by an IntersectionObserver in ScrollDivider.vue). Cool 2-stop, no rainbow. */
+  .scroll-divider {
+    position: relative;
+    height: 1px;
+    width: 100%;
+    transform: scaleX(0);
+    transform-origin: center;
+    background: linear-gradient(90deg, transparent 0%, rgba(99,102,241,0.22) 35%, rgba(139,92,246,0.18) 50%, rgba(99,102,241,0.22) 65%, transparent 100%);
+    transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .scroll-divider.is-in { transform: scaleX(1); }
 
   .noise-overlay { position: relative; }
   .noise-overlay::before {
@@ -296,10 +334,10 @@
   }
   .noise > * { position: relative; z-index: 1; }
 
-  /* ── Typography scale — weights lowered (hero/section/subsection = 700, no 800) ── */
+  /* ── Typography scale — weights lowered (hero = 700; section/subsection = 600; no 800) ── */
   .text-hero { font-size: clamp(3rem, 8vw, 6rem); line-height: 1.05; letter-spacing: -0.04em; font-weight: 700; }
-  .text-section { font-size: clamp(2.2rem, 5vw, 3.5rem); line-height: 1.1; letter-spacing: -0.035em; font-weight: 700; }
-  .text-subsection { font-size: clamp(1.5rem, 3vw, 2.2rem); line-height: 1.2; letter-spacing: -0.025em; font-weight: 700; }
+  .text-section { font-size: clamp(2.2rem, 5vw, 3.5rem); line-height: 1.1; letter-spacing: -0.035em; font-weight: 600; }
+  .text-subsection { font-size: clamp(1.5rem, 3vw, 2.2rem); line-height: 1.2; letter-spacing: -0.025em; font-weight: 600; }
   .text-title { font-size: clamp(1.1rem, 1.5vw, 1.35rem); line-height: 1.3; letter-spacing: -0.02em; }
   .text-body-lg { font-size: 1.1rem; line-height: 1.7; }
   .text-body { font-size: 1rem; line-height: 1.65; }

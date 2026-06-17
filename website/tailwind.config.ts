@@ -116,11 +116,11 @@ const config: Config = {
         ],
         'section': [
           'clamp(2.25rem, 5vw, 4.5rem)',
-          { lineHeight: '1.06', letterSpacing: '-0.035em' },
+          { lineHeight: '1.06', letterSpacing: '-0.035em', fontWeight: '600' },
         ],
         'subsection': [
           'clamp(1.5rem, 3vw, 2.75rem)',
-          { lineHeight: '1.12', letterSpacing: '-0.025em' },
+          { lineHeight: '1.12', letterSpacing: '-0.025em', fontWeight: '600' },
         ],
         'title': [
           '20px',

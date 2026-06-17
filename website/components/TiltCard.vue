@@ -53,23 +53,57 @@ const cardRef = ref<HTMLElement | null>(null)
 const contentRef = ref<HTMLElement | null>(null)
 const glareRef = ref<HTMLElement | null>(null)
 const reduce = useReducedMotion()
+const coarse = ref(false)
 
 let tween: gsap.core.Tween | null = null
+
+/** Direction-aware impulse state — set on enter, consumed by next mousemove */
+let enterDir: { rotateX: number; rotateY: number } | null = null
 
 // Glare tint — cool indigo by default, coral when warm
 const glareColor = props.glow === 'warm' ? '255,107,107' : '99,102,241'
 
-function handleMouseEnter(): void {
-  if (reduce.value) return
-  gsap.to(cardRef.value, {
+function handleMouseEnter(e: MouseEvent): void {
+  if (reduce.value || coarse.value || !cardRef.value) return
+
+  // Detect which edge the cursor crossed
+  const rect = cardRef.value.getBoundingClientRect()
+  const cx = rect.left + rect.width / 2
+  const cy = rect.top + rect.height / 2
+  const dx = e.clientX - cx
+  const dy = e.clientY - cy
+
+  // Normalise by half-dimensions so we can compare axes fairly
+  const nx = dx / (rect.width / 2)
+  const ny = dy / (rect.height / 2)
+
+  // The dominant axis determines the entry edge
+  const bias = 0.35 * props.maxTilt
+  if (Math.abs(nx) >= Math.abs(ny)) {
+    // Entered from left or right
+    // Left edge → nx < 0 → card should lean right (rotateY positive, right edge recedes)
+    // Right edge → nx > 0 → card should lean left (rotateY negative)
+    enterDir = { rotateX: 0, rotateY: -nx * bias }
+  } else {
+    // Entered from top or bottom
+    // Top edge → ny < 0 → card should lean down (rotateX negative, top tilts forward)
+    // Bottom edge → ny > 0 → card should lean up (rotateX positive)
+    enterDir = { rotateX: ny * bias, rotateY: 0 }
+  }
+
+  // Apply directional impulse, then the next handleMouseMove smoothly blends to live tracking
+  tween?.kill()
+  tween = gsap.to(cardRef.value, {
+    rotateX: enterDir.rotateX,
+    rotateY: enterDir.rotateY,
     scale: props.hoverScale,
-    duration: props.duration,
+    duration: 0.28,
     ease: props.ease,
   })
 }
 
 function handleMouseMove(e: MouseEvent): void {
-  if (!cardRef.value || reduce.value) return
+  if (!cardRef.value || reduce.value || coarse.value) return
 
   const rect = cardRef.value.getBoundingClientRect()
   const x = (e.clientX - rect.left) / rect.width
@@ -78,11 +112,15 @@ function handleMouseMove(e: MouseEvent): void {
   const tiltX = (0.5 - y) * props.maxTilt * 2
   const tiltY = (x - 0.5) * props.maxTilt * 2
 
+  // Blend duration: shorter right after a directional impulse so it feels connected
+  const blendDuration = enterDir ? 0.3 : props.duration
+  enterDir = null
+
   tween?.kill()
   tween = gsap.to(cardRef.value, {
     rotateX: tiltX,
     rotateY: tiltY,
-    duration: props.duration,
+    duration: blendDuration,
     ease: props.ease,
   })
 
@@ -97,8 +135,9 @@ function handleMouseMove(e: MouseEvent): void {
 }
 
 function handleMouseLeave(): void {
-  if (!cardRef.value || reduce.value) return
+  if (!cardRef.value || reduce.value || coarse.value) return
 
+  enterDir = null
   tween?.kill()
   tween = gsap.to(cardRef.value, {
     rotateX: 0,
@@ -118,6 +157,9 @@ function handleMouseLeave(): void {
 }
 
 onMounted(() => {
+  if (typeof window !== 'undefined') {
+    coarse.value = window.matchMedia('(pointer: coarse)').matches
+  }
   // Set initial perspective on the card parent
   if (cardRef.value?.parentElement) {
     gsap.set(cardRef.value.parentElement, { perspective: props.perspective })

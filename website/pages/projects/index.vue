@@ -5,7 +5,7 @@
     <section class="pt-28 pb-12 md:pt-36 md:pb-16">
       <div class="mx-auto max-w-6xl px-6 text-center">
         <p class="eyebrow mb-5">9 个项目</p>
-        <h1 class="text-section font-bold tracking-tight text-text-primary">选择你的项目</h1>
+        <h1 class="text-section font-semibold tracking-tight text-text-primary">选择你的项目</h1>
         <p class="mx-auto mt-6 max-w-lg text-body-lg text-text-secondary">
           从入门级天气魔方到专家级 FPGA 信号发生器，每个项目都基于真实开源硬件改编
         </p>
@@ -54,7 +54,7 @@
               </div>
             </div>
             <div class="p-5">
-              <h3 class="text-base font-bold tracking-tight text-text-primary transition-colors duration-300">{{ project.titleZh }}</h3>
+              <h3 class="text-base font-semibold tracking-tight text-text-primary transition-colors duration-300">{{ project.titleZh }}</h3>
               <p class="mt-1.5 text-[13px] text-text-secondary">{{ project.subtitle }}</p>
               <div class="mt-3 flex items-center gap-4 text-[12px] text-text-tertiary">
                 <span>{{ project.duration }}{{ project.durationUnit }}</span>

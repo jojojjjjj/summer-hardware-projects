@@ -2,9 +2,8 @@
   <section id="learning-path" ref="sectionRef" class="relative overflow-hidden bg-bg-secondary">
     <!-- Header -->
     <div class="mx-auto max-w-6xl px-6 pt-28 md:pt-40 pb-16 md:pb-24 text-center">
-      <p ref="eyebrowRef" class="eyebrow mb-5 opacity-0 translate-y-6">学习路径</p>
       <div class="flex items-center justify-center gap-4 mb-5">
-        <h2 ref="headingRef" class="text-section font-bold tracking-tight text-text-primary opacity-0 translate-y-8">
+        <h2 ref="headingRef" class="text-section font-semibold tracking-tight text-text-primary opacity-0 translate-y-8">
           从零到一，步步为营
         </h2>
       </div>
@@ -78,12 +77,14 @@
                 </span>
                 <span class="text-caption font-mono text-text-tertiary">{{ step.days }}</span>
               </div>
-              <h3 class="text-lg font-bold text-text-primary mb-2.5 transition-colors duration-300 group-hover:text-text-primary">{{ step.title }}</h3>
+              <h3 class="text-lg font-semibold text-text-primary mb-2.5 transition-colors duration-300 group-hover:text-text-primary">{{ step.title }}</h3>
               <p class="text-body-sm text-text-secondary leading-relaxed">{{ step.description }}</p>
-              <div class="mt-4 space-y-2">
-                <div v-for="bullet in step.bullets" :key="bullet" class="flex items-start gap-2.5 text-[13px] text-text-tertiary">
-                  <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" :style="{ backgroundColor: step.color + '50' }" />
-                  <span>{{ bullet }}</span>
+              <div class="step-bullets overflow-hidden" style="max-height: 300px; opacity: 1;">
+                <div class="mt-4 space-y-2">
+                  <div v-for="bullet in step.bullets" :key="bullet" class="flex items-start gap-2.5 text-[13px] text-text-tertiary">
+                    <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" :style="{ backgroundColor: step.color + '50' }" />
+                    <span>{{ bullet }}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -107,7 +108,12 @@
             >
               {{ i + 1 }}
             </span>
-            <div class="relative flex h-14 w-14 items-center justify-center">
+            <button
+              @click="toggleStep(i)"
+              :aria-expanded="!!expandedSteps[i]"
+              :aria-label="expandedSteps[i] ? `收起第${i+1}步详情` : `展开第${i+1}步详情`"
+              class="relative flex h-14 w-14 items-center justify-center cursor-pointer focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-secondary rounded-full focus:outline-none"
+            >
               <!-- Soft bloom when activated (feathered halo + directional glow, not a neon ring) -->
               <div
                 class="absolute inset-[-10px] rounded-full transition-all duration-700"
@@ -125,7 +131,11 @@
               >
                 {{ i + 1 }}
               </div>
-            </div>
+            </button>
+            <ChevronDown
+              class="step-chevron mt-1 h-4 w-4"
+              :style="{ color: step.color + '80', opacity: 0.6 }"
+            />
           </div>
 
           <!-- Right card (odd steps) -->
@@ -143,12 +153,14 @@
                 </span>
                 <span class="text-caption font-mono text-text-tertiary">{{ step.days }}</span>
               </div>
-              <h3 class="text-lg font-bold text-text-primary mb-2.5 transition-colors duration-300 group-hover:text-text-primary">{{ step.title }}</h3>
+              <h3 class="text-lg font-semibold text-text-primary mb-2.5 transition-colors duration-300 group-hover:text-text-primary">{{ step.title }}</h3>
               <p class="text-body-sm text-text-secondary leading-relaxed">{{ step.description }}</p>
-              <div class="mt-4 space-y-2">
-                <div v-for="bullet in step.bullets" :key="bullet" class="flex items-start gap-2.5 text-[13px] text-text-tertiary">
-                  <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" :style="{ backgroundColor: step.color + '50' }" />
-                  <span>{{ bullet }}</span>
+              <div class="step-bullets overflow-hidden" style="max-height: 300px; opacity: 1;">
+                <div class="mt-4 space-y-2">
+                  <div v-for="bullet in step.bullets" :key="bullet" class="flex items-start gap-2.5 text-[13px] text-text-tertiary">
+                    <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" :style="{ backgroundColor: step.color + '50' }" />
+                    <span>{{ bullet }}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -159,7 +171,12 @@
         <!-- Mobile: simple list -->
         <div class="md:hidden flex items-start gap-5">
           <div class="flex flex-col items-center pt-1">
-            <div class="relative flex h-9 w-9 shrink-0 items-center justify-center">
+            <button
+              @click="toggleStep(i)"
+              :aria-expanded="!!expandedSteps[i]"
+              :aria-label="expandedSteps[i] ? `收起第${i+1}步详情` : `展开第${i+1}步详情`"
+              class="relative flex h-9 w-9 shrink-0 items-center justify-center cursor-pointer focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-secondary rounded-full focus:outline-none"
+            >
               <div
                 class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[12px] font-bold font-mono transition-all duration-500"
                 :style="{
@@ -170,7 +187,11 @@
               >
                 {{ i + 1 }}
               </div>
-            </div>
+            </button>
+            <ChevronDown
+              class="step-chevron mt-0.5 h-3 w-3"
+              :style="{ color: step.color + '80', opacity: 0.5 }"
+            />
           </div>
           <div class="relative rounded-2xl border border-white/[0.08] p-5 flex-1 overflow-hidden group transition-transform duration-500 hover:-translate-y-0.5 glass-card"
             :style="{ '--glow-cool': glowRgb(step.color) }">
@@ -185,12 +206,14 @@
               </span>
               <span class="text-caption font-mono text-text-tertiary">{{ step.days }}</span>
             </div>
-            <h3 class="text-base font-bold text-text-primary mb-1">{{ step.title }}</h3>
+            <h3 class="text-base font-semibold text-text-primary mb-1">{{ step.title }}</h3>
             <p class="text-body-sm text-text-secondary leading-relaxed">{{ step.description }}</p>
-            <div class="mt-3 space-y-1.5">
-              <div v-for="bullet in step.bullets" :key="bullet" class="flex items-start gap-2 text-[12px] text-text-tertiary">
-                <span class="mt-1 h-1 w-1 shrink-0 rounded-full" :style="{ backgroundColor: step.color + '50' }" />
-                <span>{{ bullet }}</span>
+            <div class="step-bullets overflow-hidden" style="max-height: 300px; opacity: 1;">
+              <div class="mt-3 space-y-1.5">
+                <div v-for="bullet in step.bullets" :key="bullet" class="flex items-start gap-2 text-[12px] text-text-tertiary">
+                  <span class="mt-1 h-1 w-1 shrink-0 rounded-full" :style="{ backgroundColor: step.color + '50' }" />
+                  <span>{{ bullet }}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -203,19 +226,73 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted, type Component } from 'vue'
 import { useReducedMotion } from '~/composables/useReducedMotion'
-import { Search, Cpu, Code2, Sparkles, Presentation } from 'lucide-vue-next'
+import { Search, Cpu, Code2, Sparkles, Presentation, ChevronDown } from 'lucide-vue-next'
 
 const sectionRef = ref<HTMLElement | null>(null)
 const timelineRef = ref<HTMLElement | null>(null)
-const eyebrowRef = ref<HTMLElement | null>(null)
 const headingRef = ref<HTMLElement | null>(null)
 const subRef = ref<HTMLElement | null>(null)
 const stepRefs = ref<Record<number, HTMLElement>>({})
 
 const progressHeight = ref(0)
 const activatedSteps = reactive<Record<number, boolean>>({})
+const expandedSteps = reactive<Record<number, boolean>>({})
 
 const reduce = useReducedMotion()
+const observerCleanups: (() => void)[] = []
+
+function toggleStep(i: number) {
+  const newState = !expandedSteps[i]
+  expandedSteps[i] = newState
+
+  // Find bullet containers and chevrons for this step (desktop + mobile)
+  const stepEl = stepRefs.value[i]
+  if (!stepEl) return
+
+  const bulletContainers = stepEl.querySelectorAll('.step-bullets')
+  const chevrons = stepEl.querySelectorAll('.step-chevron')
+
+  if (reduce.value || !gsapInstance) {
+    // Reduced motion or GSAP not loaded: instant toggle
+    bulletContainers.forEach((container) => {
+      const el = container as HTMLElement
+      el.style.maxHeight = newState ? '300px' : '0px'
+      el.style.opacity = newState ? '1' : '0'
+    })
+    chevrons.forEach((chevron) => {
+      const el = chevron as HTMLElement
+      el.style.transform = newState ? 'rotate(0deg)' : 'rotate(180deg)'
+    })
+    return
+  }
+
+  // GSAP-driven animation
+  bulletContainers.forEach((container) => {
+    if (newState) {
+      gsapInstance.to(container, {
+        maxHeight: 300,
+        opacity: 1,
+        duration: 0.4,
+        ease: 'power2.out',
+      })
+    } else {
+      gsapInstance.to(container, {
+        maxHeight: 0,
+        opacity: 0,
+        duration: 0.4,
+        ease: 'power2.in',
+      })
+    }
+  })
+
+  chevrons.forEach((chevron) => {
+    gsapInstance.to(chevron, {
+      rotation: newState ? 0 : 180,
+      duration: 0.3,
+      ease: 'power2.out',
+    })
+  })
+}
 
 const steps: {
   days: string
@@ -283,7 +360,7 @@ onMounted(async () => {
   gsapInstance = gsap
 
   // Animate header
-  const headerEls = [eyebrowRef.value, headingRef.value, subRef.value].filter(Boolean) as HTMLElement[]
+  const headerEls = [headingRef.value, subRef.value].filter(Boolean) as HTMLElement[]
   if (headerEls.length) {
     if (reduce.value) {
       gsap.set(headerEls, { opacity: 1, y: 0 })
@@ -322,6 +399,11 @@ onMounted(async () => {
   window.addEventListener('scroll', scrollHandler, { passive: true })
   scrollHandler()
 
+  // Initialize expandedSteps (all expanded by default)
+  steps.forEach((_, i) => {
+    expandedSteps[i] = true
+  })
+
   // Step card entrance
   Object.keys(stepRefs.value).forEach((key) => {
     const i = Number(key)
@@ -354,10 +436,12 @@ onMounted(async () => {
       { threshold: 0.2, rootMargin: '0px 0px -40px 0px' }
     )
     observer.observe(el)
+    observerCleanups.push(() => observer.disconnect())
   })
 })
 
 onUnmounted(() => {
   if (scrollHandler) window.removeEventListener('scroll', scrollHandler)
+  observerCleanups.forEach((fn) => fn())
 })
 </script>

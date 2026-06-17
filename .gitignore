@@ -32,6 +32,9 @@ screenshot-final.js
 # Screenshot verification outputs
 verify/
 
+# Design-audit working dir (per CLAUDE.md: never commit; use verify/ or website-research/)
+website-audit/
+
 # One-off screenshot files
 *.screenshot.png
 hero-screenshot.png

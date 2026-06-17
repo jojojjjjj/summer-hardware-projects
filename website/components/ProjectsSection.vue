@@ -10,11 +10,11 @@
         9 个项目
       </p>
       <h2
-        class="text-section font-bold tracking-tight text-text-primary relative"
+        class="text-section font-semibold tracking-tight text-text-primary relative"
         ref="headingRef"
         :style="{ opacity: headerVisible ? 1 : 0, transform: headerVisible ? 'translateY(0)' : 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s' }"
       >
-        <span class="absolute -inset-x-8 -inset-y-4 bg-gradient-to-r from-[#6366f1]/[0.08] via-[#8b5cf6]/[0.05] to-transparent rounded-2xl blur-xl pointer-events-none" />
+        <span class="absolute -inset-x-8 -inset-y-4 bg-gradient-to-r from-[#6366f1]/[0.08] to-transparent rounded-2xl blur-xl pointer-events-none" />
         <span class="relative">选择你的项目</span>
       </h2>
       <p

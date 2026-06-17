@@ -2,15 +2,15 @@
   <main>
     <AppNavbar />
     <HeroSection />
-    <div class="h-20 md:h-28" />
+    <div class="h-16 md:h-24"><ScrollDivider /></div>
     <ValueSection />
-    <div class="h-20 md:h-28" />
+    <div class="h-16 md:h-24"><ScrollDivider /></div>
     <ProjectsSection />
-    <div class="h-20 md:h-28" />
+    <div class="h-16 md:h-24"><ScrollDivider /></div>
     <LearningPath />
-    <div class="h-20 md:h-28" />
+    <div class="h-16 md:h-24"><ScrollDivider /></div>
     <TestimonialsSection />
-    <div class="h-20 md:h-28" />
+    <div class="h-16 md:h-24"><ScrollDivider /></div>
     <CtaSection />
     <AppFooter />
   </main>

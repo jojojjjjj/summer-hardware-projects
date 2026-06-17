@@ -7,6 +7,17 @@
     <!-- Faint cool grid texture -->
     <div ref="bgLayer3" class="absolute inset-0 opacity-[0.018]" style="background-image: linear-gradient(rgba(120,130,180,0.18) 1px, transparent 1px), linear-gradient(90deg, rgba(120,130,180,0.18) 1px, transparent 1px); background-size: 80px 80px;" />
 
+    <!-- Static ambient orbs (spatial depth — NO animation, never events) -->
+    <div class="ambient-orb" style="width:420px;height:420px;background:#3b82f6;top:-90px;right:8%;opacity:0.05" />
+    <div class="ambient-orb" style="width:600px;height:600px;background:#8b5cf6;bottom:-200px;left:4%;opacity:0.045" />
+
+    <!-- Global mouse-follow orb (interaction-driven; lerped via useGlobalMouse) -->
+    <div
+      ref="orbRef"
+      class="pointer-events-none absolute left-0 top-0 h-[500px] w-[500px] rounded-full"
+      style="background: radial-gradient(circle, rgba(99,102,241,0.10) 0%, rgba(99,102,241,0.04) 38%, transparent 66%); filter: blur(40px); opacity: 0; will-change: transform;"
+    />
+
     <!-- Content — 7:5 asymmetric, left-aligned -->
     <div class="relative z-10 mx-auto w-full max-w-6xl px-6">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
@@ -16,11 +27,19 @@
             <span class="eyebrow inline-flex items-center rounded-full px-4 py-1.5" style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.16);">2026 暑期</span>
           </div>
 
-          <!-- Main title — animated reveal -->
-          <h1 ref="titleRef" class="text-hero font-bold tracking-tight text-text-primary">
-            <span class="block" data-split-line>从零开始</span>
-            <span class="block" data-split-line>亲手打造 9 个真实硬件项目</span>
-          </h1>
+          <!-- Main title — animated reveal + scroll parallax wrapper + magnetic char field -->
+          <div ref="titleParallaxRef">
+            <h1 ref="titleRef" class="text-hero font-bold tracking-tight text-text-primary">
+              <span v-for="(line, li) in titleLines" :key="li" class="block" data-split-line>
+                <span
+                  v-for="(ch, ci) in line"
+                  :key="ci"
+                  class="hero-char inline-block"
+                  style="will-change: transform;"
+                >{{ ch === ' ' ? ' ' : ch }}</span>
+              </span>
+            </h1>
+          </div>
 
           <!-- Subtitle -->
           <p ref="subtitleRef" class="mt-8 text-xl sm:text-2xl text-text-secondary font-normal max-w-xl leading-relaxed">
@@ -32,10 +51,12 @@
             <a
               ref="ctaBtnRef"
               href="#projects"
+              @click="onHeroRipple"
               class="magnetic-btn cta-btn group relative inline-flex items-center justify-center gap-2.5 rounded-full px-9 py-4 text-[15px] font-semibold text-white overflow-hidden"
             >
               <span class="relative z-10">查看项目</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="relative z-10 transition-transform duration-300 group-hover:translate-x-0.5"><path d="m9 18 6-6-6-6"/></svg>
+              <span ref="rippleRef" class="pointer-events-none absolute inset-0 overflow-hidden rounded-full" />
             </a>
             <a href="#value-props" class="text-[15px] font-medium text-text-secondary/80 transition-colors duration-300 hover:text-text-primary hover:underline underline-offset-4 decoration-cool-indigo/40">
               了解更多
@@ -44,8 +65,8 @@
         </div>
 
         <!-- Specs — right column (desktop), full-width row (mobile) -->
-        <div ref="specsRef" class="lg:col-span-5 lg:pl-8">
-          <div class="grid grid-cols-3 gap-6 sm:gap-8 lg:border-l lg:border-white/[0.06] lg:pl-8">
+        <div ref="specsRef" class="lg:col-span-5 lg:pl-8" style="perspective: 900px;">
+          <div ref="specsGridRef" class="grid grid-cols-3 gap-6 sm:gap-8 lg:border-l lg:border-white/[0.06] lg:pl-8" style="transform-origin: center top; will-change: transform;">
             <div class="text-left">
               <div class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gradient-accent tabular-nums font-mono tracking-tighter">
                 {{ countUp.projects }}
@@ -79,21 +100,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, watch, onMounted, onUnmounted } from 'vue'
 import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useReducedMotion } from '~/composables/useReducedMotion'
+import { useGlobalMouse } from '~/composables/useGlobalMouse'
+
+gsap.registerPlugin(ScrollTrigger)
+
+// Title lines — pre-split into chars in the template for the magnetic field.
+const titleLines = ['从零开始', '亲手打造 9 个真实硬件项目']
 
 // ── Refs ──
 const sectionRef = ref<HTMLElement | null>(null)
 const bgLayer1 = ref<HTMLElement | null>(null)
 const bgLayer2 = ref<HTMLElement | null>(null)
 const bgLayer3 = ref<HTMLElement | null>(null)
+const orbRef = ref<HTMLElement | null>(null)
 const eyebrowRef = ref<HTMLElement | null>(null)
 const titleRef = ref<HTMLElement | null>(null)
+const titleParallaxRef = ref<HTMLElement | null>(null)
 const subtitleRef = ref<HTMLElement | null>(null)
 const ctaRef = ref<HTMLElement | null>(null)
 const ctaBtnRef = ref<HTMLElement | null>(null)
+const rippleRef = ref<HTMLElement | null>(null)
 const specsRef = ref<HTMLElement | null>(null)
+const specsGridRef = ref<HTMLElement | null>(null)
 const scrollIndicatorRef = ref<HTMLElement | null>(null)
 
 // ── Count-up state (RAF) ──
@@ -104,6 +136,7 @@ let rafId: number | null = null
 const magnetic = ref({ x: 0, y: 0 })
 
 const reduce = useReducedMotion()
+const { x: mouseX, y: mouseY, enabled: mouseEnabled } = useGlobalMouse(0.12)
 
 function onCtaMouseMove(e: MouseEvent) {
   if (!ctaBtnRef.value || reduce.value) return
@@ -120,19 +153,33 @@ function onCtaMouseLeave() {
   gsap.to(ctaBtnRef.value, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.4)' })
 }
 
-// ── Parallax on scroll ──
-let scrollHandler: (() => void) | null = null
-
-function setupParallax() {
-  scrollHandler = () => {
-    const scrollY = window.scrollY
-    const vh = window.innerHeight
-    if (scrollY > vh * 1.5) return
-    const progress = scrollY / vh
-    gsap.set(bgLayer2.value, { y: progress * 40 })
-    gsap.set(bgLayer3.value, { y: progress * 60 })
-  }
-  window.addEventListener('scroll', scrollHandler, { passive: true })
+// ── CTA ripple (click feedback) ──
+function onHeroRipple(e: MouseEvent) {
+  if (!rippleRef.value || !ctaBtnRef.value || reduce.value) return
+  const rect = ctaBtnRef.value.getBoundingClientRect()
+  const x = e.clientX - rect.left
+  const y = e.clientY - rect.top
+  const size = Math.max(rect.width, rect.height) * 2
+  const ripple = document.createElement('span')
+  ripple.style.cssText = `
+    position: absolute;
+    left: ${x - size / 2}px;
+    top: ${y - size / 2}px;
+    width: ${size}px;
+    height: ${size}px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.28);
+    transform: scale(0);
+    pointer-events: none;
+  `
+  rippleRef.value.appendChild(ripple)
+  gsap.to(ripple, {
+    scale: 1,
+    opacity: 0,
+    duration: 0.6,
+    ease: 'power2.out',
+    onComplete: () => ripple.remove(),
+  })
 }
 
 // ── Main timeline ──
@@ -145,9 +192,8 @@ onMounted(() => {
     // Snap everything to final state — no motion
     gsap.set([eyebrowRef.value, titleRef.value, subtitleRef.value, ctaRef.value, specsRef.value].filter(Boolean), { opacity: 1, y: 0 })
     gsap.set(scrollIndicatorRef.value, { opacity: 0.3 })
+    gsap.set(specsGridRef.value, { rotateX: 0 })
     countUp.projects = 9
-    ctaBtnRef.value?.addEventListener('mousemove', onCtaMouseMove)
-    ctaBtnRef.value?.addEventListener('mouseleave', onCtaMouseLeave)
     return
   }
 
@@ -169,12 +215,48 @@ onMounted(() => {
     .to(specsRef.value, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', onStart: startCountUp }, '-=0.3')
     .to(scrollIndicatorRef.value, { opacity: 0.3, duration: 1, ease: 'power2.out' }, '-=0.2')
 
+  // ── Scroll-driven parallax (title rises + fades; specs 3D tilt; bg drifts) ──
+  const stOpts = { trigger: sectionRef.value!, start: 'top top', end: 'bottom top', scrub: 0.8 }
+  gsap.to(titleParallaxRef.value, { y: -70, opacity: 0, ease: 'none', scrollTrigger: { ...stOpts } })
+  gsap.to(specsGridRef.value, { rotateX: -14, ease: 'none', scrollTrigger: { ...stOpts } })
+  gsap.to(bgLayer2.value, { y: 45, ease: 'none', scrollTrigger: { ...stOpts } })
+  gsap.to(bgLayer3.value, { y: 70, ease: 'none', scrollTrigger: { ...stOpts } })
+
   // Magnetic CTA
   ctaBtnRef.value?.addEventListener('mousemove', onCtaMouseMove)
   ctaBtnRef.value?.addEventListener('mouseleave', onCtaMouseLeave)
+})
 
-  // Parallax
-  setupParallax()
+// ── Global-mouse-driven: background orb follow + title magnetic char field ──
+watch([mouseX, mouseY], () => {
+  if (!mouseEnabled.value || !sectionRef.value) return
+  const rect = sectionRef.value.getBoundingClientRect()
+  const localX = mouseX.value - rect.left
+  const localY = mouseY.value - rect.top
+
+  // Orb follows the smoothed cursor (centered on cursor)
+  if (orbRef.value) {
+    gsap.set(orbRef.value, { x: localX - 250, y: localY - 250, opacity: 0.08 })
+  }
+
+  // Title magnetic field — chars within `influence` push away from the cursor (max ~3.2px)
+  const chars = titleRef.value?.querySelectorAll<HTMLElement>('.hero-char')
+  if (!chars || !chars.length) return
+  const outside = mouseY.value < rect.top - 80 || mouseY.value > rect.bottom + 80
+  const influence = 150
+  chars.forEach((el) => {
+    if (outside) { gsap.set(el, { x: 0, y: 0 }); return }
+    const r = el.getBoundingClientRect()
+    const ccx = r.left + r.width / 2
+    const ccy = r.top + r.height / 2
+    const dx = ccx - mouseX.value
+    const dy = ccy - mouseY.value
+    const dist = Math.hypot(dx, dy)
+    if (dist > influence) { gsap.set(el, { x: 0, y: 0 }); return }
+    const factor = 1 - dist / influence
+    const inv = 1 / (dist || 1)
+    gsap.set(el, { x: dx * inv * factor * 3.2, y: dy * inv * factor * 3.2 })
+  })
 })
 
 // ── RAF count-up ──
@@ -198,6 +280,9 @@ onUnmounted(() => {
   if (rafId !== null) cancelAnimationFrame(rafId)
   ctaBtnRef.value?.removeEventListener('mousemove', onCtaMouseMove)
   ctaBtnRef.value?.removeEventListener('mouseleave', onCtaMouseLeave)
-  if (scrollHandler) window.removeEventListener('scroll', scrollHandler)
+  // Kill only this component's ScrollTriggers
+  ScrollTrigger.getAll().forEach((st) => {
+    if (st.trigger === sectionRef.value) st.kill()
+  })
 })
 </script>

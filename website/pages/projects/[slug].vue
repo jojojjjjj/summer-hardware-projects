@@ -59,7 +59,7 @@
       <div class="mx-auto max-w-5xl px-6">
         <div class="mb-16 text-center">
           <p class="eyebrow mb-5">技能</p>
-          <h2 class="text-subsection font-bold tracking-tight">你将学到什么</h2>
+          <h2 class="text-subsection font-semibold tracking-tight">你将学到什么</h2>
         </div>
         <div class="grid gap-6 sm:grid-cols-2">
           <div v-for="cat in skillCategories" :key="cat.key"
@@ -68,7 +68,7 @@
               <div class="flex h-10 w-10 items-center justify-center rounded-xl" :style="{ backgroundColor: cat.color + '15' }">
                 <component :is="cat.iconComponent" class="w-5 h-5" :style="{ color: cat.color }" />
               </div>
-              <h3 class="text-base font-bold text-text-primary">{{ cat.label }}</h3>
+              <h3 class="text-base font-semibold text-text-primary">{{ cat.label }}</h3>
             </div>
             <ul class="space-y-2.5">
               <li v-for="skill in project.skills[cat.key]" :key="skill" class="flex items-center gap-2.5 text-[14px] text-text-secondary">
@@ -86,7 +86,7 @@
       <div class="mx-auto max-w-5xl px-6">
         <div class="mb-16 text-center">
           <p class="eyebrow mb-5">硬件</p>
-          <h2 class="text-subsection font-bold tracking-tight">所需材料</h2>
+          <h2 class="text-subsection font-semibold tracking-tight">所需材料</h2>
         </div>
         <div class="space-y-3">
           <div v-for="(item, i) in project.hardware" :key="i"
@@ -109,7 +109,7 @@
       <div class="mx-auto max-w-5xl px-6">
         <div class="mb-16 text-center">
           <p class="eyebrow mb-5">日程</p>
-          <h2 class="text-subsection font-bold tracking-tight">项目时间线</h2>
+          <h2 class="text-subsection font-semibold tracking-tight">项目时间线</h2>
         </div>
         <div class="space-y-6">
           <div v-for="(phase, i) in project.timeline" :key="i"
@@ -119,7 +119,7 @@
               <span class="text-[13px] font-bold font-mono" :style="{ color: project.colorHex }">{{ phase.days }}</span>
               <span class="text-[11px] font-mono text-text-tertiary tracking-wide">Phase {{ i + 1 }}</span>
             </div>
-            <h3 class="text-lg font-bold text-text-primary mb-2">{{ phase.title }}</h3>
+            <h3 class="text-lg font-semibold text-text-primary mb-2">{{ phase.title }}</h3>
             <p class="text-[14px] text-text-secondary leading-relaxed">{{ phase.description }}</p>
           </div>
         </div>
@@ -130,7 +130,7 @@
     <section v-if="hasLinks" class="section-dark py-20 sm:py-28">
       <div class="mx-auto max-w-5xl px-6 text-center">
         <p class="eyebrow mb-5">资源</p>
-        <h2 class="text-subsection font-bold tracking-tight">开源参考</h2>
+        <h2 class="text-subsection font-semibold tracking-tight">开源参考</h2>
         <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
           <a v-if="project.links.github" :href="project.links.github" target="_blank" rel="noopener noreferrer"
             class="inline-flex items-center gap-2.5 rounded-full border border-white/[0.08] px-5 py-2.5 text-[14px] font-medium text-text-secondary transition-all duration-200 hover:border-white/[0.15] hover:text-text-primary">

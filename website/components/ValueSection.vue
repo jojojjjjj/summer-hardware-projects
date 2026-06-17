@@ -4,7 +4,7 @@
     <div class="bg-bg-secondary relative overflow-hidden">
       <div class="mx-auto max-w-6xl px-6 pt-28 md:pt-40 pb-20 md:pb-28">
         <p class="eyebrow mb-5 opacity-0 translate-y-6" ref="introEyebrow">为什么选择我们</p>
-        <h2 class="text-section font-bold tracking-tight text-text-primary opacity-0 translate-y-8 max-w-3xl" ref="introHeading">
+        <h2 class="text-section font-semibold tracking-tight text-text-primary opacity-0 translate-y-8 max-w-3xl" ref="introHeading">
           不只是夏令营<br />
           <span class="text-text-secondary">是真正的工程训练</span>
         </h2>
@@ -60,7 +60,7 @@
                     class="relative z-10 h-12 w-12 md:h-16 md:w-16 transition-transform duration-700"
                     :style="{
                       color: item.accent,
-                      transform: visibleFeatures[i] ? 'scale(1)' : 'scale(0.8)',
+                      transform: visibleFeatures[i] ? 'scale(1) translateX(0)' : `scale(0.8) translateX(${i % 2 === 0 ? '-24px' : '24px'})`,
                     }"
                   />
                 </div>
@@ -72,19 +72,19 @@
           <div :class="i % 2 !== 0 ? 'md:col-span-7 md:[direction:ltr]' : 'md:col-span-7'">
             <p
               class="text-[11px] font-mono uppercase tracking-[0.2em] mb-5 transition-all duration-700"
-              :style="{ color: item.accent, opacity: visibleFeatures[i] ? 0.9 : 0, transform: visibleFeatures[i] ? 'translateY(0)' : 'translateY(24px)' }"
+              :style="{ color: item.accent, opacity: visibleFeatures[i] ? 0.9 : 0, transform: visibleFeatures[i] ? 'translateY(0) translateX(0)' : `translateY(24px) translateX(${i % 2 === 0 ? '-24px' : '24px'})` }"
             >
               {{ item.eyebrow }}
             </p>
             <h3
-              class="text-subsection font-bold tracking-tight text-text-primary mb-6 transition-all duration-700 delay-75"
-              :style="{ opacity: visibleFeatures[i] ? 1 : 0, transform: visibleFeatures[i] ? 'translateY(0)' : 'translateY(24px)' }"
+              class="text-subsection font-semibold tracking-tight text-text-primary mb-6 transition-all duration-700 delay-75"
+              :style="{ opacity: visibleFeatures[i] ? 1 : 0, transform: visibleFeatures[i] ? 'translateY(0) translateX(0)' : `translateY(24px) translateX(${i % 2 === 0 ? '-24px' : '24px'})` }"
             >
               {{ item.title }}
             </h3>
             <p
               class="text-body-lg text-text-secondary leading-relaxed mb-10 max-w-md transition-all duration-700 delay-150"
-              :style="{ opacity: visibleFeatures[i] ? 1 : 0, transform: visibleFeatures[i] ? 'translateY(0)' : 'translateY(24px)' }"
+              :style="{ opacity: visibleFeatures[i] ? 1 : 0, transform: visibleFeatures[i] ? 'translateY(0) translateX(0)' : `translateY(24px) translateX(${i % 2 === 0 ? '-24px' : '24px'})` }"
             >
               {{ item.description }}
             </p>
@@ -96,7 +96,7 @@
                 :style="{
                   borderColor: item.accent + '40',
                   opacity: visibleFeatures[i] ? 1 : 0,
-                  transform: visibleFeatures[i] ? 'translateY(0)' : 'translateY(20px)',
+                  transform: visibleFeatures[i] ? 'translateY(0) translateX(0)' : `translateY(20px) translateX(${i % 2 === 0 ? '-24px' : '24px'})`,
                   transitionDelay: `${200 + pi * 80}ms`,
                 }"
               >
@@ -110,7 +110,7 @@
               class="mt-10 inline-flex items-baseline gap-3 rounded-xl px-5 py-3 transition-all duration-700 glass-card"
               :style="{
                 opacity: visibleFeatures[i] ? 1 : 0,
-                transform: visibleFeatures[i] ? 'translateY(0)' : 'translateY(16px)',
+                transform: visibleFeatures[i] ? 'translateY(0) translateX(0)' : `translateY(16px) translateX(${i % 2 === 0 ? '-24px' : '24px'})`,
                 transitionDelay: '400ms',
                 borderLeft: `3px solid ${item.accent}`,
               }"
@@ -234,6 +234,12 @@ onMounted(async () => {
     } else {
       gsap.to(introEls, { opacity: 1, y: 0, duration: 0.9, stagger: 0.12, ease: 'expo.out', delay: 0.2 })
     }
+  }
+
+  // Reduced-motion: force all features visible immediately (transforms resolve via CSS transition-duration: 0.001ms)
+  if (reduce.value) {
+    values.forEach((_, i) => { visibleFeatures[i] = true })
+    return
   }
 
   // Set up IntersectionObserver for each feature

@@ -1,5 +1,5 @@
 <template>
-  <TiltCard :max-tilt="6" :glare-opacity="0.08" glow="cool">
+  <TiltCard :max-tilt="tiltConfig.maxTilt" :duration="tiltConfig.duration" glow="cool">
     <NuxtLink :to="`/projects/${project.slug}`" class="block group">
       <div
         ref="cardRef"
@@ -8,7 +8,7 @@
           background: cardGradient,
           '--glow-cool': glowRgb(project.colorHex),
           boxShadow: isHovered
-            ? '0 18px 60px -12px rgba(0,0,0,0.45), 0 0 0 1px ' + project.colorHex + '55'
+            ? tiltConfig.hoverShadow
             : '0 2px 8px rgba(0,0,0,0.18), 0 8px 32px rgba(0,0,0,0.22)',
           border: '1px solid ' + project.colorHex + '20',
         }"
@@ -59,7 +59,7 @@
           <!-- MCU label centered -->
           <div class="relative z-[1] flex flex-col items-center gap-3 text-center">
             <div
-              class="flex h-16 w-16 items-center justify-center rounded-2xl transition-transform duration-500 group-hover:scale-110"
+              class="flex h-16 w-16 items-center justify-center rounded-2xl transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-0.5"
               :style="{
                 background: `linear-gradient(145deg, ${project.colorHex}30, ${project.colorHex}10)`,
                 backdropFilter: 'blur(12px)',
@@ -81,7 +81,7 @@
 
           <!-- Title -->
           <h3
-            class="text-[18px] font-bold tracking-tight text-text-primary transition-colors duration-300 group-hover:text-text-primary"
+            class="text-[18px] font-semibold tracking-tight text-text-primary transition-all duration-500 group-hover:text-text-primary group-hover:-translate-y-0.5"
           >
             {{ project.titleZh }}
           </h3>
@@ -173,6 +173,36 @@ const difficultyColor = computed(() => {
     5: '#ff6b6b',
   }
   return colors[props.project.difficulty] || '#c9944a'
+})
+
+/** Difficulty-scaled tilt configuration — heavier projects tilt more and feel "weightier" */
+const tiltConfig = computed(() => {
+  const d = props.project.difficulty
+  const hex = props.project.colorHex
+
+  // Shadow depth scales with difficulty (beginner = light, expert = deep)
+  const shadowMap: Record<number, string> = {
+    1: `0 12px 40px -16px rgba(0,0,0,0.4), 0 0 0 1px ${hex}40`,
+    2: `0 12px 40px -16px rgba(0,0,0,0.4), 0 0 0 1px ${hex}40`,
+    3: `0 18px 60px -12px rgba(0,0,0,0.45), 0 0 0 1px ${hex}55`,
+    4: `0 22px 68px -14px rgba(0,0,0,0.5), 0 0 0 1px ${hex}55`,
+    5: `0 28px 80px -14px rgba(0,0,0,0.55), 0 0 0 1px ${hex}55`,
+  }
+
+  const configMap: Record<number, { maxTilt: number; duration: number }> = {
+    1: { maxTilt: 4, duration: 0.32 },
+    2: { maxTilt: 4, duration: 0.32 },
+    3: { maxTilt: 6, duration: 0.4 },
+    4: { maxTilt: 8, duration: 0.46 },
+    5: { maxTilt: 10, duration: 0.5 },
+  }
+
+  const base = configMap[d] || configMap[3]
+  return {
+    maxTilt: base.maxTilt,
+    duration: base.duration,
+    hoverShadow: shadowMap[d] || shadowMap[3],
+  }
 })
 
 const cardGradient = computed(() => {
