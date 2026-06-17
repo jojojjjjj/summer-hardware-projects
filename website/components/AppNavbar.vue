@@ -97,10 +97,10 @@ const ctaBtnRef = ref<HTMLElement | null>(null)
 const reduce = useReducedMotion()
 
 const navLinks = [
+  { href: '#about', label: '关于' },
+  { href: '#services', label: '课程' },
   { href: '#projects', label: '项目' },
-  { href: '#learning-path', label: '学习路径' },
-  { href: '#testimonials', label: '学员反馈' },
-  { href: '#contact', label: '联系我们' },
+  { href: '#contact', label: '联系' },
 ]
 
 // ── Scroll detection ──

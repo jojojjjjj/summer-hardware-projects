@@ -3,25 +3,27 @@
     <AppNavbar />
     <HeroSection />
 
-    <!-- Bridge 1 · Hero → Value: full-bleed color-shift + hairline (was an identical ScrollDivider) -->
-    <SectionBridge variant="color-shift" from="#0b0d12" to="#11141b" />
+    <!-- 08 · Jack-style flow: Hero → Marquee → About → Services (white flip) →
+         Projects (sticky-stack) → CTA. SectionBridge rhythm preserved from 07;
+         the white Services → dark Projects transition is the Jack -mt overlap. -->
+    <JackMarquee />
 
-    <ValueSection />
+    <!-- Bridge · Marquee → About: left-aligned index rule -->
+    <SectionBridge variant="overlap-lip" tag="01 — 关于" />
 
-    <!-- Bridge 2 · Value → Projects: left-aligned index rule (NOT a centered line) -->
-    <SectionBridge variant="overlap-lip" tag="02 — Projects" />
+    <JackAbout />
 
-    <ProjectsSection />
-
-    <!-- Bridge 3 · Projects → LearningPath: parallax row of the 9 project colours -->
+    <!-- Bridge · About → Services: parallax row of the 9 project colours -->
     <SectionBridge variant="dots" />
 
-    <!-- Tight band (≤0.5 screen): the height-rhythm counterpoint to the long LearningPath -->
-    <SectionBridge variant="tight" number="15">天，从第一次焊接到最终答辩</SectionBridge>
+    <JackServices />
 
-    <LearningPath />
+    <!-- JackProjects: dark, rounded-top, pulled up (-mt) to overlap the white
+         Services — the Jack signature white→dark flip (no bridge; the overlap
+         IS the transition). -->
+    <JackProjects />
 
-    <!-- Bridge 4 · LearningPath → CTA: soft full-bleed glow merging the two atmospheres -->
+    <!-- Bridge · Projects → CTA: soft glow merging the two atmospheres -->
     <SectionBridge variant="glow-merge" />
 
     <CtaSection />

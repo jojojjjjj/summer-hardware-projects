@@ -98,6 +98,9 @@ const config: Config = {
           'Noto Sans SC',
           'sans-serif',
         ],
+        // 08: Kanit drives the Jack-style giant gradient headings (display-only;
+        // Latin/Thai — no CJK, so Noto Sans SC must follow for Chinese text).
+        jack: ['Kanit', 'Plus Jakarta Sans', 'Noto Sans SC', 'sans-serif'],
       },
 
       /* ── Apple-scale typography (weights lowered — no 800) ── */

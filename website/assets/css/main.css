@@ -7,7 +7,7 @@
    - No infinite breathing / pulse animations
    ═══════════════════════════════════════════════════════════════════ */
 
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Noto+Sans+SC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Noto+Sans+SC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Kanit:wght@400;600;800;900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -72,7 +72,9 @@
     font-size: 17px;
     line-height: 1.65;
     letter-spacing: -0.011em;
-    overflow-x: hidden;
+    /* 08: `clip` (not `hidden`) — hidden computes overflow-y:auto, making body a
+       scroll container that breaks position:sticky in the JackProjects stack. */
+    overflow-x: clip;
     background-color: var(--bg-primary);
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
@@ -221,6 +223,18 @@
   .text-gradient-accent {
     background: linear-gradient(135deg, #9aa3d4, #6366f1);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  /* ── 08: Jack-style hero heading — cool grey→silver vertical gradient on Kanit.
+     Distinct from .text-gradient-accent (cool indigo). Used on hero h1 + section
+     headings. font-black/uppercase/tracking-tight applied via Tailwind utilities. ── */
+  .hero-heading {
+    font-family: 'Kanit', 'Plus Jakarta Sans', 'Noto Sans SC', sans-serif;
+    background: linear-gradient(180deg, #646973 0%, #BBCCD7 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
   }
 
   /* Soft cool ambient wash (top) — use sparingly, never full-bleed warm */

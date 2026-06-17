@@ -34,7 +34,7 @@
 
           <!-- Main title — animated reveal + scroll parallax wrapper + magnetic char field -->
           <div ref="titleParallaxRef">
-            <h1 ref="titleRef" class="text-hero font-bold tracking-tight text-text-primary">
+            <h1 ref="titleRef" class="hero-heading text-hero font-black tracking-tight">
               <span v-for="(line, li) in titleLines" :key="li" class="block" data-split-line>
                 <span
                   v-for="(ch, ci) in line"
@@ -243,24 +243,9 @@ watch([mouseX, mouseY], () => {
     gsap.set(orbRef.value, { x: localX - 250, y: localY - 250, opacity: 0.08 })
   }
 
-  // Title magnetic field — chars within `influence` push away from the cursor (max ~3.2px)
-  const chars = titleRef.value?.querySelectorAll<HTMLElement>('.hero-char')
-  if (!chars || !chars.length) return
-  const outside = mouseY.value < rect.top - 80 || mouseY.value > rect.bottom + 80
-  const influence = 150
-  chars.forEach((el) => {
-    if (outside) { gsap.set(el, { x: 0, y: 0 }); return }
-    const r = el.getBoundingClientRect()
-    const ccx = r.left + r.width / 2
-    const ccy = r.top + r.height / 2
-    const dx = ccx - mouseX.value
-    const dy = ccy - mouseY.value
-    const dist = Math.hypot(dx, dy)
-    if (dist > influence) { gsap.set(el, { x: 0, y: 0 }); return }
-    const factor = 1 - dist / influence
-    const inv = 1 / (dist || 1)
-    gsap.set(el, { x: dx * inv * factor * 3.2, y: dy * inv * factor * 3.2 })
-  })
+  // 08: per-char magnetic field disabled — the h1 now uses .hero-heading gradient
+  // (background-clip:text). Transformed child chars drop the clipped gradient and
+  // turn invisible on hover. Orb follow + entrance stagger + magnetic CTA remain.
 })
 
 // ── RAF count-up ──
