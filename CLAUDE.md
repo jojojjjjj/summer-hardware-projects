@@ -44,12 +44,17 @@ There is **no lint script** configured (no ESLint in `website/package.json`).
 
 ### Visual verification
 
-Playwright (`@playwright/test`, devDependency) scripts at the **repo root** screenshot a locally-served build into `verify/` (gitignored):
+> **Rule (hardcoded — always follow this):** ALL visual-verification artifacts — screenshots, capture scripts, before/after diffs, design-review reports — live under **`verify/`** at the repo root. `verify/` is gitignored, so none of this is committed. Never create `website-audit/`, `website/verify/`, or scatter screenshot scripts at the repo root; `verify/` is the single home. This is mandatory for every visual change, before and after.
 
-- `verify-screenshot.js` — expects a server on `localhost:8765`, writes `verify/v1/`
-- `screenshot-final.js` — expects a server on `localhost:3099`, writes `verify/`
+Layout:
 
-Each script hardcodes its own port and is a one-off (both are gitignored). To use one: serve the built site (`npm run preview` from `website/`, or serve `.output/public`), make sure the port matches the script, then `node verify-screenshot.js`. Nuxt's default dev/preview port is 3000 — adjust the script or the server as needed.
+- `verify/scripts/` — reusable Playwright capture scripts (gitignored dev tools, not committed):
+  - `screenshot-audit.mjs` — `node verify/scripts/screenshot-audit.mjs before|after [port]`. Captures `/`, `/projects`, `/projects/weather-cube` at 375 / 768 / 1440 → `verify/<phase>-upgrade/`.
+  - `section-shots.mjs` — `node verify/scripts/section-shots.mjs` (expects `:3000`). Per-section viewport screenshots (in-view states activated, ground-truth scroll-position verified) at 1440 + 375 → `verify/sections/`.
+  - `verify/legacy/` — older one-off scripts (`verify-screenshot.js`, `screenshot-final.js`) kept for reference.
+- `verify/<run-name>/` — one folder per verification run (e.g. `verify/before-upgrade/`, `verify/after-upgrade/`, `verify/sections/`). Screenshots land here, alongside any `SUMMARY.md` / `design-review.md` / `issues.md` for that run.
+
+How to use: serve the built site (`npm run preview` from `website/`, or serve `.output/public`) — or run `npm run dev` (default `:3000`) — then run the script. The scripts resolve Playwright from `website/node_modules` via an absolute `createRequire`, so they work from any cwd. When capturing, disable smooth-scroll first (`document.documentElement.style.scrollBehavior = 'auto'`) and assert the target heading is in the viewport before screenshotting, or `scroll-behavior: smooth` will capture mid-scroll at the wrong position.
 
 ### Deployment
 
@@ -173,5 +178,5 @@ Team config: `.claude/teams/summer-project/config.json` (lead: project-manager, 
 - **Bilingual requirement**: every deliverable must have both Chinese and English content.
 - **Scaffolding principle**: curriculum docs must include prerequisite checklists, common error guides, and debugging tips.
 - **College-level rigor**: course-packs must include formal project proposals, weekly check-in reports, final demo + presentation specs, and Git workflow conventions.
-- **Design audit artifacts**: `website-audit/` and `website-research/` contain competitive analysis and design specs — reference these (and `prompts/05_website_visual_upgrade.md`) when modifying visual design.
+- **Visual verification & design-audit artifacts**: visual-verification screenshots, capture scripts, and design-review reports live under **`verify/`** (gitignored) — see [Visual verification](#visual-verification). `website-research/` contains competitive analysis and design specs — reference it (and `prompts/05_website_visual_upgrade.md`) when modifying visual design. (The old `website-audit/` folder is gone; do not recreate it.)
 - **`website-old/`** is the pre-Nuxt Next.js backup and is gitignored — do not edit it; it is not part of the build.
