@@ -105,6 +105,8 @@ Website slugs come from `content/projects.ts` and **do not always match the `pro
 
 Each project folder follows: `README.md`, `curriculum/`, `hardware/`, `software/`, `assignments/` (some also have `resources/` or `advanced/`).
 
+> **The 9 `project-NN-*` directories are git submodules** — each is its own public repo at `https://github.com/jojojjjjj/<folder>.git` (branch `main`), linked in via `.gitmodules`. Clone/update instructions are in [Key Conventions](#key-conventions).
+
 ---
 
 ## Three-Phase Generation Pipeline
@@ -140,6 +142,7 @@ Team config: `.claude/teams/summer-project/config.json` (lead: project-manager, 
 
 ## Key Conventions
 
+- **Project course-packs are git submodules**: the 9 `project-NN-*` directories are tracked as git submodules, each pointing to its own public repo `https://github.com/jojojjjjj/<folder>.git` (branch `main`, registered in `.gitmodules`). Clone recursively: `git clone --recurse-submodules https://github.com/jojojjjjj/summer-hardware-projects.git` — or, after a plain clone, `git submodule update --init --recursive`. To edit a project, commit inside the submodule (it is its own repo) and then bump the submodule pointer in the parent; to advance all submodules to their latest `main`, run `git submodule update --remote --merge`.
 - **When adding/modifying a project**: update both the project folder's `README.md` and `website/content/projects.ts` — they must stay in sync. If you add a project, also add a matching `project-NN` accent color in `tailwind.config.ts` and a `colorHex` in the data.
 - **Website deployment path**: the site lives at `/summer-hardware-projects` on GitHub Pages via `app.baseURL` (production only); local dev has no base prefix.
 - **Static generation constraints**: all pages must be statically generatable (no server runtime). The build is `nuxt generate`; there is no `next/image`/Nuxt Image optimization here — images are plain static assets in `public/`.

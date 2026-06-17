@@ -1,0 +1,36 @@
+[submodule "project-01-binocular-thermal-imager"]
+	path = project-01-binocular-thermal-imager
+	url = https://github.com/jojojjjjj/project-01-binocular-thermal-imager.git
+	branch = main
+[submodule "project-02-env-monitor-mid"]
+	path = project-02-env-monitor-mid
+	url = https://github.com/jojojjjjj/project-02-env-monitor-mid.git
+	branch = main
+[submodule "project-03-4mode-keyboard"]
+	path = project-03-4mode-keyboard
+	url = https://github.com/jojojjjjj/project-03-4mode-keyboard.git
+	branch = main
+[submodule "project-04-pocket-oscilloscope-high"]
+	path = project-04-pocket-oscilloscope-high
+	url = https://github.com/jojojjjjj/project-04-pocket-oscilloscope-high.git
+	branch = main
+[submodule "project-05-desktop-pet-mid"]
+	path = project-05-desktop-pet-mid
+	url = https://github.com/jojojjjjj/project-05-desktop-pet-mid.git
+	branch = main
+[submodule "project-06-weather-cube-easy"]
+	path = project-06-weather-cube-easy
+	url = https://github.com/jojojjjjj/project-06-weather-cube-easy.git
+	branch = main
+[submodule "project-07-bipedal-wheeled-robot-high"]
+	path = project-07-bipedal-wheeled-robot-high
+	url = https://github.com/jojojjjjj/project-07-bipedal-wheeled-robot-high.git
+	branch = main
+[submodule "project-08-electronbot-xhigh"]
+	path = project-08-electronbot-xhigh
+	url = https://github.com/jojojjjjj/project-08-electronbot-xhigh.git
+	branch = main
+[submodule "project-09-desk-satellite-high"]
+	path = project-09-desk-satellite-high
+	url = https://github.com/jojojjjjj/project-09-desk-satellite-high.git
+	branch = main

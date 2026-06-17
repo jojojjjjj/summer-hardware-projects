@@ -102,6 +102,10 @@ summer-hardware-projects/
 └── project-09-desk-satellite-high/        # 桌面卫星气象站
 ```
 
+> 🔗 **9 个 `project-NN-*` 目录均为 git submodule**，各自指向独立公开仓库（`https://github.com/jojojjjjj/<folder>`，分支 `main`）。完整克隆：
+> `git clone --recurse-submodules https://github.com/jojojjjjj/summer-hardware-projects.git`
+> 已克隆的仓库补全子模块：`git submodule update --init --recursive`
+
 每个项目文件夹包含统一结构：
 
 ```

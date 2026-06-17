@@ -6,6 +6,8 @@
 
 > This repository is a summer practicum resource library designed for **high school students**, where each subfolder corresponds to an independent project module.
 
+> 🔗 Each `project-NN-*` subfolder is a **git submodule** pointing to its own public repo (`https://github.com/jojojjjjj/project-NN-*`, branch `main`). Clone with `--recurse-submodules`, or run `git submodule update --init --recursive` after cloning.
+
 ---
 
 ## 核心参数 | Core Parameters
