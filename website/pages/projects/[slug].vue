@@ -4,9 +4,9 @@
 
     <!-- Hero -->
     <section class="relative min-h-[60vh] sm:min-h-[70vh] pt-24 sm:pt-28 pb-16 sm:pb-20"
-      :style="{ background: 'radial-gradient(ellipse at top, ' + project.colorHex + '15, transparent 70%)' }">
+      :style="{ background: 'radial-gradient(ellipse at top, ' + project.colorHex + '0a, transparent 70%)' }">
       <div class="mx-auto max-w-5xl px-6">
-        <NuxtLink to="/#projects" class="mb-10 inline-flex items-center gap-2 text-[13px] text-text-secondary transition-colors hover:text-warm-peach">
+        <NuxtLink to="/#projects" class="mb-10 inline-flex items-center gap-2 text-[13px] text-text-secondary transition-colors hover:text-text-primary">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
           返回项目列表
         </NuxtLink>
@@ -19,7 +19,7 @@
                 Project {{ project.id }}
               </span>
             </div>
-            <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-text-primary">{{ project.titleZh }}</h1>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-text-primary">{{ project.titleZh }}</h1>
             <p class="mt-3 text-xl sm:text-2xl text-text-secondary font-mono font-medium">{{ project.titleEn }}</p>
             <p class="mt-6 text-body-lg text-text-secondary leading-relaxed">{{ project.description }}</p>
 
@@ -44,9 +44,9 @@
           </div>
 
           <div class="flex items-center justify-center order-first md:order-last">
-            <div class="aspect-video w-full max-w-lg rounded-3xl border border-white/[0.06] inner-glow" :style="{ background: 'linear-gradient(135deg, ' + project.colorHex + '0a, ' + project.colorHex + '03)' }">
+            <div class="aspect-video w-full max-w-lg rounded-3xl border border-white/[0.06] inner-glow overflow-hidden" :style="{ background: 'linear-gradient(135deg, ' + project.colorHex + '0a, ' + project.colorHex + '03)' }">
               <div class="flex h-full items-center justify-center">
-                <span class="text-7xl sm:text-9xl font-mono font-extrabold opacity-[0.04]" :style="{ color: project.colorHex }">{{ project.titleEn }}</span>
+                <span class="text-6xl sm:text-8xl font-mono font-bold opacity-[0.05]" :style="{ color: project.colorHex }">{{ project.titleEn }}</span>
               </div>
             </div>
           </div>
@@ -59,7 +59,7 @@
       <div class="mx-auto max-w-5xl px-6">
         <div class="mb-16 text-center">
           <p class="eyebrow mb-5">技能</p>
-          <h2 class="text-subsection font-extrabold tracking-tight">你将学到什么</h2>
+          <h2 class="text-subsection font-bold tracking-tight">你将学到什么</h2>
         </div>
         <div class="grid gap-6 sm:grid-cols-2">
           <div v-for="cat in skillCategories" :key="cat.key"
@@ -86,7 +86,7 @@
       <div class="mx-auto max-w-5xl px-6">
         <div class="mb-16 text-center">
           <p class="eyebrow mb-5">硬件</p>
-          <h2 class="text-subsection font-extrabold tracking-tight">所需材料</h2>
+          <h2 class="text-subsection font-bold tracking-tight">所需材料</h2>
         </div>
         <div class="space-y-3">
           <div v-for="(item, i) in project.hardware" :key="i"
@@ -109,7 +109,7 @@
       <div class="mx-auto max-w-5xl px-6">
         <div class="mb-16 text-center">
           <p class="eyebrow mb-5">日程</p>
-          <h2 class="text-subsection font-extrabold tracking-tight">项目时间线</h2>
+          <h2 class="text-subsection font-bold tracking-tight">项目时间线</h2>
         </div>
         <div class="space-y-6">
           <div v-for="(phase, i) in project.timeline" :key="i"
@@ -130,7 +130,7 @@
     <section v-if="hasLinks" class="section-dark py-20 sm:py-28">
       <div class="mx-auto max-w-5xl px-6 text-center">
         <p class="eyebrow mb-5">资源</p>
-        <h2 class="text-subsection font-extrabold tracking-tight">开源参考</h2>
+        <h2 class="text-subsection font-bold tracking-tight">开源参考</h2>
         <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
           <a v-if="project.links.github" :href="project.links.github" target="_blank" rel="noopener noreferrer"
             class="inline-flex items-center gap-2.5 rounded-full border border-white/[0.08] px-5 py-2.5 text-[14px] font-medium text-text-secondary transition-all duration-200 hover:border-white/[0.15] hover:text-text-primary">
@@ -167,7 +167,7 @@
             </div>
           </NuxtLink>
           <div v-else />
-          <NuxtLink to="/projects" class="text-[13px] text-text-tertiary hover:text-warm-peach transition-colors">
+          <NuxtLink to="/projects" class="text-[13px] text-text-tertiary hover:text-text-primary transition-colors">
             全部项目
           </NuxtLink>
           <NuxtLink v-if="nextProject" :to="'/projects/' + nextProject.slug"

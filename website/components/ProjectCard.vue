@@ -1,28 +1,30 @@
 <template>
-  <TiltCard :max-tilt="6" :glare-opacity="0.1">
+  <TiltCard :max-tilt="6" :glare-opacity="0.08" glow="cool">
     <NuxtLink :to="`/projects/${project.slug}`" class="block group">
       <div
-        class="relative w-[320px] sm:w-[360px] rounded-[1.75rem] overflow-hidden transition-all duration-500"
+        ref="cardRef"
+        class="spotlight relative w-[320px] sm:w-[360px] rounded-[1.75rem] overflow-hidden transition-all duration-500"
         :style="{
           background: cardGradient,
-          boxShadow: isHovered ? `0 0 80px ${project.colorHex}30, 0 8px 40px rgba(0,0,0,0.3)` : '0 2px 8px rgba(0,0,0,0.18), 0 8px 32px rgba(0,0,0,0.22)',
-          border: `1px solid ${project.colorHex}25`,
+          '--glow-cool': glowRgb(project.colorHex),
+          boxShadow: isHovered
+            ? '0 10px 40px rgba(0,0,0,0.35), 0 0 0 1px ' + project.colorHex + '40'
+            : '0 2px 8px rgba(0,0,0,0.18), 0 8px 32px rgba(0,0,0,0.22)',
+          border: '1px solid ' + project.colorHex + '20',
         }"
         @mouseenter="isHovered = true"
         @mouseleave="isHovered = false"
       >
-        <!-- Top area with richer gradient + watermark -->
+        <!-- Top area with subtle gradient + watermark -->
         <div class="relative aspect-[4/3] flex items-center justify-center overflow-hidden px-6 pt-6">
-          <!-- Richer gradient overlay that shifts on hover -->
-          <div class="absolute inset-0 transition-opacity duration-700" :style="{ background: `linear-gradient(180deg, ${project.colorHex}20 0%, ${project.colorHex}08 50%, transparent 100%)` }" />
-          <div class="absolute inset-0 opacity-0 transition-opacity duration-700" :class="{ 'opacity-100': isHovered }" :style="{ background: `radial-gradient(ellipse at 50% 30%, ${project.colorHex}28 0%, transparent 70%)` }" />
+          <div class="absolute inset-0" :style="{ background: `linear-gradient(180deg, ${project.colorHex}18 0%, ${project.colorHex}06 50%, transparent 100%)` }" />
 
           <!-- Large project number watermark -->
           <span
-            class="absolute font-mono font-extrabold leading-none select-none pointer-events-none transition-transform duration-700"
+            class="absolute font-mono font-bold leading-none select-none pointer-events-none transition-transform duration-700"
             :style="{
               color: project.colorHex,
-              opacity: 0.14,
+              opacity: 0.13,
               fontSize: 'clamp(7rem, 14vw, 10rem)',
               letterSpacing: '-0.06em',
               top: '-0.1em',
@@ -44,7 +46,7 @@
             </span>
           </div>
 
-          <!-- Difficulty pill — warm color -->
+          <!-- Difficulty pill -->
           <div class="absolute top-5 right-5 z-[2]">
             <span
               class="rounded-full px-3 py-1.5 text-[11px] font-semibold backdrop-blur-md"
@@ -54,18 +56,17 @@
             </span>
           </div>
 
-          <!-- MCU label centered — MORE prominent -->
+          <!-- MCU label centered -->
           <div class="relative z-[1] flex flex-col items-center gap-3 text-center">
             <div
-              class="flex h-16 w-16 items-center justify-center rounded-2xl transition-all duration-500 group-hover:scale-110"
+              class="flex h-16 w-16 items-center justify-center rounded-2xl transition-transform duration-500 group-hover:scale-110"
               :style="{
-                background: `linear-gradient(145deg, ${project.colorHex}38, ${project.colorHex}12)`,
-                boxShadow: `0 0 40px ${project.colorHex}18, 0 0 80px ${project.colorHex}0c`,
+                background: `linear-gradient(145deg, ${project.colorHex}30, ${project.colorHex}10)`,
                 backdropFilter: 'blur(12px)',
                 border: `1px solid ${project.colorHex}20`,
               }"
             >
-              <span class="text-lg font-bold font-mono" :style="{ color: project.colorHex, filter: `drop-shadow(0 0 12px ${project.colorHex}60)` }">
+              <span class="text-lg font-bold font-mono" :style="{ color: project.colorHex }">
                 {{ project.mcu.split('-')[0] }}
               </span>
             </div>
@@ -80,7 +81,7 @@
 
           <!-- Title -->
           <h3
-            class="text-[18px] font-bold tracking-tight text-text-primary transition-colors duration-300 group-hover:text-gradient-warm"
+            class="text-[18px] font-bold tracking-tight text-text-primary transition-colors duration-300 group-hover:text-text-primary"
           >
             {{ project.titleZh }}
           </h3>
@@ -105,7 +106,7 @@
             </span>
           </div>
 
-          <!-- Warm color tags (pill style) -->
+          <!-- Color tags -->
           <div class="mt-4 flex flex-wrap gap-1.5">
             <span
               v-for="tag in project.tags.slice(0, 3)"
@@ -121,11 +122,11 @@
             </span>
           </div>
 
-          <!-- Arrow with "view details" micro-copy -->
+          <!-- Arrow -->
           <div class="mt-5 flex items-center justify-between">
             <span class="text-[11px] text-text-faint transition-colors duration-300 group-hover:text-text-tertiary">查看详情</span>
             <div
-              class="flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300 text-text-tertiary group-hover:text-white group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(0,0,0,0.2)]"
+              class="flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300 text-text-tertiary group-hover:text-white group-hover:scale-110"
               :style="{ backgroundColor: isHovered ? project.colorHex : 'rgba(255,255,255,0.04)' }"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -135,15 +136,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Hover glow overlay — STRONGER -->
-        <div
-          class="pointer-events-none absolute inset-0 rounded-[1.75rem] transition-opacity duration-500"
-          :style="{
-            opacity: isHovered ? 1 : 0,
-            boxShadow: `inset 0 0 100px ${project.colorHex}20, 0 0 120px ${project.colorHex}28`,
-          }"
-        />
       </div>
     </NuxtLink>
   </TiltCard>
@@ -153,12 +145,24 @@
 import { ref, computed } from 'vue'
 import type { Project } from '~/content/projects'
 import TiltCard from './TiltCard.vue'
+import { useSpotlight } from '~/composables/useSpotlight'
 
 const props = defineProps<{
   project: Project
 }>()
 
 const isHovered = ref(false)
+const cardRef = ref<HTMLElement | null>(null)
+useSpotlight(cardRef, { glow: 'cool' })
+
+// Map a hex accent to "r, g, b" so the .spotlight follow-light tints to the card's own accent
+function glowRgb(hex: string): string {
+  const h = hex.replace('#', '')
+  const r = parseInt(h.slice(0, 2), 16)
+  const g = parseInt(h.slice(2, 4), 16)
+  const b = parseInt(h.slice(4, 6), 16)
+  return `${r}, ${g}, ${b}`
+}
 
 const difficultyColor = computed(() => {
   const colors: Record<number, string> = {
@@ -173,6 +177,6 @@ const difficultyColor = computed(() => {
 
 const cardGradient = computed(() => {
   const hex = props.project.colorHex
-  return `linear-gradient(160deg, ${hex}28 0%, ${hex}10 35%, #0a0a0b 100%)`
+  return `linear-gradient(160deg, ${hex}22 0%, ${hex}0a 35%, #0b0d12 100%)`
 })
 </script>

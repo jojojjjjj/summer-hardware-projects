@@ -1,0 +1,56 @@
+[
+  {
+    "page": "home",
+    "w": "375",
+    "file": "D:\\coding\\Summer_project\\website-audit\\after-upgrade\\home-375.png",
+    "overflow": 2745
+  },
+  {
+    "page": "home",
+    "w": "768",
+    "file": "D:\\coding\\Summer_project\\website-audit\\after-upgrade\\home-768.png",
+    "overflow": 0
+  },
+  {
+    "page": "home",
+    "w": "1440",
+    "file": "D:\\coding\\Summer_project\\website-audit\\after-upgrade\\home-1440.png",
+    "overflow": 0
+  },
+  {
+    "page": "projects",
+    "w": "375",
+    "file": "D:\\coding\\Summer_project\\website-audit\\after-upgrade\\projects-375.png",
+    "overflow": 0
+  },
+  {
+    "page": "projects",
+    "w": "768",
+    "file": "D:\\coding\\Summer_project\\website-audit\\after-upgrade\\projects-768.png",
+    "overflow": 0
+  },
+  {
+    "page": "projects",
+    "w": "1440",
+    "file": "D:\\coding\\Summer_project\\website-audit\\after-upgrade\\projects-1440.png",
+    "overflow": 0
+  },
+  {
+    "page": "detail",
+    "w": "375",
+    "file": "D:\\coding\\Summer_project\\website-audit\\after-upgrade\\detail-375.png",
+    "overflow": 11
+  },
+  {
+    "page": "detail",
+    "w": "768",
+    "file": "D:\\coding\\Summer_project\\website-audit\\after-upgrade\\detail-768.png",
+    "overflow": 0
+  },
+  {
+    "page": "detail",
+    "w": "1440",
+    "file": "D:\\coding\\Summer_project\\website-audit\\after-upgrade\\detail-1440.png",
+    "overflow": 0
+  }
+]

@@ -10,11 +10,11 @@
         9 个项目
       </p>
       <h2
-        class="text-section font-extrabold tracking-tight text-text-primary relative"
+        class="text-section font-bold tracking-tight text-text-primary relative"
         ref="headingRef"
         :style="{ opacity: headerVisible ? 1 : 0, transform: headerVisible ? 'translateY(0)' : 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s' }"
       >
-        <span class="absolute -inset-x-8 -inset-y-4 bg-gradient-to-r from-[#ff9a76]/[0.06] via-[#ff6b6b]/[0.04] to-transparent rounded-2xl blur-xl pointer-events-none" />
+        <span class="absolute -inset-x-8 -inset-y-4 bg-gradient-to-r from-[#6366f1]/[0.08] via-[#8b5cf6]/[0.05] to-transparent rounded-2xl blur-xl pointer-events-none" />
         <span class="relative">选择你的项目</span>
       </h2>
       <p
@@ -37,7 +37,7 @@
           :class="activeFilter === filter.value
             ? 'text-white shadow-glow scale-105'
             : 'bg-white/[0.04] text-text-secondary hover:bg-white/[0.08] hover:text-text-primary'"
-          :style="activeFilter === filter.value ? { background: 'linear-gradient(135deg, #ff9a76, #ff6b6b)', boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.15), 0 0 16px rgba(255,107,107,0.2)' } : {}"
+          :style="activeFilter === filter.value ? { background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.15), 0 0 16px rgba(99,102,241,0.28)' } : {}"
         >
           {{ filter.label }}
         </button>
@@ -69,7 +69,7 @@
       <!-- Scroll hint (visible on desktop before first scroll) -->
       <div
         v-if="!hasScrolled"
-        class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 text-[#ff9a76]/60 text-[12px] animate-pulse select-none"
+        class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 text-cool-indigo/60 text-[12px] select-none"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         左右滑动浏览
@@ -105,6 +105,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { projects, difficultyFilters } from '~/content/projects'
 import ProjectCard from './ProjectCard.vue'
+import { useReducedMotion } from '~/composables/useReducedMotion'
 
 const activeFilter = ref(0)
 const filteredProjects = computed(() =>
@@ -118,6 +119,8 @@ const trackRef = ref<HTMLElement | null>(null)
 const headerVisible = ref(false)
 const cardsVisible = ref(false)
 const hasScrolled = ref(false)
+
+const reduce = useReducedMotion()
 
 function scrollBy(delta: number) {
   scrollContainer.value?.scrollBy({ left: delta, behavior: 'smooth' })
@@ -137,7 +140,12 @@ onMounted(async () => {
   // Animate header in
   headerVisible.value = true
 
-  // Animate cards in with ScrollTrigger
+  // Animate cards in with ScrollTrigger (or snap visible under reduced motion)
+  if (reduce.value) {
+    cardsVisible.value = true
+    return
+  }
+
   if (trackRef.value) {
     ScrollTrigger.create({
       trigger: trackRef.value,

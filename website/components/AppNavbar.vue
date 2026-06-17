@@ -5,16 +5,16 @@
       scrolled ? 'navbar-blur border-b border-white/[0.06]' : 'bg-transparent border-b border-transparent'
     ]"
   >
-    <!-- Subtle warm gradient line when scrolled -->
+    <!-- Subtle cool divider line when scrolled -->
     <div
       v-if="scrolled"
-      class="absolute bottom-0 left-0 right-0 h-px opacity-60"
-      style="background: linear-gradient(90deg, transparent 0%, rgba(255,154,118,0.2) 30%, rgba(255,154,118,0.3) 50%, rgba(255,154,118,0.2) 70%, transparent 100%);"
+      class="absolute bottom-0 left-0 right-0 h-px opacity-70"
+      style="background: linear-gradient(90deg, transparent 0%, rgba(99,102,241,0.18) 30%, rgba(99,102,241,0.28) 50%, rgba(99,102,241,0.18) 70%, transparent 100%);"
     />
     <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-2.5">
       <!-- Logo -->
       <NuxtLink to="/" class="group flex items-center gap-2.5 transition-opacity duration-300 hover:opacity-80">
-        <img src="/logo.png" alt="Logo" class="h-7 w-auto object-contain transition-all duration-500 group-hover:drop-shadow-[0_0_12px_rgba(255,154,118,0.25)]" />
+        <img src="/logo.png" alt="Logo" class="h-7 w-auto object-contain transition-opacity duration-500 group-hover:opacity-90" />
       </NuxtLink>
 
       <!-- Center links (desktop) -->
@@ -23,7 +23,7 @@
           v-for="link in navLinks"
           :key="link.href"
           :href="link.href"
-          class="nav-link relative text-[13px] font-medium text-text-secondary/70 transition-all duration-300 hover:text-text-primary hover:[text-shadow:0_0_16px_rgba(255,154,118,0.2)] underline-offset-4 decoration-warm-peach/30 hover:underline"
+          class="nav-link relative text-[13px] font-medium text-text-secondary/70 transition-colors duration-300 hover:text-text-primary underline-offset-4 decoration-cool-indigo/40 hover:underline"
         >
           {{ link.label }}
         </a>
@@ -88,11 +88,13 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { gsap } from 'gsap'
+import { useReducedMotion } from '~/composables/useReducedMotion'
 
 const route = useRoute()
 const scrolled = ref(false)
 const mobileOpen = ref(false)
 const ctaBtnRef = ref<HTMLElement | null>(null)
+const reduce = useReducedMotion()
 
 const navLinks = [
   { href: '#projects', label: '项目' },
@@ -115,7 +117,7 @@ function handleScroll() {
 
 // ── Magnetic CTA ──
 function onCtaMouseMove(e: MouseEvent) {
-  if (!ctaBtnRef.value) return
+  if (!ctaBtnRef.value || reduce.value) return
   const rect = ctaBtnRef.value.getBoundingClientRect()
   const cx = rect.left + rect.width / 2
   const cy = rect.top + rect.height / 2
@@ -125,6 +127,7 @@ function onCtaMouseMove(e: MouseEvent) {
 }
 
 function onCtaMouseLeave() {
+  if (!ctaBtnRef.value || reduce.value) return
   gsap.to(ctaBtnRef.value, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.4)' })
 }
 
@@ -134,7 +137,12 @@ watch(mobileOpen, async (open) => {
     await nextTick()
     const links = document.querySelectorAll('.mobile-menu-link')
     const cta = document.querySelector('.mobile-cta-link')
-    gsap.to([...links, cta], {
+    const els = [...links, cta] as HTMLElement[]
+    if (reduce.value) {
+      gsap.set(els, { opacity: 1, y: 0 })
+      return
+    }
+    gsap.to(els, {
       opacity: 1,
       y: 0,
       duration: 0.4,

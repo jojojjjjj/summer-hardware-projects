@@ -1,84 +1,76 @@
 <template>
-  <section ref="sectionRef" class="relative flex h-screen items-center justify-center overflow-hidden">
+  <section ref="sectionRef" class="relative flex min-h-screen items-center overflow-hidden">
     <!-- Background layers (parallax) -->
     <div ref="bgLayer1" class="absolute inset-0 bg-background" />
-    <div ref="bgLayer2" class="absolute inset-0" style="background: radial-gradient(ellipse 70% 55% at 50% 40%, rgba(255,154,118,0.10) 0%, transparent 70%), radial-gradient(ellipse 40% 35% at 55% 60%, rgba(255,107,107,0.05) 0%, transparent 60%); animation: gradientShift 8s ease infinite;" />
-    <!-- Faint grid texture -->
-    <div ref="bgLayer3" class="absolute inset-0 opacity-[0.015]" style="background-image: linear-gradient(rgba(255,154,118,0.22) 1px, transparent 1px), linear-gradient(90deg, rgba(255,154,118,0.22) 1px, transparent 1px); background-size: 80px 80px;" />
-    <!-- Noise texture overlay -->
-    <div class="pointer-events-none absolute inset-0 noise opacity-[0.015]" />
+    <!-- Single directional volumetric light from top-left (cool indigo), static -->
+    <div ref="bgLayer2" class="absolute inset-0" style="background: linear-gradient(125deg, rgba(99,102,241,0.10) 0%, rgba(99,102,241,0.03) 28%, transparent 55%);" />
+    <!-- Faint cool grid texture -->
+    <div ref="bgLayer3" class="absolute inset-0 opacity-[0.012]" style="background-image: linear-gradient(rgba(120,130,180,0.18) 1px, transparent 1px), linear-gradient(90deg, rgba(120,130,180,0.18) 1px, transparent 1px); background-size: 80px 80px;" />
 
-    <!-- Content -->
-    <div class="relative z-10 mx-auto max-w-5xl px-6 text-center">
-      <!-- Eyebrow -->
-      <div ref="eyebrowRef" class="mb-6">
-        <span class="eyebrow inline-flex items-center rounded-full px-4 py-1.5" style="background: linear-gradient(135deg, rgba(255,154,118,0.12), rgba(255,107,107,0.08));">2026 暑期</span>
-      </div>
-
-      <!-- Main title — animated reveal -->
-      <h1 ref="titleRef" class="text-hero font-extrabold tracking-tight text-text-primary">
-        <span class="block" data-split-line>从零开始</span>
-        <span class="block" data-split-line>亲手打造 9 个真实硬件项目</span>
-      </h1>
-
-      <!-- Subtitle -->
-      <p ref="subtitleRef" class="mt-8 text-xl sm:text-2xl text-text-secondary/80 font-normal max-w-xl mx-auto leading-relaxed">
-        高中生暑期硬件实践课程
-      </p>
-
-      <!-- CTAs -->
-      <div ref="ctaRef" class="mt-12 flex flex-col sm:flex-row items-center justify-center gap-5">
-        <a
-          ref="ctaBtnRef"
-          href="#projects"
-          class="magnetic-btn group relative inline-flex items-center justify-center gap-2.5 rounded-full px-9 py-4 text-[15px] font-semibold text-white overflow-hidden transition-shadow duration-300 hover:shadow-glow-strong"
-          style="background: linear-gradient(135deg, #ff9a76, #ff6b6b);"
-        >
-          <span class="relative z-10">查看项目</span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="relative z-10 transition-transform duration-300 group-hover:translate-x-0.5"><path d="m9 18 6-6-6-6"/></svg>
-          <!-- Inner glow on hover -->
-          <span class="absolute inset-0 rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-100" style="background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15), transparent 70%);" />
-        </a>
-        <a href="#value-props" class="text-[15px] font-medium text-text-secondary/80 transition-all duration-300 hover:text-warm-peach hover:underline underline-offset-4 decoration-warm-peach/30">
-          了解更多
-        </a>
-      </div>
-
-      <!-- Specs bar (desktop) -->
-      <div ref="specsRef" class="mt-28 hidden sm:flex items-center justify-center gap-16">
-        <div class="text-center">
-          <div class="text-5xl sm:text-6xl font-extrabold text-gradient-warm tabular-nums font-mono tracking-tighter">
-            {{ countUp.projects }}
+    <!-- Content — 7:5 asymmetric, left-aligned -->
+    <div class="relative z-10 mx-auto w-full max-w-6xl px-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+        <div class="lg:col-span-7 text-left">
+          <!-- Eyebrow -->
+          <div ref="eyebrowRef" class="mb-6">
+            <span class="eyebrow inline-flex items-center rounded-full px-4 py-1.5" style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.16);">2026 暑期</span>
           </div>
-          <p class="mt-2.5 text-[11px] text-text-tertiary uppercase tracking-[0.2em] font-semibold">项目</p>
-        </div>
-        <div class="h-12 w-px bg-white/[0.08]" />
-        <div class="text-center">
-          <div class="text-5xl sm:text-6xl font-extrabold text-gradient-warm tabular-nums font-mono tracking-tighter">
-            10–20
-          </div>
-          <p class="mt-2.5 text-[11px] text-text-tertiary uppercase tracking-[0.2em] font-semibold">天</p>
-        </div>
-        <div class="h-12 w-px bg-white/[0.08]" />
-        <div class="text-center">
-          <div class="text-5xl sm:text-6xl font-extrabold text-gradient-warm tabular-nums font-mono tracking-tighter">
-            ≤¥500
-          </div>
-          <p class="mt-2.5 text-[11px] text-text-tertiary uppercase tracking-[0.2em] font-semibold">每套</p>
-        </div>
-      </div>
 
-      <!-- Mobile specs -->
-      <div class="mt-14 flex sm:hidden items-center justify-center gap-5 text-[13px] text-text-tertiary">
-        <span class="font-mono"><span class="text-gradient-warm font-bold">{{ countUp.projects }}</span> 项目</span>
-        <span class="text-white/[0.10]">·</span>
-        <span class="font-mono"><span class="text-gradient-warm font-bold">10–20</span> 天</span>
-        <span class="text-white/[0.10]">·</span>
-        <span class="font-mono"><span class="text-gradient-warm font-bold">≤¥500</span>/套</span>
+          <!-- Main title — animated reveal -->
+          <h1 ref="titleRef" class="text-hero font-bold tracking-tight text-text-primary">
+            <span class="block" data-split-line>从零开始</span>
+            <span class="block" data-split-line>亲手打造 9 个真实硬件项目</span>
+          </h1>
+
+          <!-- Subtitle -->
+          <p ref="subtitleRef" class="mt-8 text-xl sm:text-2xl text-text-secondary font-normal max-w-xl leading-relaxed">
+            高中生暑期硬件实践课程
+          </p>
+
+          <!-- CTAs -->
+          <div ref="ctaRef" class="mt-12 flex flex-col sm:flex-row items-start sm:items-center gap-5">
+            <a
+              ref="ctaBtnRef"
+              href="#projects"
+              class="magnetic-btn group relative inline-flex items-center justify-center gap-2.5 rounded-full px-9 py-4 text-[15px] font-semibold text-white overflow-hidden transition-shadow duration-300 hover:shadow-glow-strong"
+              style="background: linear-gradient(135deg, #ff9a76, #ff6b6b);"
+            >
+              <span class="relative z-10">查看项目</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="relative z-10 transition-transform duration-300 group-hover:translate-x-0.5"><path d="m9 18 6-6-6-6"/></svg>
+            </a>
+            <a href="#value-props" class="text-[15px] font-medium text-text-secondary/80 transition-colors duration-300 hover:text-text-primary hover:underline underline-offset-4 decoration-cool-indigo/40">
+              了解更多
+            </a>
+          </div>
+        </div>
+
+        <!-- Specs — right column (desktop), full-width row (mobile) -->
+        <div ref="specsRef" class="lg:col-span-5 lg:pl-8">
+          <div class="grid grid-cols-3 gap-6 sm:gap-8 lg:border-l lg:border-white/[0.06] lg:pl-8">
+            <div class="text-left">
+              <div class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gradient-accent tabular-nums font-mono tracking-tighter">
+                {{ countUp.projects }}
+              </div>
+              <p class="mt-2 text-[11px] text-text-tertiary uppercase tracking-[0.2em] font-semibold">项目</p>
+            </div>
+            <div class="text-left">
+              <div class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gradient-accent tabular-nums font-mono tracking-tighter">
+                10–20
+              </div>
+              <p class="mt-2 text-[11px] text-text-tertiary uppercase tracking-[0.2em] font-semibold">天</p>
+            </div>
+            <div class="text-left">
+              <div class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gradient-accent tabular-nums font-mono tracking-tighter">
+                ≤¥500
+              </div>
+              <p class="mt-2 text-[11px] text-text-tertiary uppercase tracking-[0.2em] font-semibold">每套</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Scroll indicator -->
+    <!-- Scroll indicator (static, no infinite float) -->
     <div ref="scrollIndicatorRef" class="absolute bottom-10 left-1/2 -translate-x-1/2">
       <div class="flex flex-col items-center gap-2.5">
         <div class="scroll-line h-10 w-px bg-gradient-to-b from-text-tertiary/50 to-transparent" />
@@ -90,6 +82,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { gsap } from 'gsap'
+import { useReducedMotion } from '~/composables/useReducedMotion'
 
 // ── Refs ──
 const sectionRef = ref<HTMLElement | null>(null)
@@ -111,8 +104,10 @@ let rafId: number | null = null
 // ── Magnetic CTA ──
 const magnetic = ref({ x: 0, y: 0 })
 
+const reduce = useReducedMotion()
+
 function onCtaMouseMove(e: MouseEvent) {
-  if (!ctaBtnRef.value) return
+  if (!ctaBtnRef.value || reduce.value) return
   const rect = ctaBtnRef.value.getBoundingClientRect()
   const cx = rect.left + rect.width / 2
   const cy = rect.top + rect.height / 2
@@ -122,6 +117,7 @@ function onCtaMouseMove(e: MouseEvent) {
 }
 
 function onCtaMouseLeave() {
+  if (!ctaBtnRef.value || reduce.value) return
   gsap.to(ctaBtnRef.value, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.4)' })
 }
 
@@ -144,8 +140,17 @@ function setupParallax() {
 let tl: gsap.core.Timeline | null = null
 
 onMounted(() => {
-  // Get title lines
   const lines = titleRef.value?.querySelectorAll('[data-split-line]') || []
+
+  if (reduce.value) {
+    // Snap everything to final state — no motion
+    gsap.set([eyebrowRef.value, titleRef.value, subtitleRef.value, ctaRef.value, specsRef.value].filter(Boolean), { opacity: 1, y: 0 })
+    gsap.set(scrollIndicatorRef.value, { opacity: 0.3 })
+    countUp.projects = 9
+    ctaBtnRef.value?.addEventListener('mousemove', onCtaMouseMove)
+    ctaBtnRef.value?.addEventListener('mouseleave', onCtaMouseLeave)
+    return
+  }
 
   // Set initial states
   gsap.set(eyebrowRef.value, { opacity: 0, y: 20 })
@@ -158,52 +163,12 @@ onMounted(() => {
   // Build timeline
   tl = gsap.timeline({ delay: 0.3 })
 
-  tl.to(eyebrowRef.value, {
-    opacity: 1,
-    y: 0,
-    duration: 0.8,
-    ease: 'power3.out',
-  })
-  .to(lines, {
-    opacity: 1,
-    y: 0,
-    duration: 0.9,
-    stagger: 0.15,
-    ease: 'power3.out',
-  }, '-=0.3')
-  .to(subtitleRef.value, {
-    opacity: 1,
-    y: 0,
-    duration: 0.9,
-    ease: 'power3.out',
-  }, '-=0.4')
-  .to(ctaRef.value, {
-    opacity: 1,
-    y: 0,
-    duration: 0.8,
-    ease: 'power3.out',
-  }, '-=0.35')
-  .to(specsRef.value, {
-    opacity: 1,
-    y: 0,
-    duration: 0.8,
-    ease: 'power3.out',
-    onStart: startCountUp,
-  }, '-=0.3')
-  .to(scrollIndicatorRef.value, {
-    opacity: 0.3,
-    duration: 1,
-    ease: 'power2.out',
-  }, '-=0.2')
-
-  // Scroll indicator float
-  gsap.to('.scroll-line', {
-    y: 4,
-    duration: 1.8,
-    ease: 'sine.inOut',
-    yoyo: true,
-    repeat: -1,
-  })
+  tl.to(eyebrowRef.value, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
+    .to(lines, { opacity: 1, y: 0, duration: 0.9, stagger: 0.15, ease: 'power3.out' }, '-=0.3')
+    .to(subtitleRef.value, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.4')
+    .to(ctaRef.value, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.35')
+    .to(specsRef.value, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', onStart: startCountUp }, '-=0.3')
+    .to(scrollIndicatorRef.value, { opacity: 0.3, duration: 1, ease: 'power2.out' }, '-=0.2')
 
   // Magnetic CTA
   ctaBtnRef.value?.addEventListener('mousemove', onCtaMouseMove)
@@ -215,6 +180,7 @@ onMounted(() => {
 
 // ── RAF count-up ──
 function startCountUp() {
+  if (reduce.value) { countUp.projects = 9; return }
   const duration = 2200
   const start = performance.now()
   function tick(now: number) {
@@ -236,22 +202,3 @@ onUnmounted(() => {
   if (scrollHandler) window.removeEventListener('scroll', scrollHandler)
 })
 </script>
-
-<style scoped>
-@keyframes gradientShift {
-  0%, 100% {
-    transform: scale(1) translate(0, 0);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.05) translate(1%, -1%);
-    opacity: 0.85;
-  }
-}
-
-.noise {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 256px 256px;
-}
-</style>

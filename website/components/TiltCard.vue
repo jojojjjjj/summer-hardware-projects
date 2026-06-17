@@ -2,6 +2,7 @@
   <div
     ref="cardRef"
     class="tilt-card"
+    :data-glow="glow"
     @mouseenter="handleMouseEnter"
     @mousemove="handleMouseMove"
     @mouseleave="handleMouseLeave"
@@ -16,6 +17,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { gsap } from 'gsap'
+import { useReducedMotion } from '~/composables/useReducedMotion'
 
 export interface TiltCardProps {
   /** Maximum tilt angle in degrees. Default 15 */
@@ -24,7 +26,7 @@ export interface TiltCardProps {
   perspective?: number
   /** Scale on hover. Default 1.04 */
   hoverScale?: number
-  /** Glare intensity (0-1). Default 0.15 */
+  /** Glare intensity (0-1). Default 0.08 (restrained) */
   glareIntensity?: number
   /** Transition duration in seconds. Default 0.4 */
   duration?: number
@@ -32,30 +34,33 @@ export interface TiltCardProps {
   ease?: string
   /** Enable glare effect */
   glare?: boolean
+  /** Glare light theme — 'cool' (indigo) or 'warm' (coral). Default 'cool' */
+  glow?: 'cool' | 'warm'
 }
 
 const props = withDefaults(defineProps<TiltCardProps>(), {
   maxTilt: 15,
   perspective: 1000,
   hoverScale: 1.04,
-  glareIntensity: 0.15,
+  glareIntensity: 0.08,
   duration: 0.4,
   ease: 'power2.out',
   glare: true,
+  glow: 'cool',
 })
 
 const cardRef = ref<HTMLElement | null>(null)
 const contentRef = ref<HTMLElement | null>(null)
 const glareRef = ref<HTMLElement | null>(null)
+const reduce = useReducedMotion()
 
 let tween: gsap.core.Tween | null = null
-let isHovering = false
-let prefersReducedMotion = false
+
+// Glare tint — cool indigo by default, coral when warm
+const glareColor = props.glow === 'warm' ? '255,107,107' : '99,102,241'
 
 function handleMouseEnter(): void {
-  if (prefersReducedMotion) return
-  isHovering = true
-
+  if (reduce.value) return
   gsap.to(cardRef.value, {
     scale: props.hoverScale,
     duration: props.duration,
@@ -64,7 +69,7 @@ function handleMouseEnter(): void {
 }
 
 function handleMouseMove(e: MouseEvent): void {
-  if (!cardRef.value || prefersReducedMotion) return
+  if (!cardRef.value || reduce.value) return
 
   const rect = cardRef.value.getBoundingClientRect()
   const x = (e.clientX - rect.left) / rect.width
@@ -81,11 +86,10 @@ function handleMouseMove(e: MouseEvent): void {
     ease: props.ease,
   })
 
-  // Update glare position
   if (props.glare && glareRef.value) {
     gsap.to(glareRef.value, {
       opacity: props.glareIntensity,
-      background: `radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 60%)`,
+      background: `radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(${glareColor},0.45) 0%, rgba(${glareColor},0) 60%)`,
       duration: 0.3,
       ease: 'power1.out',
     })
@@ -93,8 +97,7 @@ function handleMouseMove(e: MouseEvent): void {
 }
 
 function handleMouseLeave(): void {
-  if (!cardRef.value || prefersReducedMotion) return
-  isHovering = false
+  if (!cardRef.value || reduce.value) return
 
   tween?.kill()
   tween = gsap.to(cardRef.value, {
@@ -105,7 +108,6 @@ function handleMouseLeave(): void {
     ease: 'elastic.out(1, 0.5)',
   })
 
-  // Fade out glare
   if (props.glare && glareRef.value) {
     gsap.to(glareRef.value, {
       opacity: 0,
@@ -116,15 +118,6 @@ function handleMouseLeave(): void {
 }
 
 onMounted(() => {
-  // Check for reduced motion preference
-  const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-  prefersReducedMotion = motionQuery.matches
-
-  const handler = (e: MediaQueryListEvent) => {
-    prefersReducedMotion = e.matches
-  }
-  motionQuery.addEventListener('change', handler)
-
   // Set initial perspective on the card parent
   if (cardRef.value?.parentElement) {
     gsap.set(cardRef.value.parentElement, { perspective: props.perspective })
@@ -158,7 +151,7 @@ onUnmounted(() => {
   pointer-events: none;
   opacity: 0;
   border-radius: inherit;
-  mix-blend-mode: overlay;
+  mix-blend-mode: screen;
   will-change: opacity, background;
 }
 </style>
