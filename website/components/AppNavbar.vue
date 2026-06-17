@@ -4,6 +4,7 @@
       'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
       scrolled ? 'navbar-blur border-b border-white/[0.06]' : 'bg-transparent border-b border-transparent'
     ]"
+    style="view-transition-name: site-navbar"
   >
     <!-- Subtle cool divider line when scrolled -->
     <div

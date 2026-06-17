@@ -1,29 +1,37 @@
 <template>
   <section id="projects" class="relative overflow-hidden bg-background">
-    <!-- Section header -->
-    <div class="mx-auto max-w-6xl px-6 pt-28 md:pt-40 pb-12 md:pb-16">
-      <p
-        class="eyebrow mb-5"
-        ref="eyebrowRef"
-        :style="{ opacity: headerVisible ? 1 : 0, transform: headerVisible ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1)' }"
-      >
-        9 个项目
-      </p>
-      <h2
-        class="text-section font-semibold tracking-tight text-text-primary relative"
-        ref="headingRef"
-        :style="{ opacity: headerVisible ? 1 : 0, transform: headerVisible ? 'translateY(0)' : 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s' }"
-      >
-        <span class="absolute -inset-x-8 -inset-y-4 bg-gradient-to-r from-[#6366f1]/[0.08] to-transparent rounded-2xl blur-xl pointer-events-none" />
-        <span class="relative">选择你的项目</span>
-      </h2>
-      <p
-        class="mx-auto mt-6 max-w-xl text-body-lg text-text-secondary"
-        ref="subRef"
-        :style="{ opacity: headerVisible ? 1 : 0, transform: headerVisible ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s' }"
-      >
-        从入门到专家，每个都基于真实开源项目改编
-      </p>
+    <!-- Section header — formula B: oversized bleeding "02" (z-overlap graphic) +
+         asymmetric 7:5 (title / legend), no eyebrow (distinct from Value's formula A) -->
+    <div class="relative mx-auto max-w-6xl px-6 pt-28 md:pt-40 pb-12 md:pb-16">
+      <span
+        class="pointer-events-none absolute left-1/2 -translate-x-1/2 font-mono font-bold leading-none select-none text-text-primary"
+        style="font-size: clamp(8rem, 22vw, 18rem); opacity: 0.05; letter-spacing: -0.06em; z-index: 0; top: -2.5rem;"
+        aria-hidden="true"
+      >02</span>
+      <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-end">
+        <div class="md:col-span-7">
+          <h2
+            class="text-section font-semibold tracking-tight text-text-primary"
+            ref="headingRef"
+            :style="{ opacity: headerVisible ? 1 : 0, transform: headerVisible ? 'translateY(0)' : 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1)' }"
+          >
+            选择你的项目
+          </h2>
+        </div>
+        <div class="md:col-span-5 md:text-right">
+          <span
+            class="inline-block mb-3 rounded-full px-3 py-1 text-[12px] font-medium"
+            style="background: rgba(99,102,241,0.10); color: #a5aceb; border: 1px solid rgba(99,102,241,0.20);"
+          >9 个项目 · 5 级难度</span>
+          <p
+            class="text-body-lg text-text-secondary"
+            ref="subRef"
+            :style="{ opacity: headerVisible ? 1 : 0, transform: headerVisible ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s' }"
+          >
+            从入门到专家，每个都基于真实开源项目改编
+          </p>
+        </div>
+      </div>
     </div>
 
     <!-- Difficulty filters -->

@@ -405,6 +405,29 @@
   .spotlight::before { display: none; }
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   View Transitions — page-flow crossfade + shared-element morph (V3 §4.3).
+   Navigation is wrapped in document.startViewTransition() by
+   plugins/view-transitions.client.ts. These rules only tune timing/easing;
+   the morph itself is driven by matching `view-transition-name` values
+   (site-navbar persists; vt-project-{slug} flies card↔hero). Under
+   prefers-reduced-motion the plugin skips VT entirely (instant nav), so the
+   no-preference guard here is belt-and-suspenders.
+   ═══════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 380ms;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /* All shared-element groups morph a touch slower than the root crossfade
+     so the card↔hero flight reads as deliberate, not flickery. */
+  ::view-transition-group(*) {
+    animation-duration: 520ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
 @media print {
   .noise-overlay::before, .noise::after { display: none; }
   body { background: white; color: black; }

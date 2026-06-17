@@ -5,6 +5,11 @@ export default defineNuxtConfig({
 
   app: {
     baseURL: process.env.NODE_ENV === 'production' ? '/summer-hardware-projects' : '/',
+    // Page-flow transitions are driven by the native View Transitions API
+    // (plugins/view-transitions.client.ts). Disable Vue's <Transition> on
+    // <NuxtPage> so the two systems don't double-animate — out-in would also
+    // delay the new-page mount and break the shared-element morph.
+    pageTransition: false,
     head: {
       htmlAttrs: { lang: 'zh-CN', class: 'dark' },
       meta: [

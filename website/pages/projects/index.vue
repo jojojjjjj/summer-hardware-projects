@@ -34,7 +34,7 @@
             :to="`/projects/${project.slug}`"
             class="group block rounded-3xl border border-white/[0.06] bg-white/[0.02] overflow-hidden transition-all duration-300 hover:border-white/[0.12] hover:bg-white/[0.04] inner-glow">
             <div class="relative aspect-[16/10] flex items-center justify-center overflow-hidden"
-              :style="{ background: `linear-gradient(145deg, ${project.colorHex}12 0%, ${project.colorHex}05 60%, transparent 100%)` }">
+              :style="{ background: `linear-gradient(145deg, ${project.colorHex}12 0%, ${project.colorHex}05 60%, transparent 100%)`, viewTransitionName: 'vt-project-' + project.slug }">
               <span class="font-mono font-bold tracking-tighter text-5xl opacity-[0.05] select-none"
                 :style="{ color: project.colorHex }">
                 {{ project.titleEn }}

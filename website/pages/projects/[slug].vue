@@ -40,10 +40,8 @@
           </div>
 
           <div class="flex items-center justify-center order-first md:order-last">
-            <div class="aspect-video w-full max-w-lg rounded-3xl border border-white/[0.06] inner-glow overflow-hidden" :style="{ background: 'linear-gradient(135deg, ' + project.colorHex + '0a, ' + project.colorHex + '03)' }">
-              <div class="flex h-full items-center justify-center">
-                <span class="text-6xl sm:text-8xl font-mono font-bold opacity-[0.05]" :style="{ color: project.colorHex }">{{ project.titleEn }}</span>
-              </div>
+            <div class="aspect-video w-full max-w-lg rounded-3xl border border-white/[0.06] inner-glow overflow-hidden relative" :style="{ background: 'linear-gradient(135deg, ' + project.colorHex + '14, ' + project.colorHex + '05)', viewTransitionName: 'vt-project-' + project.slug }">
+              <ProjectSignature :project="project" />
             </div>
           </div>
         </div>
@@ -53,9 +51,15 @@
     <!-- Skills -->
     <section class="section-elevated py-20 sm:py-28">
       <div class="mx-auto max-w-5xl px-6">
-        <div class="mb-16 text-center">
-          <p class="eyebrow mb-5">技能</p>
-          <h2 class="text-subsection font-semibold tracking-tight">你将学到什么</h2>
+        <div class="mb-14 flex items-end justify-between gap-6">
+          <div>
+            <div class="mb-4 flex items-center gap-3">
+              <span class="font-mono text-[12px] tracking-[0.2em] text-text-tertiary">01</span>
+              <span class="h-px w-8 bg-white/10" />
+              <p class="eyebrow">技能</p>
+            </div>
+            <h2 class="text-subsection font-semibold tracking-tight">你将学到什么</h2>
+          </div>
         </div>
         <div class="grid gap-6 sm:grid-cols-2">
           <div v-for="cat in skillCategories" :key="cat.key"
@@ -80,9 +84,16 @@
     <!-- Hardware -->
     <section class="section-dark py-20 sm:py-28">
       <div class="mx-auto max-w-5xl px-6">
-        <div class="mb-16 text-center">
-          <p class="eyebrow mb-5">硬件</p>
-          <h2 class="text-subsection font-semibold tracking-tight">所需材料</h2>
+        <div class="mb-14 flex items-end justify-between gap-6">
+          <div>
+            <div class="mb-4 flex items-center gap-3">
+              <span class="font-mono text-[12px] tracking-[0.2em] text-text-tertiary">02</span>
+              <span class="h-px w-8 bg-white/10" />
+              <p class="eyebrow">硬件</p>
+            </div>
+            <h2 class="text-subsection font-semibold tracking-tight">所需材料</h2>
+          </div>
+          <span class="hidden sm:block text-[13px] font-mono text-text-tertiary">{{ project.hardware.length }} 件</span>
         </div>
         <div class="space-y-3">
           <div v-for="(item, i) in project.hardware" :key="i"
@@ -102,9 +113,12 @@
     <!-- Timeline -->
     <section class="section-elevated py-20 sm:py-28">
       <div class="mx-auto max-w-5xl px-6">
-        <div class="mb-16 text-center">
-          <p class="eyebrow mb-5">日程</p>
-          <h2 class="text-subsection font-semibold tracking-tight">项目时间线</h2>
+        <div class="mb-14 relative">
+          <span class="pointer-events-none absolute -top-10 -left-2 font-mono font-bold leading-none select-none text-text-primary" style="font-size: clamp(5rem, 12vw, 9rem); opacity: 0.05; letter-spacing: -0.06em;" aria-hidden="true">03</span>
+          <div class="relative">
+            <p class="eyebrow mb-4">日程</p>
+            <h2 class="text-subsection font-semibold tracking-tight">项目时间线</h2>
+          </div>
         </div>
         <div class="space-y-6">
           <div v-for="(phase, i) in project.timeline" :key="i"
@@ -149,31 +163,29 @@
       </div>
     </section>
 
-    <!-- Nav -->
-    <section class="border-t border-white/[0.06] py-12">
+    <!-- Gallery-style prev/next (V3 §4.6) -->
+    <section class="border-t border-white/[0.06] py-14 md:py-20">
       <div class="mx-auto max-w-5xl px-6">
-        <div class="flex items-center justify-between">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <NuxtLink v-if="prevProject" :to="'/projects/' + prevProject.slug"
-            class="group flex items-center gap-3 text-text-secondary transition-colors hover:text-text-primary">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:-translate-x-1"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-            <div>
-              <p class="text-[11px] text-text-tertiary">上一个</p>
-              <p class="text-[14px] font-medium">{{ prevProject.titleZh }}</p>
-            </div>
+            class="group relative rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 overflow-hidden transition-all duration-300 hover:border-white/[0.14] hover:bg-white/[0.04] inner-glow">
+            <div class="absolute top-0 left-0 h-full w-1" :style="{ background: prevProject.colorHex }" />
+            <p class="text-[11px] font-mono uppercase tracking-[0.2em] text-text-tertiary mb-2">← 上一个</p>
+            <p class="text-lg font-semibold text-text-primary">{{ prevProject.titleZh }}</p>
+            <p class="text-[13px] font-mono text-text-tertiary mt-0.5">{{ prevProject.titleEn }}</p>
           </NuxtLink>
           <div v-else />
-          <NuxtLink to="/projects" class="text-[13px] text-text-tertiary hover:text-text-primary transition-colors">
-            全部项目
-          </NuxtLink>
           <NuxtLink v-if="nextProject" :to="'/projects/' + nextProject.slug"
-            class="group flex items-center gap-3 text-text-secondary transition-colors hover:text-text-primary text-right">
-            <div>
-              <p class="text-[11px] text-text-tertiary">下一个</p>
-              <p class="text-[14px] font-medium">{{ nextProject.titleZh }}</p>
-            </div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-1"><path d="m12 19 7-7-7-7"/><path d="M5 12h14"/></svg>
+            class="group relative rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 overflow-hidden transition-all duration-300 hover:border-white/[0.14] hover:bg-white/[0.04] inner-glow md:text-right">
+            <div class="absolute top-0 right-0 h-full w-1" :style="{ background: nextProject.colorHex }" />
+            <p class="text-[11px] font-mono uppercase tracking-[0.2em] text-text-tertiary mb-2">下一个 →</p>
+            <p class="text-lg font-semibold text-text-primary">{{ nextProject.titleZh }}</p>
+            <p class="text-[13px] font-mono text-text-tertiary mt-0.5">{{ nextProject.titleEn }}</p>
           </NuxtLink>
           <div v-else />
+        </div>
+        <div class="mt-6 text-center">
+          <NuxtLink to="/projects" class="text-[13px] text-text-tertiary hover:text-text-primary transition-colors">查看全部项目</NuxtLink>
         </div>
       </div>
     </section>

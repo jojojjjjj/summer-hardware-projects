@@ -1,20 +1,23 @@
 <template>
   <section id="learning-path" ref="sectionRef" class="relative overflow-hidden bg-bg-secondary">
-    <!-- Header -->
-    <div class="mx-auto max-w-6xl px-6 pt-28 md:pt-40 pb-16 md:pb-24 text-center">
-      <div class="flex items-center justify-center gap-4 mb-5">
-        <h2 ref="headingRef" class="text-section font-semibold tracking-tight text-text-primary opacity-0 translate-y-8">
-          从零到一，步步为营
-        </h2>
+    <!-- Header — formula C: side-by-side 4:8 (badge+title / intro), NOT centered
+         (distinct from Projects' formula B and Value's formula A) -->
+    <div class="mx-auto max-w-6xl px-6 pt-28 md:pt-40 pb-16 md:pb-24">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-end">
+        <div class="md:col-span-5">
+          <span class="inline-flex items-center rounded-full px-3 py-1 mb-5 text-[13px] font-medium" style="background: rgba(99,102,241,0.10); color: #a5aceb; border: 1px solid rgba(99,102,241,0.20);">
+            5 个阶段
+          </span>
+          <h2 ref="headingRef" class="text-section font-semibold tracking-tight text-text-primary opacity-0 translate-y-8">
+            从零到一，步步为营
+          </h2>
+        </div>
+        <div class="md:col-span-7 md:pl-8">
+          <p ref="subRef" class="text-body-lg text-text-secondary opacity-0 translate-y-6 max-w-md">
+            12–15 天，5 个阶段，从第一次焊接到最后一次展示
+          </p>
+        </div>
       </div>
-      <div class="flex items-center justify-center gap-3 mb-6">
-        <span class="inline-flex items-center rounded-full px-3 py-1 text-[13px] font-medium" style="background: rgba(99,102,241,0.10); color: #a5aceb; border: 1px solid rgba(99,102,241,0.20);">
-          5 个阶段
-        </span>
-      </div>
-      <p ref="subRef" class="mx-auto max-w-lg text-body-lg text-text-secondary opacity-0 translate-y-6">
-        12–15 天，5 个阶段，从第一次焊接到最后一次展示
-      </p>
     </div>
 
     <!-- Timeline -->

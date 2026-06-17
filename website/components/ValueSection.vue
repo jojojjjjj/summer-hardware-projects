@@ -3,7 +3,11 @@
     <!-- Section intro -->
     <div class="bg-bg-secondary relative overflow-hidden">
       <div class="mx-auto max-w-6xl px-6 pt-28 md:pt-40 pb-20 md:pb-28">
-        <p class="eyebrow mb-5 opacity-0 translate-y-6" ref="introEyebrow">为什么选择我们</p>
+        <div class="mb-5 flex items-center gap-4">
+          <span class="font-mono text-[12px] tracking-[0.22em] text-text-tertiary">01 / 05</span>
+          <span class="h-px w-10 bg-white/10" />
+          <p class="eyebrow opacity-0 translate-y-6" ref="introEyebrow">为什么选择我们</p>
+        </div>
         <h2 class="text-section font-semibold tracking-tight text-text-primary opacity-0 translate-y-8 max-w-3xl" ref="introHeading">
           不只是夏令营<br />
           <span class="text-text-secondary">是真正的工程训练</span>

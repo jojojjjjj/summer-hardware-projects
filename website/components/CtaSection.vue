@@ -17,7 +17,7 @@
             准备好开始了吗？
           </h2>
           <p ref="subRef" class="mx-auto mt-6 max-w-md text-body-lg text-text-secondary opacity-0 translate-y-6">
-            加入我们，开启你的硬件之旅
+            12–15 天，9 个真实项目，从第一次焊接到最终答辩
           </p>
 
           <!-- CTA Button with magnetic hover — restrained warm accent -->

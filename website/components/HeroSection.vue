@@ -69,21 +69,28 @@
           </div>
         </div>
 
-        <!-- Specs — right column: two stacked stats -->
-        <div ref="specsRef" class="lg:col-span-5 lg:pl-8" style="perspective: 900px;">
-          <div ref="specsGridRef" class="flex flex-col gap-8 lg:border-l lg:border-white/[0.06] lg:pl-10" style="transform-origin: center top; will-change: transform;">
-            <div>
-              <div class="text-5xl sm:text-6xl lg:text-7xl font-bold text-gradient-accent tabular-nums font-mono tracking-tighter leading-none">
-                {{ countUp.projects }}
-              </div>
-              <p class="mt-3 text-[11px] text-text-tertiary uppercase tracking-[0.22em] font-semibold">真实项目</p>
+        <!-- Artifact — 3D signature visual (V3 §4.2). The SVG poster is the SSG
+             baseline (visible immediately, no first-paint blank); the Three.js
+             constellation is progressive enhancement that fades in over it.
+             Falls back to the poster under reduced-motion / touch-mobile / no-WebGL. -->
+        <div ref="specsRef" class="lg:col-span-5 lg:pl-4" style="perspective: 1000px;">
+          <div ref="specsGridRef" class="relative mx-auto h-[340px] w-full sm:h-[420px] lg:h-[520px] lg:max-w-[440px]" style="transform-origin: center top; will-change: transform;">
+            <ClientOnly>
+              <HeroArtifact :projects="projects" />
+              <template #fallback>
+                <ConstellationPoster :projects="projects" />
+              </template>
+            </ClientOnly>
+          </div>
+          <div class="mt-6 flex items-center justify-center gap-7 lg:justify-start">
+            <div class="flex items-baseline gap-2">
+              <span class="text-3xl font-bold tabular-nums font-mono tracking-tight text-text-primary">{{ countUp.projects }}</span>
+              <span class="text-[11px] uppercase tracking-[0.2em] text-text-tertiary font-semibold">个项目节点</span>
             </div>
-            <div class="h-px w-14 bg-white/[0.08]" />
-            <div>
-              <div class="text-5xl sm:text-6xl lg:text-7xl font-bold text-gradient-accent tabular-nums font-mono tracking-tighter leading-none">
-                12–15
-              </div>
-              <p class="mt-3 text-[11px] text-text-tertiary uppercase tracking-[0.22em] font-semibold">天完成</p>
+            <div class="h-7 w-px bg-white/[0.08]" />
+            <div class="flex items-baseline gap-2">
+              <span class="text-3xl font-bold tabular-nums font-mono tracking-tight text-text-primary">12–15</span>
+              <span class="text-[11px] uppercase tracking-[0.2em] text-text-tertiary font-semibold">天完成</span>
             </div>
           </div>
         </div>
@@ -105,6 +112,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useReducedMotion } from '~/composables/useReducedMotion'
 import { useGlobalMouse } from '~/composables/useGlobalMouse'
+import { projects } from '~/content/projects'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -198,30 +206,23 @@ onMounted(() => {
     return
   }
 
-  // Set initial states
-  gsap.set(logoRef.value, { opacity: 0, y: 20 })
-  gsap.set(eyebrowRef.value, { opacity: 0, y: 20 })
-  gsap.set(lines, { opacity: 0, y: 50 })
-  gsap.set(subtitleRef.value, { opacity: 0, y: 25 })
-  gsap.set(ctaRef.value, { opacity: 0, y: 25 })
-  gsap.set(specsRef.value, { opacity: 0, y: 20 })
-  gsap.set(scrollIndicatorRef.value, { opacity: 0 })
+  // V3 §6: visibility must NOT depend on JS. CSS baseline is visible (opacity:1
+  // in the template); gsap.from animates FROM a near-hidden state quickly. If JS
+  // fails to run, content stays visible. The artifact column (specsRef) is never
+  // hidden — only a subtle y-slide — so the signature visual shows immediately.
+  tl = gsap.timeline({ delay: 0.08, defaults: { ease: 'power3.out' } })
 
-  // Build timeline
-  tl = gsap.timeline({ delay: 0.3 })
-
-  tl.to(logoRef.value, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
-    .to(eyebrowRef.value, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.4')
-    .to(lines, { opacity: 1, y: 0, duration: 0.9, stagger: 0.15, ease: 'power3.out' }, '-=0.3')
-    .to(subtitleRef.value, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.4')
-    .to(ctaRef.value, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, '-=0.35')
-    .to(specsRef.value, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', onStart: startCountUp }, '-=0.3')
-    .to(scrollIndicatorRef.value, { opacity: 0.3, duration: 1, ease: 'power2.out' }, '-=0.2')
+  tl.from(eyebrowRef.value, { opacity: 0, y: 14, duration: 0.5 })
+    .from(lines, { opacity: 0, y: 24, duration: 0.7, stagger: 0.09 }, '-=0.15')
+    .from(logoRef.value, { opacity: 0, y: 14, duration: 0.5 }, '-=0.55')
+    .from(subtitleRef.value, { opacity: 0, y: 16, duration: 0.6 }, '-=0.3')
+    .from(ctaRef.value, { opacity: 0, y: 16, duration: 0.6 }, '-=0.3')
+    .from(specsRef.value, { y: 22, duration: 0.7, onStart: startCountUp }, '-=0.45')
+    .from(scrollIndicatorRef.value, { opacity: 0, duration: 0.8 }, '-=0.3')
 
   // ── Scroll-driven parallax (title rises + fades; specs 3D tilt; bg drifts) ──
   const stOpts = { trigger: sectionRef.value!, start: 'top top', end: 'bottom top', scrub: 0.8 }
   gsap.to(titleParallaxRef.value, { y: -70, opacity: 0, ease: 'none', scrollTrigger: { ...stOpts } })
-  gsap.to(specsGridRef.value, { rotateX: -14, ease: 'none', scrollTrigger: { ...stOpts } })
   gsap.to(bgLayer2.value, { y: 45, ease: 'none', scrollTrigger: { ...stOpts } })
   gsap.to(bgLayer3.value, { y: 70, ease: 'none', scrollTrigger: { ...stOpts } })
 
