@@ -1,7 +1,8 @@
 <template>
   <section id="contact" class="relative overflow-hidden py-24 md:py-36" style="background: linear-gradient(180deg, #0b0d12 0%, #0f1118 50%, #0b0d12 100%);">
-    <!-- Single subtle cool directional wash (local, not full-bleed warm orbs) -->
-    <div class="pointer-events-none absolute inset-0" style="background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(99,102,241,0.06) 0%, transparent 65%);" />
+    <!-- Directional cool wash from top + richer soft bloom pooling behind the card -->
+    <div class="pointer-events-none absolute inset-0" style="background: radial-gradient(ellipse 75% 55% at 50% 0%, rgba(99,102,241,0.14) 0%, transparent 60%);" />
+    <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[115%] max-w-5xl h-[40rem]" style="background: radial-gradient(ellipse 50% 60% at 50% 42%, rgba(99,102,241,0.26) 0%, rgba(99,102,241,0.07) 45%, transparent 72%); filter: blur(48px);" />
 
     <div class="mx-auto max-w-4xl px-6">
       <div
@@ -27,8 +28,8 @@
               @mousemove="onBtnMove"
               @mouseleave="onBtnLeave"
               @click="onBtnClick"
-              class="group relative inline-flex items-center justify-center gap-3 rounded-full text-[16px] font-semibold text-white transition-shadow duration-300 hover:shadow-glow-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-cool-indigo/50 overflow-hidden"
-              style="background: linear-gradient(135deg, #ff9a76, #ff6b6b); padding: 20px 48px;"
+              class="group cta-btn relative inline-flex items-center justify-center gap-3 rounded-full text-[16px] font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-warm-coral/50 overflow-hidden"
+              style="padding: 20px 48px;"
             >
               <!-- Inner gradient sheen -->
               <span class="absolute inset-0 rounded-full opacity-15" style="background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);" />

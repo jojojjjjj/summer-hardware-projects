@@ -34,8 +34,7 @@
         <a
           ref="ctaBtnRef"
           href="#projects"
-          class="magnetic-btn relative rounded-full px-5 py-1.5 text-[13px] font-semibold text-white transition-shadow duration-300 hover:shadow-glow inner-glow"
-          style="background: linear-gradient(135deg, #ff9a76, #ff6b6b);"
+          class="magnetic-btn cta-btn relative rounded-full px-5 py-1.5 text-[13px] font-semibold text-white"
         >
           查看项目
         </a>
@@ -73,8 +72,8 @@
           </a>
           <a
             href="#projects"
-            class="mobile-cta-link mt-3 flex min-h-[44px] items-center justify-center rounded-full text-[15px] font-semibold text-white inner-glow"
-            style="background: linear-gradient(135deg, #ff9a76, #ff6b6b); opacity: 0; transform: translateY(8px);"
+            class="mobile-cta-link cta-btn mt-3 flex min-h-[44px] items-center justify-center rounded-full text-[15px] font-semibold text-white"
+            style="opacity: 0; transform: translateY(8px);"
             @click="mobileOpen = false"
           >
             查看项目

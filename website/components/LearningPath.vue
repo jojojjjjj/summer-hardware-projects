@@ -108,12 +108,12 @@
               {{ i + 1 }}
             </span>
             <div class="relative flex h-14 w-14 items-center justify-center">
-              <!-- One-shot glow ring when activated (transition, not infinite) -->
+              <!-- Soft bloom when activated (feathered halo + directional glow, not a neon ring) -->
               <div
-                class="absolute inset-[-8px] rounded-full transition-all duration-700"
+                class="absolute inset-[-10px] rounded-full transition-all duration-700"
                 :style="{
-                  background: activatedSteps[i] ? `radial-gradient(circle, ${step.color}33, transparent 70%)` : 'none',
-                  boxShadow: activatedSteps[i] ? `0 0 50px ${step.color}40` : 'none',
+                  background: activatedSteps[i] ? `radial-gradient(circle, ${step.color}40, transparent 70%)` : 'none',
+                  boxShadow: activatedSteps[i] ? `0 12px 44px -10px ${step.color}66` : 'none',
                 }"
               />
               <div
@@ -121,7 +121,6 @@
                 :style="{
                   background: activatedSteps[i] ? `linear-gradient(135deg, ${step.color}, ${step.color}cc)` : 'rgba(255,255,255,0.04)',
                   color: activatedSteps[i] ? '#0b0d12' : '#6b7280',
-                  boxShadow: activatedSteps[i] ? `0 0 30px ${step.color}55` : 'none',
                 }"
               >
                 {{ i + 1 }}
@@ -166,7 +165,7 @@
                 :style="{
                   background: activatedSteps[i] ? `linear-gradient(135deg, ${step.color}, ${step.color}cc)` : 'rgba(255,255,255,0.04)',
                   color: activatedSteps[i] ? '#0b0d12' : '#6b7280',
-                  boxShadow: activatedSteps[i] ? `0 0 20px ${step.color}50` : 'none',
+                  boxShadow: activatedSteps[i] ? `0 8px 28px -8px ${step.color}66` : 'none',
                 }"
               >
                 {{ i + 1 }}

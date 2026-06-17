@@ -163,13 +163,13 @@ const config: Config = {
         '5xl': '2.5rem',
       },
 
-      /* ── Shadows — layered depth; glow shadows are cool indigo (hover/active only) ── */
+      /* ── Shadows — layered depth; glow shadows are cool indigo soft blooms (hover/active only) ── */
       boxShadow: {
-        'glow': '0 0 40px rgba(99,102,241,0.16), 0 0 90px rgba(99,102,241,0.05)',
-        'glow-strong': '0 0 55px rgba(99,102,241,0.22), 0 0 120px rgba(99,102,241,0.07)',
-        'glow-subtle': '0 0 30px rgba(99,102,241,0.10)',
-        'glow-cool': '0 0 50px rgba(99,102,241,0.18), 0 0 110px rgba(99,102,241,0.06)',
-        'glow-warm': '0 0 50px rgba(255,107,107,0.18), 0 0 110px rgba(255,107,107,0.06)',
+        'glow': '0 12px 48px -16px rgba(99,102,241,0.40), 0 0 0 1px rgba(99,102,241,0.10)',
+        'glow-strong': '0 18px 64px -14px rgba(99,102,241,0.55), 0 0 0 1px rgba(99,102,241,0.16)',
+        'glow-subtle': '0 8px 32px -14px rgba(99,102,241,0.26)',
+        'glow-cool': '0 18px 70px -14px rgba(99,102,241,0.50), 0 0 0 1px rgba(99,102,241,0.16)',
+        'glow-warm': '0 18px 70px -14px rgba(255,107,107,0.50), 0 0 0 1px rgba(255,107,107,0.16)',
         'card': '0 2px 8px rgba(0,0,0,0.18), 0 8px 32px rgba(0,0,0,0.22)',
         'card-hover': '0 4px 16px rgba(0,0,0,0.22), 0 16px 48px rgba(0,0,0,0.28)',
         'card-elevated': '0 8px 32px rgba(0,0,0,0.28), 0 24px 64px rgba(0,0,0,0.18)',

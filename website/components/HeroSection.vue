@@ -2,10 +2,10 @@
   <section ref="sectionRef" class="relative flex min-h-screen items-center overflow-hidden">
     <!-- Background layers (parallax) -->
     <div ref="bgLayer1" class="absolute inset-0 bg-background" />
-    <!-- Single directional volumetric light from top-left (cool indigo), static -->
-    <div ref="bgLayer2" class="absolute inset-0" style="background: linear-gradient(125deg, rgba(99,102,241,0.10) 0%, rgba(99,102,241,0.03) 28%, transparent 55%);" />
+    <!-- Directional volumetric light: a soft corner bloom (light source, top-left) + faint diagonal wash -->
+    <div ref="bgLayer2" class="absolute inset-0" style="background: radial-gradient(ellipse 55% 65% at 14% 6%, rgba(99,102,241,0.18) 0%, rgba(99,102,241,0.05) 35%, transparent 60%), linear-gradient(125deg, rgba(99,102,241,0.06) 0%, transparent 45%);" />
     <!-- Faint cool grid texture -->
-    <div ref="bgLayer3" class="absolute inset-0 opacity-[0.012]" style="background-image: linear-gradient(rgba(120,130,180,0.18) 1px, transparent 1px), linear-gradient(90deg, rgba(120,130,180,0.18) 1px, transparent 1px); background-size: 80px 80px;" />
+    <div ref="bgLayer3" class="absolute inset-0 opacity-[0.018]" style="background-image: linear-gradient(rgba(120,130,180,0.18) 1px, transparent 1px), linear-gradient(90deg, rgba(120,130,180,0.18) 1px, transparent 1px); background-size: 80px 80px;" />
 
     <!-- Content — 7:5 asymmetric, left-aligned -->
     <div class="relative z-10 mx-auto w-full max-w-6xl px-6">
@@ -32,8 +32,7 @@
             <a
               ref="ctaBtnRef"
               href="#projects"
-              class="magnetic-btn group relative inline-flex items-center justify-center gap-2.5 rounded-full px-9 py-4 text-[15px] font-semibold text-white overflow-hidden transition-shadow duration-300 hover:shadow-glow-strong"
-              style="background: linear-gradient(135deg, #ff9a76, #ff6b6b);"
+              class="magnetic-btn cta-btn group relative inline-flex items-center justify-center gap-2.5 rounded-full px-9 py-4 text-[15px] font-semibold text-white overflow-hidden"
             >
               <span class="relative z-10">查看项目</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="relative z-10 transition-transform duration-300 group-hover:translate-x-0.5"><path d="m9 18 6-6-6-6"/></svg>

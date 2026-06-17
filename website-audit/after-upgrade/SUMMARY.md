@@ -3,6 +3,31 @@
 Upgrade of `website/` from a warm "Apple × Mimo" look toward a restrained, cool "Meta-style" language.
 Goal: remove the "AI-generated look" (ambient warm glow, infinite breathing, gradient-text everywhere, centered symmetry) while keeping information architecture, routes, data, and GSAP skeleton intact.
 
+## Glow redesign (pass 2 — premium execution)
+
+The first glow pass used `box-shadow: 0 0 Npx rgba(...)` (tight omnidirectional halos) which read as **cheap neon rings**, and the CTA bloom was hidden behind the card. Redesigned for "高级感":
+
+- **All glows are now soft, feathered, directional blooms** — `box-shadow: 0 Ypx Blur -Spreadpx rgba(...)` (large blur + negative spread + adequate center alpha = reads as light, not an outline). Applied to `.glow-soft`, `.glow-on-hover`, `.glow-in-view`, `.shadow-glow*`.
+- **Spotlight** (mouse-follow): 440px radius, 3-stop feather, removed `mix-blend: screen` (which read as a flashlight) → soft light pool.
+- **Hero directional volumetric light**: corner bloom (light source top-left) + diagonal wash, replacing the flat centered radial.
+- **CTA card bloom**: enlarged to extend *beyond* the card edges (115% × 40rem, blur 48px) so the feathered halo is visible around the card (was hidden behind it).
+- **LearningPath nodes**: replaced dual neon rings with a single soft radial halo + directional bloom per activated node; progress line/dot made solid (no glow) to keep ≤2 glowing elements.
+- **Premium CTA button** (`.cta-btn`, on all 3 CTAs): warm gradient + glossy top sheen (layered `background-image`) + raised inset edge + soft drop shadow; warm directional bloom on hover only (no cool/warm mix). Inline backgrounds removed so the class gloss applies.
+
+## Per-section visual verification
+
+Every landing section captured at 1440 + 375 with ground-truth scroll-position verification (correct heading confirmed in viewport for each). `website-audit/sections/v2-*-*.png`.
+
+| Section | Verified |
+|---|---|
+| Hero | heading + specs + glossy CTA button; soft directional bloom top-left, no neon ✓ |
+| Value intro | left-aligned, clean cool dark bg, no full-screen warm radial ✓ |
+| Value feature | glass icon tile with soft premium in-view bloom + edge highlight ✓ |
+| Projects | cards in shelf, cool active filter, no neon glow ✓ |
+| LearningPath | timeline nodes with soft feathered bloom; solid progress line; no neon ring ✓ |
+| Testimonials | left-aligned glass quote card + dots; **no autoplay progress bar**; cool/neutral ✓ |
+| CTA | soft blue bloom extending around card; glossy raised orange button ✓ |
+
 ## Quality gates (Section 七 of the prompt)
 
 | # | Gate | Result |

@@ -8,7 +8,7 @@
           background: cardGradient,
           '--glow-cool': glowRgb(project.colorHex),
           boxShadow: isHovered
-            ? '0 10px 40px rgba(0,0,0,0.35), 0 0 0 1px ' + project.colorHex + '40'
+            ? '0 18px 60px -12px rgba(0,0,0,0.45), 0 0 0 1px ' + project.colorHex + '55'
             : '0 2px 8px rgba(0,0,0,0.18), 0 8px 32px rgba(0,0,0,0.22)',
           border: '1px solid ' + project.colorHex + '20',
         }"
