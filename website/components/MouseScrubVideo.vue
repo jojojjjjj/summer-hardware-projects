@@ -10,6 +10,7 @@
     <video
       ref="videoRef"
       class="absolute inset-0 h-full w-full object-cover"
+      style="object-position: 72% center"
       :poster="poster"
       muted
       playsinline

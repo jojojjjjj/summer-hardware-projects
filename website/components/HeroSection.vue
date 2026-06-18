@@ -3,16 +3,20 @@
     <!-- Background layers (parallax) -->
     <div ref="bgLayer1" class="absolute inset-0 bg-background" />
 
-    <!-- V4 · Mouse-scrub video as ambient base (placeholder: blackhole-code.jpg
-         poster now; drop a scrub video at /media/<name>.mp4 and set :src). Sits
-         behind the 3D constellation subject — video is atmosphere, 3D is the
-         focus (§4 #1 layered coexist with 07's hero 3D). -->
+    <!-- V4·10 · Mouse-scrub video as ambient base. The self-hosted Mainframe
+         "little person" clip scrubs with horizontal mouse movement (turns its
+         head as you move the cursor) — the 2D hero layer. The 3D constellation
+         (right column) floats over it: video is atmosphere + interaction, the
+         glowing constellation is the subject. src is one-swap: replace
+         public/media/hero-scrub.mp4 to change the video (no code edit).
+         ⚠️ Licensing: this clip is Higgsfield/Mainframe's demo asset, not ours
+         — swap for a self-generated/licensed clip before public launch. -->
     <MediaSlot
-      class="absolute inset-0 opacity-30"
+      class="absolute inset-0"
       mode="mouse-scrub"
       poster="/media/blackhole-code.jpg"
-      src=""
-      overlay-class="bg-gradient-to-b from-background/50 via-background/35 to-background/60"
+      src="/media/hero-scrub.mp4"
+      overlay-class="bg-gradient-to-r from-background/90 via-background/50 to-background/80"
     />
     <!-- Directional volumetric light: a soft corner bloom (light source, top-left) + faint diagonal wash -->
     <div ref="bgLayer2" class="absolute inset-0" style="background: radial-gradient(ellipse 55% 65% at 14% 6%, rgba(99,102,241,0.18) 0%, rgba(99,102,241,0.05) 35%, transparent 60%), linear-gradient(125deg, rgba(99,102,241,0.06) 0%, transparent 45%);" />
