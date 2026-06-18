@@ -1,0 +1,50 @@
+# Cloudflare Pages 自动部署 —— push 到 master 时自动构建并 deploy 到 duoweisummer.pages.dev
+# Cloudflare Pages auto-deploy: on push to master, build and deploy to duoweisummer.pages.dev
+#
+# 凭证来自 GitHub Secrets (CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID), 公开仓库不可见。
+# 构建用 DEPLOY_TARGET=cf 切根路径 baseURL (绕开 NUXT_APP_BASE_URL prerender bug, 见 nuxt.config.ts)。
+# 未来 duoweisummer.com 实名 + ICP 备案后切广州腾讯云, 此 workflow 届时可停用或改指向。
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'website/**'
+      - '.github/workflows/deploy-cf-pages.yml'
+  workflow_dispatch:
+
+# 同分支新 push 取消旧 run, 避免并发部署冲突
+concurrency:
+  group: cf-pages-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: website
+
+      - name: Build (DEPLOY_TARGET=cf → root baseURL /)
+        run: DEPLOY_TARGET=cf npm run generate
+        working-directory: website
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy website/.output/public --project-name=duoweisummer --branch=master
