@@ -13,8 +13,8 @@
         <div class="absolute inset-x-0 top-0 h-px" style="background: linear-gradient(90deg, transparent, rgba(99,102,241,0.5), transparent);" />
 
         <div class="relative z-10 px-8 py-20 sm:px-16 sm:py-28 md:py-32 text-center">
-          <h2 ref="headingRef" class="text-[2.5rem] md:text-[3.75rem] font-semibold tracking-[-0.04em] text-text-primary opacity-0 translate-y-8 leading-[1.05]">
-            准备好开始了吗？
+          <h2 ref="headingRef" class="text-[2.5rem] md:text-[3.75rem] font-semibold tracking-[-0.04em] text-text-primary leading-[1.05]">
+            <WordsPullUp text="准备好开始了吗？" />
           </h2>
           <p ref="subRef" class="mx-auto mt-6 max-w-md text-body-lg text-text-secondary opacity-0 translate-y-6">
             12–15 天，9 个真实项目，从第一次焊接到最终答辩
@@ -115,7 +115,8 @@ onMounted(async () => {
   const gsap = (await import('gsap')).default
   gsapInstance = gsap
 
-  const els = [headingRef.value, subRef.value, ctaWrapperRef.value].filter(Boolean) as HTMLElement[]
+  // headingRef is revealed by <WordsPullUp>; only the subtitle + CTA animate here.
+  const els = [subRef.value, ctaWrapperRef.value].filter(Boolean) as HTMLElement[]
   if (els.length) {
     if (reduce.value) {
       gsap.set(els, { opacity: 1, y: 0 })

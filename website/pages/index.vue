@@ -16,6 +16,9 @@
     <!-- Bridge · About → Services: parallax row of the 9 project colours -->
     <SectionBridge variant="dots" />
 
+    <!-- V4 · Clock-video timeline intro (clock-motion.mp4 + typewriter tagline) -->
+    <ClockVideoBand />
+
     <JackServices />
 
     <!-- Bridge · Services (white) → Projects (dark): white→dark color shift -->
@@ -27,6 +30,9 @@
 
     <!-- Bridge · Projects → CTA: soft glow merging the two atmospheres -->
     <SectionBridge variant="glow-merge" />
+
+    <!-- V4 · Mission narrative (blackhole bg + scroll-linked char reveal) -->
+    <MissionSection />
 
     <CtaSection />
     <AppFooter />

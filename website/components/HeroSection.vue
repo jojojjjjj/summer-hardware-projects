@@ -2,6 +2,18 @@
   <section ref="sectionRef" class="relative flex min-h-screen items-center overflow-hidden">
     <!-- Background layers (parallax) -->
     <div ref="bgLayer1" class="absolute inset-0 bg-background" />
+
+    <!-- V4 · Mouse-scrub video as ambient base (placeholder: blackhole-code.jpg
+         poster now; drop a scrub video at /media/<name>.mp4 and set :src). Sits
+         behind the 3D constellation subject — video is atmosphere, 3D is the
+         focus (§4 #1 layered coexist with 07's hero 3D). -->
+    <MediaSlot
+      class="absolute inset-0 opacity-30"
+      mode="mouse-scrub"
+      poster="/media/blackhole-code.jpg"
+      src=""
+      overlay-class="bg-gradient-to-b from-background/50 via-background/35 to-background/60"
+    />
     <!-- Directional volumetric light: a soft corner bloom (light source, top-left) + faint diagonal wash -->
     <div ref="bgLayer2" class="absolute inset-0" style="background: radial-gradient(ellipse 55% 65% at 14% 6%, rgba(99,102,241,0.18) 0%, rgba(99,102,241,0.05) 35%, transparent 60%), linear-gradient(125deg, rgba(99,102,241,0.06) 0%, transparent 45%);" />
     <!-- Faint cool grid texture -->

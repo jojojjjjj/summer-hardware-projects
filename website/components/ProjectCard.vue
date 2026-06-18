@@ -15,12 +15,21 @@
         @mouseenter="isHovered = true"
         @mouseleave="isHovered = false"
       >
-        <!-- Top area with subtle gradient + watermark -->
+        <!-- Top area — gradient (default) or video/poster slot (featured card, V4) -->
         <div class="relative aspect-[4/3] flex items-center justify-center overflow-hidden px-6 pt-6">
-          <div class="absolute inset-0" :style="{ background: `linear-gradient(180deg, ${project.colorHex}18 0%, ${project.colorHex}06 50%, transparent 100%)` }" />
+          <MediaSlot
+            v-if="videoPoster"
+            class="absolute inset-0"
+            mode="bg-autoplay"
+            :poster="videoPoster"
+            :src="videoSrc"
+            overlay-class="bg-gradient-to-b from-black/30 via-transparent to-black/75"
+          />
+          <div v-else class="absolute inset-0" :style="{ background: `linear-gradient(180deg, ${project.colorHex}18 0%, ${project.colorHex}06 50%, transparent 100%)` }" />
 
-          <!-- Large project number watermark -->
+          <!-- Large project number watermark (hidden over video for clarity) -->
           <span
+            v-if="!videoPoster"
             class="absolute font-mono font-bold leading-none select-none pointer-events-none transition-transform duration-700"
             :style="{
               color: project.colorHex,
@@ -143,6 +152,9 @@ import { useSpotlight } from '~/composables/useSpotlight'
 
 const props = defineProps<{
   project: Project
+  /** V4: when set, the card's top area becomes a video/poster slot (featured card). */
+  videoPoster?: string
+  videoSrc?: string
 }>()
 
 const isHovered = ref(false)

@@ -61,3 +61,6 @@ website-old/
 
 # Claude local settings (contains API keys)
 .claude/settings.local.json
+
+# Cloudflare API keys (local secrets — never commit)
+docs/api/

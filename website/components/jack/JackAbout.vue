@@ -17,9 +17,10 @@
       <Bot class="w-[120px] sm:w-[160px] md:w-[210px] h-auto opacity-15 text-indigo-400/60" aria-hidden="true" />
     </JackFadeIn>
 
-    <!-- Bottom-right: Satellite -->
+    <!-- Bottom-right: hand-art accent (V4 direct fusion) — "动手造物" motif.
+         Replaces the generic Satellite icon with the real art, framed + tilted. -->
     <JackFadeIn :tag="'div'" :delay="0.3" :x="80" :y="0" :duration="0.9" class="pointer-events-none absolute bottom-[8%] right-[3%] sm:right-[6%] md:right-[10%]">
-      <Satellite class="w-[130px] sm:w-[170px] md:w-[220px] h-auto opacity-15 text-indigo-400/60" aria-hidden="true" />
+      <img src="/media/hand-art.webp" alt="" class="w-[130px] sm:w-[170px] md:w-[220px] h-auto rotate-3 rounded-2xl border border-white/10 object-cover opacity-30" style="filter: saturate(0.9);" loading="lazy" decoding="async" />
     </JackFadeIn>
 
     <!-- Heading -->
@@ -77,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { Cpu, CircuitBoard, Bot, Satellite } from 'lucide-vue-next'
+import { Cpu, CircuitBoard, Bot } from 'lucide-vue-next'
 
 const aboutTextCn = '这是一个为高中生设计的暑期硬件实践课程。12–15 天，从第一次焊接到最后一次答辩，亲手打造 9 个真实开源硬件项目。不只是夏令营，是真正的工程训练。'
 

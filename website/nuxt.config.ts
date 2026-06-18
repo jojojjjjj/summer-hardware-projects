@@ -4,7 +4,10 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
 
   app: {
-    baseURL: process.env.NODE_ENV === 'production' ? '/summer-hardware-projects' : '/',
+    // GitHub Pages 项目页用 /summer-hardware-projects；Cloudflare Pages / 自定义根域名
+    // 用 DEPLOY_TARGET=cf 切到根路径。注意：别用官方的 NUXT_APP_BASE_URL——实测在
+    // nuxt generate 时它会触发 prerender 把根路由渲染成 "Redirecting..." 空壳（bug）。
+    baseURL: process.env.DEPLOY_TARGET === 'cf' ? '/' : (process.env.NODE_ENV === 'production' ? '/summer-hardware-projects' : '/'),
     // Page-flow transitions are driven by the native View Transitions API
     // (plugins/view-transitions.client.ts). Disable Vue's <Transition> on
     // <NuxtPage> so the two systems don't double-animate — out-in would also

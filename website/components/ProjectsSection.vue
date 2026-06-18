@@ -1,5 +1,11 @@
 <template>
   <section id="projects" class="relative overflow-hidden bg-background">
+    <!-- V4 · Direct-fusion hardware backdrop: 3D circuit board, dimmed + overlay.
+         Sits behind all section content (header / filters / shelf are z-10 above). -->
+    <div class="pointer-events-none absolute inset-0 z-0">
+      <img src="/media/circuit-3d.jpg" alt="" class="h-full w-full object-cover opacity-[0.12]" loading="lazy" decoding="async" />
+      <div class="absolute inset-0 bg-gradient-to-b from-background/70 via-background/45 to-background/90" />
+    </div>
     <!-- Section header — formula B: oversized bleeding "02" (z-overlap graphic) +
          asymmetric 7:5 (title / legend), no eyebrow (distinct from Value's formula A) -->
     <div class="relative mx-auto max-w-6xl px-6 pt-28 md:pt-40 pb-12 md:pb-16">
@@ -13,9 +19,8 @@
           <h2
             class="text-section font-semibold tracking-tight text-text-primary"
             ref="headingRef"
-            :style="{ opacity: headerVisible ? 1 : 0, transform: headerVisible ? 'translateY(0)' : 'translateY(24px)', transition: 'all 0.8s cubic-bezier(0.16,1,0.3,1)' }"
           >
-            选择你的项目
+            <WordsPullUp text="选择你的项目" />
           </h2>
         </div>
         <div class="md:col-span-5 md:text-right">
@@ -35,7 +40,7 @@
     </div>
 
     <!-- Difficulty filters -->
-    <div class="mx-auto max-w-6xl px-6 pb-10 md:pb-14">
+    <div class="relative z-10 mx-auto max-w-6xl px-6 pb-10 md:pb-14">
       <div class="flex flex-wrap items-center gap-2">
         <button
           v-for="filter in difficultyFilters"
@@ -53,7 +58,7 @@
     </div>
 
     <!-- Horizontal scroll shelf -->
-    <div class="relative">
+    <div class="relative z-10">
       <!-- Left fade + arrow -->
       <div class="pointer-events-none absolute left-0 top-0 bottom-0 z-10 w-32 bg-gradient-to-r from-background to-transparent" />
       <button
@@ -98,6 +103,8 @@
             v-for="(project, i) in filteredProjects"
             :key="project.id"
             :project="project"
+            :video-poster="project.slug === 'pocket-signal-generator' ? '/media/code-river.jpg' : undefined"
+            :video-src="''"
             :style="{ opacity: cardsVisible ? 1 : 0, transform: cardsVisible ? 'translateY(0)' : 'translateY(40px)', transition: `all 0.8s cubic-bezier(0.16,1,0.3,1) ${i * 0.08}s` }"
           />
         </div>
