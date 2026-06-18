@@ -4,7 +4,7 @@
     class="hero-artifact"
     :class="{ 'is-3d': running }"
     role="img"
-    aria-label="9 个硬件项目组成的 3D 星座图，悬停或点击节点可进入对应项目"
+    aria-label="9 个硬件项目组成的 3D 星座图，中央的机械守护者会随鼠标转头，悬停或点击节点可进入对应项目"
   >
     <ConstellationPoster :projects="projects" class="poster" />
     <canvas ref="canvasRef" class="canvas" />
@@ -58,6 +58,25 @@ let hoverIndex = -1
 const targetRot = { x: -0.16, y: 0.42 }
 const curRot = { x: -0.16, y: 0.42 }
 
+// ── V5: mechanical figure (shares the constellation's scene/group/camera/lights) ──
+// Cool indigo body + copper metal accents; emissive AdditiveBlending accents
+// (chest core, eyes) speak the same glow language as the constellation nodes.
+let figureGroup: THREE.Group | null = null
+let headGroup: THREE.Group | null = null
+let eyeGroup: THREE.Group | null = null
+let figureParts: THREE.Mesh[] = [] // solid occluders for raycast (figure is not clickable)
+// head tracking reuses onPointerMove's vx/vy (no new listener); local yaw/pitch
+// layered on top of the constellation group tilt → "turning head inside the chamber"
+let headTargetYaw = 0
+let headTargetPitch = 0
+const FIG_BASE_Y = -0.18 // settled vertical offset (head sits near frame centre)
+const FIG_SCALE = 1.25
+// head-turn sensitivity: vx/vy ∈ ±0.5 → yaw ±35°, pitch ±15°
+const HEAD_YAW_K = 1.22 // 35°/0.5
+const HEAD_PITCH_K = 0.52 // 15°/0.5
+const HEAD_YAW_MAX = 0.61 // 35°
+const HEAD_PITCH_MAX = 0.26 // 15°
+
 function fibSphere(n: number, r: number): [number, number, number][] {
   const pts: [number, number, number][] = []
   const phi = Math.PI * (3 - Math.sqrt(5))
@@ -85,6 +104,118 @@ function capable(): boolean {
   }
 }
 
+/** V5: procedural mechanical figure — a floating "operator/guardian" bust that
+ *  shares the constellation's scene, camera, lights and depth buffer. Built from
+ *  basic geometry (≤12 parts). Cool indigo body + copper metal accents, with
+ *  emissive AdditiveBlending accents (chest core, eyes) that share the glow
+ *  language of the constellation nodes → same-source harmony. Returns the figure
+ *  group, the head group (mouse-driven tracking), the eye group (subtle pupil
+ *  shift) and the solid parts used as raycast occluders. */
+function buildFigure(): {
+  group: THREE.Group
+  head: THREE.Group
+  eyes: THREE.Group
+  parts: THREE.Mesh[]
+} {
+  const g = new THREE.Group()
+
+  // ── materials (shared; cool palette, copper metal accents) ──
+  // Faint emissive on the indigo body bridges the lit-solid figure to the
+  // constellation's self-emissive nodes — shadowed areas keep a low indigo
+  // glow instead of going dead black, so the figure reads as part of the same
+  // energy field while the key light still gives it real 3D form.
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x34384f, metalness: 0.5, roughness: 0.55, emissive: 0x1a2040, emissiveIntensity: 0.35 })
+  const headMat = new THREE.MeshStandardMaterial({ color: 0x3d4263, metalness: 0.55, roughness: 0.5, emissive: 0x1c2244, emissiveIntensity: 0.35 })
+  const darkMat = new THREE.MeshStandardMaterial({ color: 0x14172a, metalness: 0.4, roughness: 0.6, emissive: 0x0a0c18, emissiveIntensity: 0.3 })
+  const copperMat = new THREE.MeshStandardMaterial({ color: 0xc9944a, metalness: 0.9, roughness: 0.3, emissive: 0x3a2a10, emissiveIntensity: 0.15 })
+  // emissive accents — same AdditiveBlending language as the constellation nodes/halos
+  const coreMat = new THREE.MeshBasicMaterial({ color: 0x8b5cf6, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false })
+  const coreHaloMat = new THREE.MeshBasicMaterial({ color: 0x8b5cf6, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending, depthWrite: false })
+  const eyeMat = new THREE.MeshBasicMaterial({ color: 0x6366f1, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false })
+  const eyeHaloMat = new THREE.MeshBasicMaterial({ color: 0x6366f1, transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending, depthWrite: false })
+  disposables.push(bodyMat, headMat, darkMat, copperMat, coreMat, coreHaloMat, eyeMat, eyeHaloMat)
+
+  const parts: THREE.Mesh[] = []
+  const mark = (m: THREE.Mesh) => { m.userData.isFigure = true; parts.push(m); return m }
+
+  // ── torso: square-tapered frustum (wide shoulders → narrow waist) ──
+  const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.28, 0.95, 4), bodyMat)
+  torso.rotation.y = Math.PI / 4
+  torso.position.y = -0.05
+  disposables.push(torso.geometry)
+  g.add(mark(torso))
+
+  // ── chest core: a glowing "heart node" (harmony bridge with the constellation).
+  //     The halo reuses the exact node-halo idiom (additive sphere) so the core
+  //     reads as "a constellation node embedded in the figure's chest". ──
+  const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.1, 0), coreMat)
+  core.position.set(0, 0.14, 0.3)
+  disposables.push(core.geometry)
+  g.add(core)
+  const coreHalo = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), coreHaloMat)
+  coreHalo.position.copy(core.position)
+  disposables.push(coreHalo.geometry)
+  g.add(coreHalo)
+
+  // ── neck (torso-level, so the head rotates above it cleanly) ──
+  const neckGeo = new THREE.CylinderGeometry(0.09, 0.12, 0.16, 12)
+  disposables.push(neckGeo)
+  const neck = new THREE.Mesh(neckGeo, bodyMat)
+  neck.position.y = 0.5
+  g.add(mark(neck))
+
+  // ── head group (pivot at top of neck; mouse-driven yaw/pitch layered on group tilt) ──
+  const head = new THREE.Group()
+  head.position.set(0, 0.58, 0)
+  const headShell = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.36, 0.38), headMat)
+  headShell.position.y = 0.2
+  disposables.push(headShell.geometry)
+  head.add(mark(headShell))
+  const visor = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.15, 0.02), darkMat)
+  visor.position.set(0, 0.2, 0.2)
+  disposables.push(visor.geometry)
+  head.add(mark(visor))
+  // eyes (emissive, in a sub-group for a subtle pupil shift toward the cursor)
+  const eyes = new THREE.Group()
+  eyes.position.set(0, 0.2, 0.205)
+  const eyeGeo = new THREE.SphereGeometry(0.04, 12, 12)
+  disposables.push(eyeGeo)
+  const eyeHaloGeo = new THREE.SphereGeometry(0.075, 12, 12)
+  disposables.push(eyeHaloGeo)
+  const eL = new THREE.Mesh(eyeGeo, eyeMat); eL.position.x = -0.09; eyes.add(eL)
+  const eR = new THREE.Mesh(eyeGeo, eyeMat); eR.position.x = 0.09; eyes.add(eR)
+  // eye halos (additive) — same glow language as the constellation nodes
+  const ehL = new THREE.Mesh(eyeHaloGeo, eyeHaloMat); ehL.position.x = -0.09; eyes.add(ehL)
+  const ehR = new THREE.Mesh(eyeHaloGeo, eyeHaloMat); ehR.position.x = 0.09; eyes.add(ehR)
+  head.add(eyes)
+  g.add(head)
+
+  // ── shoulders (copper metal) ──
+  const shoulderGeo = new THREE.SphereGeometry(0.12, 16, 16)
+  disposables.push(shoulderGeo)
+  const sL = new THREE.Mesh(shoulderGeo, copperMat); sL.position.set(-0.31, 0.28, 0); g.add(mark(sL))
+  const sR = new THREE.Mesh(shoulderGeo, copperMat); sR.position.set(0.31, 0.28, 0); g.add(mark(sR))
+
+  // ── arms: single tapered cylinders, slight outward angle (clean guardian silhouette) ──
+  const armGeo = new THREE.CylinderGeometry(0.06, 0.05, 0.62, 12)
+  disposables.push(armGeo)
+  const aL = new THREE.Mesh(armGeo, bodyMat); aL.position.set(-0.33, -0.04, 0); aL.rotation.z = 0.1; g.add(mark(aL))
+  const aR = new THREE.Mesh(armGeo, bodyMat); aR.position.set(0.33, -0.04, 0); aR.rotation.z = -0.1; g.add(mark(aR))
+
+  // ── base ring: tilted copper "projector platform" the figure emerges from ──
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.035, 14, 44), copperMat)
+  ring.position.y = -0.6
+  ring.rotation.x = 1.15
+  disposables.push(ring.geometry)
+  g.add(mark(ring))
+
+  // final placement + scale (figure ~2 units tall, centred, head near upper-centre)
+  g.position.set(0, FIG_BASE_Y, 0)
+  g.scale.setScalar(FIG_SCALE)
+
+  return { group: g, head, eyes, parts }
+}
+
 function init() {
   const root = rootRef.value
   const canvas = canvasRef.value
@@ -105,6 +236,18 @@ function init() {
   group = new THREE.Group()
   group.rotation.set(curRot.x, curRot.y, 0)
   scene.add(group)
+
+  // ── V5: scene lights. Shape ONLY the MeshStandardMaterial figure — the
+  //     constellation nodes are MeshBasicMaterial (unlit), so adding lights
+  //     here cannot wash them out; the constellation look is preserved. Cool
+  //     palette so the lit figure reads as the same deep-space language. ──
+  scene.add(new THREE.AmbientLight(0x2a3358, 0.7))
+  const keyLight = new THREE.DirectionalLight(0xb8c4ff, 1.3)
+  keyLight.position.set(-3, 5, 4)
+  scene.add(keyLight)
+  const rimLight = new THREE.DirectionalLight(0xc9944a, 0.4)
+  rimLight.position.set(3, -2, 2)
+  scene.add(rimLight)
 
   const pts = fibSphere(props.projects.length, 3.1)
   const coreGeo = new THREE.IcosahedronGeometry(0.17, 1)
@@ -150,6 +293,14 @@ function init() {
   lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(lp, 3))
   disposables.push(lineGeo)
   group.add(new THREE.LineSegments(lineGeo, lineMat))
+
+  // ── V5: procedural mechanical figure, same scene/group as the constellation ──
+  const fig = buildFigure()
+  figureGroup = fig.group
+  headGroup = fig.head
+  eyeGroup = fig.eyes
+  figureParts = fig.parts
+  group.add(figureGroup)
 
   raycaster = new THREE.Raycaster()
 
@@ -216,6 +367,27 @@ function loop() {
   group.rotation.x = curRot.x
   group.rotation.y = curRot.y
 
+  // ── V5: figure one-shot entrance (rises + scales in, aligned to the
+  //     constellation's 1.1s timing; begins after the first nodes appear) ──
+  const figE = Math.max(0, Math.min(1, (eRaw - 0.25) / 0.75))
+  const figEase = 1 - Math.pow(1 - figE, 3) // power3.out, same family as nodes
+  if (figureGroup) {
+    figureGroup.position.y = FIG_BASE_Y - (1 - figEase) * 0.9
+    figureGroup.scale.setScalar(0.6 + figEase * (FIG_SCALE - 0.6))
+  }
+  // head tracks the cursor: local yaw/pitch layered on the group tilt
+  if (headGroup) {
+    headGroup.rotation.y += (headTargetYaw - headGroup.rotation.y) * 0.08
+    headGroup.rotation.x += (headTargetPitch - headGroup.rotation.x) * 0.08
+  }
+  // subtle pupil shift toward the cursor (alive feel, very small amplitude)
+  if (eyeGroup) {
+    const tx = headTargetYaw * 0.04
+    const ty = 0.2 - headTargetPitch * 0.04
+    eyeGroup.position.x += (tx - eyeGroup.position.x) * 0.1
+    eyeGroup.position.y += (ty - eyeGroup.position.y) * 0.1
+  }
+
   // scroll-driven camera dolly (user-driven, only while hero in view)
   const maxScroll = Math.max(1, window.innerHeight)
   const sp = Math.min(window.scrollY / maxScroll, 1)
@@ -235,11 +407,17 @@ function loop() {
     ;(nodeHalos[i].material as THREE.MeshBasicMaterial).opacity = (i === hoverIndex ? 0.32 : 0.16) * ent
   }
 
-  // hover raycast + tooltip follow
+  // hover raycast + tooltip follow. The figure's solid parts are occluders: if
+  // the nearest hit is a figure part, no node is hovered (the figure is not
+  // clickable and reads as a solid object in front of the constellation).
   if (raycaster && camera) {
     raycaster.setFromCamera(pointer, camera)
-    const hits = raycaster.intersectObjects(nodeCores, false)
-    const idx = hits.length ? (hits[0].object.userData.index as number) : -1
+    const hits = raycaster.intersectObjects([...nodeCores, ...figureParts], false)
+    let idx = -1
+    for (const h of hits) {
+      if (h.object.userData.isFigure) { idx = -1; break }
+      if (h.object.userData.index !== undefined) { idx = h.object.userData.index as number; break }
+    }
     if (idx !== hoverIndex) {
       hoverIndex = idx
       if (rootRef.value) rootRef.value.style.cursor = idx >= 0 ? 'pointer' : ''
@@ -281,12 +459,17 @@ function onPointerMove(e: PointerEvent) {
   const vy = e.clientY / window.innerHeight - 0.5
   targetRot.y = 0.42 + vx * 0.7
   targetRot.x = -0.16 + vy * 0.5
+  // V5: head tracking reuses the same pointer input (no new listener)
+  headTargetYaw = Math.max(-HEAD_YAW_MAX, Math.min(HEAD_YAW_MAX, vx * HEAD_YAW_K))
+  headTargetPitch = Math.max(-HEAD_PITCH_MAX, Math.min(HEAD_PITCH_MAX, vy * HEAD_PITCH_K))
 }
 
 function onPointerLeave() {
   pointer.set(-2, -2)
   targetRot.x = -0.16
   targetRot.y = 0.42
+  headTargetYaw = 0
+  headTargetPitch = 0
 }
 
 function onClick() {
@@ -325,6 +508,10 @@ onUnmounted(() => {
   scene = null
   camera = null
   group = null
+  figureGroup = null
+  headGroup = null
+  eyeGroup = null
+  figureParts = []
   nodeCores = []
   nodeHalos = []
   nodeData = []
