@@ -32,17 +32,16 @@
             <span class="eyebrow inline-flex items-center rounded-full px-4 py-1.5" style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.16);">2026 暑期</span>
           </div>
 
-          <!-- Main title — animated reveal + scroll parallax wrapper + magnetic char field -->
+          <!-- Main title — animated reveal + scroll parallax wrapper.
+               08: .hero-heading gradient sits on the LINE spans (direct text
+               containers), NOT the h1. The old per-char .hero-char inline-block
+               spans broke background-clip:text — inline-block + will-change paint
+               independently, so the parent's clipped gradient never reached the
+               glyphs and the title was invisible. The magnetic char field is
+               disabled, so char spans are gone; each line is plain text. -->
           <div ref="titleParallaxRef">
-            <h1 ref="titleRef" class="hero-heading text-hero font-black tracking-tight">
-              <span v-for="(line, li) in titleLines" :key="li" class="block" data-split-line>
-                <span
-                  v-for="(ch, ci) in line"
-                  :key="ci"
-                  class="hero-char inline-block"
-                  style="will-change: transform;"
-                >{{ ch === ' ' ? ' ' : ch }}</span>
-              </span>
+            <h1 ref="titleRef" class="text-hero font-black tracking-tight">
+              <span v-for="(line, li) in titleLines" :key="li" class="hero-heading block" data-split-line>{{ line }}</span>
             </h1>
           </div>
 
@@ -116,7 +115,8 @@ import { projects } from '~/content/projects'
 
 gsap.registerPlugin(ScrollTrigger)
 
-// Title lines — pre-split into chars in the template for the magnetic field.
+// Title lines — rendered as plain text in .hero-heading line spans (08: no more
+// per-char splitting; the magnetic char field was removed for the gradient clip).
 const titleLines = ['从零开始', '亲手打造 9 个真实硬件项目']
 
 // ── Refs ──
@@ -231,7 +231,10 @@ onMounted(() => {
   ctaBtnRef.value?.addEventListener('mouseleave', onCtaMouseLeave)
 })
 
-// ── Global-mouse-driven: background orb follow + title magnetic char field ──
+// ── Global-mouse-driven: background orb follow.
+// 08: per-char title magnetic field removed — the h1 uses .hero-heading gradient
+// (background-clip:text) and transformed child chars dropped the clipped gradient
+// (turned invisible). Orb follow + entrance stagger + magnetic CTA remain. ──
 watch([mouseX, mouseY], () => {
   if (!mouseEnabled.value || !sectionRef.value) return
   const rect = sectionRef.value.getBoundingClientRect()
@@ -242,10 +245,6 @@ watch([mouseX, mouseY], () => {
   if (orbRef.value) {
     gsap.set(orbRef.value, { x: localX - 250, y: localY - 250, opacity: 0.08 })
   }
-
-  // 08: per-char magnetic field disabled — the h1 now uses .hero-heading gradient
-  // (background-clip:text). Transformed child chars drop the clipped gradient and
-  // turn invisible on hover. Orb follow + entrance stagger + magnetic CTA remain.
 })
 
 // ── RAF count-up ──

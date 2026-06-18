@@ -18,10 +18,12 @@
 
     <JackServices />
 
-    <!-- JackProjects: dark, rounded-top, pulled up (-mt) to overlap the white
-         Services — the Jack signature white→dark flip (no bridge; the overlap
-         IS the transition). -->
-    <JackProjects />
+    <!-- Bridge · Services (white) → Projects (dark): white→dark color shift -->
+    <SectionBridge variant="color-shift" from="#ffffff" to="#0b0d12" />
+
+    <!-- Projects: reverted to the original horizontal-scroll shelf + difficulty
+         filters (JackProjects sticky-stack reverted per user request). -->
+    <ProjectsSection />
 
     <!-- Bridge · Projects → CTA: soft glow merging the two atmospheres -->
     <SectionBridge variant="glow-merge" />
