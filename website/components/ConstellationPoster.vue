@@ -48,15 +48,19 @@ function fibSphere(n: number, r: number): [number, number, number][] {
   return pts
 }
 
-const CX = 180, CY = 182, SCALE = 46
+const CX = 180, CY = 182, RING_R = 92
 
+// A 2D ring of nodes (slightly elliptical to echo the 3D tilted ring's projection)
+// — matches the WebGL constellation's ring-around-the-head composition.
 const nodes2d = computed(() => {
-  const pts = fibSphere(props.projects.length, 1)
-  return pts.map((p, i) => {
-    // slight isometric projection for 2.5D depth
-    const x = CX + (p[0] * 0.92 + p[2] * 0.38) * SCALE
-    const y = CY + (-p[1] + p[2] * 0.22) * SCALE
-    return { x, y, color: props.projects[i]?.colorHex || '#6366f1' }
+  const n = props.projects.length
+  return Array.from({ length: n }, (_, i) => {
+    const t = (i / n) * Math.PI * 2
+    return {
+      x: CX + Math.cos(t) * RING_R,
+      y: CY + Math.sin(t) * RING_R * 0.82,
+      color: props.projects[i]?.colorHex || '#6366f1',
+    }
   })
 })
 

@@ -14,7 +14,7 @@
     <MediaSlot
       class="absolute inset-0"
       mode="mouse-scrub"
-      poster="/media/blackhole-code.jpg"
+      poster=""
       src="/media/hero-scrub.mp4"
       overlay-class="bg-gradient-to-r from-background/90 via-background/50 to-background/80"
     />
@@ -33,6 +33,22 @@
       class="pointer-events-none absolute left-0 top-0 h-[500px] w-[500px] rounded-full"
       style="background: radial-gradient(circle, rgba(99,102,241,0.10) 0%, rgba(99,102,241,0.04) 38%, transparent 66%); filter: blur(40px); opacity: 0; will-change: transform;"
     />
+
+    <!-- 10v2 · Full-bleed 3D ring canvas. The ring (positioned via 3D offset in
+         HeroArtifact) floats ABOVE the scrub-video person's head like an angel
+         halo, spins with the head (scrub), and tilts with the mouse. Sits over
+         the video (z-5) and under the copy (z-10). Frosted-glass node chips blur
+         the video behind them. Falls back to a positioned SVG poster. -->
+    <div class="absolute inset-0 z-[5]">
+      <ClientOnly>
+        <HeroArtifact :projects="projects" />
+        <template #fallback>
+          <div class="pointer-events-none absolute left-[73%] top-[20%] h-[180px] w-[180px] -translate-x-1/2 -translate-y-1/2 sm:h-[240px] sm:w-[240px] md:h-[300px] md:w-[300px]">
+            <ConstellationPoster :projects="projects" />
+          </div>
+        </template>
+      </ClientOnly>
+    </div>
 
     <!-- Content — 7:5 asymmetric, left-aligned -->
     <div class="relative z-10 mx-auto w-full max-w-6xl px-6">
@@ -84,20 +100,10 @@
           </div>
         </div>
 
-        <!-- Artifact — 3D signature visual (V3 §4.2). The SVG poster is the SSG
-             baseline (visible immediately, no first-paint blank); the Three.js
-             constellation is progressive enhancement that fades in over it.
-             Falls back to the poster under reduced-motion / touch-mobile / no-WebGL. -->
-        <div ref="specsRef" class="lg:col-span-5 lg:pl-4" style="perspective: 1000px;">
-          <div ref="specsGridRef" class="relative mx-auto h-[340px] w-full sm:h-[420px] lg:h-[520px] lg:max-w-[440px]" style="transform-origin: center top; will-change: transform;">
-            <ClientOnly>
-              <HeroArtifact :projects="projects" />
-              <template #fallback>
-                <ConstellationPoster :projects="projects" />
-              </template>
-            </ClientOnly>
-          </div>
-          <div class="mt-6 flex items-center justify-center gap-7 lg:justify-start">
+        <!-- Stats column (the 3D ring is now a full-bleed layer above; this right
+             column holds the project-count stats). -->
+        <div ref="specsRef" class="lg:col-span-5 lg:pl-4 flex items-center justify-center lg:justify-start min-h-[420px]">
+          <div class="flex items-center justify-center gap-7 lg:justify-start">
             <div class="flex items-baseline gap-2">
               <span class="text-3xl font-bold tabular-nums font-mono tracking-tight text-text-primary">{{ countUp.projects }}</span>
               <span class="text-[11px] uppercase tracking-[0.2em] text-text-tertiary font-semibold">个项目节点</span>
@@ -217,7 +223,6 @@ onMounted(() => {
     // Snap everything to final state — no motion
     gsap.set([logoRef.value, eyebrowRef.value, titleRef.value, subtitleRef.value, ctaRef.value, specsRef.value].filter(Boolean), { opacity: 1, y: 0 })
     gsap.set(scrollIndicatorRef.value, { opacity: 0.3 })
-    gsap.set(specsGridRef.value, { rotateX: 0 })
     countUp.projects = 9
     return
   }
