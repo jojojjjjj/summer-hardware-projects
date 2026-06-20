@@ -22,7 +22,15 @@
          tones into the site palette (Aetheris/Prisma move) so the video + dock +
          chrome share one color family. Contrast comes from the glass chrome, not
          from dimming the video (light left-only gradient above keeps copy readable). -->
-    <div class="pointer-events-none absolute inset-0" style="background: rgba(222,219,200,0.07); mix-blend-mode: multiply;" />
+    <div class="pointer-events-none absolute inset-0" style="background: rgba(222,219,200,0.1); mix-blend-mode: multiply;" />
+    <!-- Grain blanket (Prisma .noise-overlay): a full-bleed feTurbulence grain
+         over the video + dock area, low opacity, mix-blend-overlay. This is the
+         cinematic UNIFIER — it ties the video person, the glass shelf, and the
+         copy into one film-still (the dock alone read as flat "pagination"; the
+         grain makes everything feel like the same cinematic frame). Sits under
+         the copy (z-10) so text stays sharp; the dock's backdrop-filter blurs
+         the grainy video behind its glass. -->
+    <div class="pointer-events-none absolute inset-0 z-[6]" style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E&quot;); opacity: 0.32; mix-blend-mode: overlay;" />
     <!-- Directional volumetric light: a soft corner bloom (light source, top-left) + faint diagonal wash -->
     <div ref="bgLayer2" class="absolute inset-0" style="background: radial-gradient(ellipse 55% 65% at 14% 6%, rgba(99,102,241,0.18) 0%, rgba(99,102,241,0.05) 35%, transparent 60%), linear-gradient(125deg, rgba(99,102,241,0.06) 0%, transparent 45%);" />
     <!-- Faint cool grid texture -->
@@ -95,9 +103,11 @@
              glass material as the navbar/CTA (one design system), grounded beneath
              the figure (not a competing 3D object). Pure DOM (no WebGL → no
              clipping; SSG/reduced-motion/touch all render the same dock). -->
-        <div ref="specsRef" class="lg:col-span-5 lg:pl-4 flex flex-col items-start lg:items-start justify-end lg:min-h-[440px] pt-2 gap-3">
-          <HeroDock :projects="projects" />
-          <div class="text-[11px] uppercase tracking-[0.2em] text-text-tertiary font-semibold">12–15 天完成</div>
+        <div ref="specsRef" class="lg:col-span-5 lg:pl-4 flex flex-col items-start lg:items-start justify-center">
+          <div class="flex flex-col items-start gap-3 lg:translate-y-[22vh]">
+            <HeroDock :projects="projects" />
+            <div class="text-[11px] uppercase tracking-[0.2em] text-text-tertiary font-semibold">12–15 天完成</div>
+          </div>
         </div>
       </div>
     </div>

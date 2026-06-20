@@ -1,39 +1,34 @@
 <template>
-  <!-- 12 · JackServices rewrite (approach C — "Lean Ambient Drawer").
-       One faint clock-motion ambient video (the same clock motif as
-       ClockVideoBand immediately before this section) behind five
-       liquid-glass accordion drawers. BlurText title, quiet mono counter.
-       The leanness is the feature: ONE video (not a crossfade queue),
-       ONE expanded drawer (not a sticky-stack), ONE counter (not per-stage
-       watermarks). Accordion is the only interaction — no ScrollTrigger,
-       no GSAP for the drawers (CSS max-height transition). SSG-safe: with
-       zero JS, openIndex=0 renders stage 1 fully expanded + 4 collapsed
-       headers in the static HTML (v-show, not v-if). JackFadeIn + BlurText
-       each self-gate on useReducedMotion; the 2 .ambient-orb are static
-       (NEVER animated). MediaSlot is FROZEN — used verbatim. Premium dark
-       Jack-flow (cool indigo/blue/violet only). -->
+  <!-- 12 · JackServices rewrite (approach C — "Diagonal Clip-Path Slash Accent").
+       The V3 drawer accordion (5 glass drawers, one open, BlurText title, mono
+       counter, 5-stage content) is PRESERVED VERBATIM — only the background
+       video layer changed. The single full-bleed clock-motion <MediaSlot> is
+       REPLACED with TWO peripheral diagonal slash accents (clip-path polygons)
+       sitting in the section's negative-space gutters, OUTSIDE the centered
+       max-w-4xl content column:
+         · SLASH A (primary, lower-left): gears-tower.mp4 — engineered gear/tower
+           motion maps onto the 5-stage climb metaphor.
+         · SLASH B (secondary, upper-right): code-river.mp4 — lateral code flow
+           vs. mechanical vertical, so the overlap reads as two distinct textures.
+       Both are vertical 1920×3414 portrait clips; the portrait aspect lets the
+       diagonal polygon read as a tall slash rather than a cropped band. clip-path
+       gives the angled-graphic read with ZERO bounding-box growth (the DOM box
+       stays axis-aligned; only visible pixels are angled), so the section's
+       existing overflow-hidden is the only overflow guarantee needed. The
+       slashes are DECOR (aria-hidden + pointer-events-none) — the drawer
+       accordion stays the unambiguous focal. SSG-safe: clip-path is inline CSS
+       (renders in static HTML), MediaSlot gates to the poster <img> under
+       pointer:coarse OR prefers-reduced-motion, JackFadeIn + BlurText each
+       self-gate on useReducedMotion, the accordion uses v-show so stage 1's
+       expanded panel is in the SSG HTML. MediaSlot is FROZEN — used verbatim.
+       Premium dark Jack-flow (cool indigo/blue/violet only). -->
   <section
     id="services"
     class="relative z-0 overflow-hidden bg-background text-text-primary px-5 sm:px-8 md:px-10 py-16 sm:py-20 md:py-24"
   >
-    <!-- AMBIENT VIDEO LAYER — single FROZEN MediaSlot, faint background
-         texture (the clock mechanism reads as a ghost, not a focal). The
-         82% dark-indigo scrim + 0.4 noise pushes it to barely-there behind
-         the glass drawers. MediaSlot already does IO play/pause,
-         pointer:fine gate, and reduced-motion→poster. -->
-    <MediaSlot
-      class="absolute inset-0 z-0"
-      mode="bg-autoplay"
-      poster="/media/clock-banner.webp"
-      src="/media/clock-motion.mp4"
-      :noise="true"
-      :noise-opacity="0.4"
-      overlay-class="bg-[#0b0d12]/82"
-    />
-
     <!-- Static ambient depth — NEVER animated (per main.css .ambient-orb).
-         These survive even when the video is gated off so the section
-         never goes flat. -->
+         z-0 base layer; these survive even when both videos gate to posters so
+         the section never goes flat. -->
     <div
       class="ambient-orb pointer-events-none"
       style="width: 520px; height: 520px; left: -8%; top: 10%; background: rgba(99,102,241,0.06);"
@@ -45,7 +40,67 @@
       aria-hidden="true"
     />
 
-    <!-- CONTENT WRAPPER — z-10 sits above the z-0 video/scrim/orbs. -->
+    <!-- DIAGONAL SLASH ACCENTS — z-[1] sit above the z-0 orbs but below the
+         z-10 content column. Each is a clipped MediaSlot (FROZEN, bg-autoplay
+         self-gates: IO play/pause, pointer:fine, reduced-motion→poster).
+         Negative offsets bleed past the section edge but are SAFE: section
+         overflow-hidden clips them to the section box, never the viewport, so
+         no page-level horizontal scroll can occur. pointer-events:none +
+         aria-hidden so they never intercept drawer taps on touch.
+
+         NOTE on entrance: the slashes are STATIC (no JackFadeIn wrapper). A
+         transform-based entrance (JackFadeIn applies gsap x/y) would establish
+         a containing block on its wrapper, making the absolute slash resolve
+         its left/bottom against the wrapper instead of the section — a layout
+         risk. The plan permits skipping the slash entrance ("optional, skip if
+         it risks layout"). The drawers keep their JackFadeIn stagger; the
+         slashes are always-present decor. SSG-safe: visible in the no-JS
+         baseline (clip-path is inline CSS, MediaSlot poster <img> renders). -->
+
+    <!-- SLASH A (primary, lower-left) — gears-tower. 6-point parallelogram-ish
+         slash running lower-left → upper-right (an upward vector that
+         foreshadows the 5-stage progression the drawers describe). -->
+    <div
+      class="slash-a pointer-events-none absolute z-[1]"
+      aria-hidden="true"
+      :style="slashAStyle"
+    >
+      <MediaSlot
+        class="h-full w-full"
+        mode="bg-autoplay"
+        poster="/media/gears-tower-hd.webp"
+        src="/media/gears-tower.mp4"
+        :noise="true"
+        :noise-opacity="0.32"
+        overlay-class="bg-[#0b0d12]/68"
+      />
+    </div>
+
+    <!-- SLASH B (secondary, upper-right) — code-river. Thinner counter-slanted
+         polygon running upper-right → lower-left, intersecting/overlapping
+         Slash A near the vertical center for the Neo-style overlap. Slightly
+         heavier scrim so B reads as secondary to A. -->
+    <div
+      class="slash-b pointer-events-none absolute z-[1]"
+      aria-hidden="true"
+      :style="slashBStyle"
+    >
+      <MediaSlot
+        class="h-full w-full"
+        mode="bg-autoplay"
+        poster="/media/code-river-hd.webp"
+        src="/media/code-river.mp4"
+        :noise="true"
+        :noise-opacity="0.34"
+        overlay-class="bg-[#0b0d12]/72"
+      />
+    </div>
+
+    <!-- CONTENT WRAPPER — z-10 sits above the z-0 orbs + z-[1] slashes.
+         Drawers sit on solid bg-background (#0b0d12) — a flat high-contrast
+         surface — so text remains at full V3 contrast (no text sits on the
+         slashes; the slash scrims tone the VIDEO into the cool palette, they
+         do not protect text). -->
     <div class="relative z-10 mx-auto max-w-4xl">
 
       <!-- HEADER (preserved verbatim — already matches the dark Jack flow) -->
@@ -203,7 +258,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { Search, Cpu, Code2, Sparkles, Presentation, ChevronDown } from 'lucide-vue-next'
 import type { Component } from 'vue'
 import BlurText from './BlurText.vue'
@@ -280,6 +335,31 @@ const stages: Stage[] = [
 // row opens it; clicking the open row closes it (openIndex = -1).
 const openIndex = ref(0)
 
+// ── DIAGONAL SLASH ACCENT STYLES (approach C) ──
+// Pure CSS clip-path + min()/clamp() sizing — renders in the SSG HTML
+// baseline (no window at render top-level), so the diagonal graphic
+// composition holds with zero JS. Position offsets (left/right/top/bottom)
+// live in the scoped <style> below so a mobile media query can tighten the
+// negative bleed; the clip-path + dimensions are inline here per the plan.
+//
+// SLASH A — primary lower-left slash (gears-tower). 6-point parallelogram
+// running lower-left → upper-right. width/height capped via min() so a very
+// tall phone never stretches the slash beyond the section height.
+const slashAStyle = computed(() => ({
+  clipPath: 'polygon(0 22%, 58% 0, 100% 30%, 100% 78%, 46% 100%, 0 74%)',
+  width: 'min(52vw, 620px)',
+  height: 'min(62vh, 560px)',
+}))
+
+// SLASH B — secondary upper-right counter-slash (code-river). Thinner
+// polygon running upper-right → lower-left, overlapping Slash A near the
+// vertical center.
+const slashBStyle = computed(() => ({
+  clipPath: 'polygon(8% 0, 100% 18%, 92% 100%, 0 82%)',
+  width: 'min(40vw, 440px)',
+  height: 'min(48vh, 420px)',
+}))
+
 // Reduced-motion gate. MediaSlot internally flips to the poster <img>
 // under reduced-motion / coarse-pointer; BlurText + JackFadeIn leave
 // content visible; here we drop the max-height transition so the panel
@@ -291,3 +371,29 @@ function toggle(i: number) {
   openIndex.value = openIndex.value === i ? -1 : i
 }
 </script>
+
+<style scoped>
+/* ── DIAGONAL SLASH ACCENT POSITIONING (approach C) ──
+   Position offsets ONLY (clip-path + dimensions are inline via :style per
+   the plan). Desktop: negative offsets bleed the slashes past the section
+   edge; SAFE because the parent <section> is overflow-hidden, so anything
+   bleeding past left/right/bottom is clipped to the section box, never the
+   viewport — no page-level horizontal scroll can occur. The DOM box stays
+   axis-aligned (only visible pixels are angled via clip-path), so the
+   bounding box does NOT grow the way a rotated element's would.
+   Mobile (≤640px): tighten the bleed so the slash reads as an edge accent,
+   not a wall — still bleeds, still fully clipped by the section. */
+.slash-a {
+  left: -6%;
+  bottom: -8%;
+}
+.slash-b {
+  right: -5%;
+  top: 6%;
+}
+
+@media (max-width: 640px) {
+  .slash-a { left: -10%; }
+  .slash-b { right: -9%; }
+}
+</style>

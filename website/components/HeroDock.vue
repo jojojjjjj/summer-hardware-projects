@@ -1,9 +1,12 @@
 <template>
-  <!-- 10v4 · Indigo Archive dock — the 9 project nodes become a single-shell
-       liquid-glass "specimen dock" grounded beneath the scrub-video figure. Same
-       .liquid-glass material as the navbar/CTA (one design system, not a separate
-       3D object). Pure DOM (no WebGL → no clipping ever; SSG/reduced-motion/touch
-       all render the same dock). Shared-pointer parallax + GSAP entrance. -->
+  <!-- 10v5 · Grain-blanket light-point shelf. The 9 project nodes are glowing
+       light-point orbs (real 光点 — radial-gradient + additive glow, project
+       colour) in a single-shell liquid-glass shelf — same glass material as the
+       navbar/CTA (one design system). Hover → orb brightens + a rich frosted
+       tooltip (titleZh + titleEn + difficulty). Pure DOM (no WebGL → no
+       clipping ever). Shared-pointer parallax + blur-in entrance. The grain
+       blanket (in HeroSection) unifies the video + shelf + copy into one
+       film-still. -->
   <div ref="dockRef" class="hero-dock" :class="{ 'is-ready': ready }" role="navigation" aria-label="9 个硬件项目快速入口">
     <div class="hero-dock-shell">
       <button
@@ -19,14 +22,16 @@
         @blur="onLeave"
         @click="onClick(p.slug)"
       >
-        <span class="dock-dot" />
-        <span class="dock-idx">{{ String(i + 1).padStart(2, '0') }}</span>
+        <span class="dock-orb" />
       </button>
     </div>
     <Transition name="docktip">
-      <div v-if="hovered" class="dock-tip" :style="{ left: tipX + 'px' }">
-        <span class="tip-dot" :style="{ background: hovered.color }" />
-        {{ hovered.title }}
+      <div v-if="hovered" class="dock-tip" :style="{ left: tipX + 'px', '--c': hovered.color }">
+        <span class="tip-orb" />
+        <div class="tip-text">
+          <span class="tip-title">{{ hovered.titleZh }}</span>
+          <span class="tip-sub">{{ hovered.index }} · {{ hovered.titleEn }} · {{ hovered.difficultyLabel }}</span>
+        </div>
       </div>
     </Transition>
   </div>
@@ -39,7 +44,7 @@ import { useGlobalMouse } from '~/composables/useGlobalMouse'
 import { useReducedMotion } from '~/composables/useReducedMotion'
 
 const props = defineProps<{
-  projects: { slug: string; titleZh: string; colorHex: string }[]
+  projects: { slug: string; titleZh: string; titleEn: string; colorHex: string; difficultyLabel: string }[]
 }>()
 
 const router = useRouter()
@@ -49,18 +54,20 @@ const { x: mx, y: my, enabled: mouseEnabled } = useGlobalMouse(0.1)
 const dockRef = ref<HTMLDivElement | null>(null)
 const chipRefEls = ref<HTMLButtonElement[]>([])
 const ready = ref(false)
-const hovered = ref<{ title: string; color: string } | null>(null)
+const hovered = ref<{ titleZh: string; titleEn: string; difficultyLabel: string; color: string; index: string } | null>(null)
 const tipX = ref(0)
 
 function onHover(i: number) {
   const p = props.projects[i]
-  hovered.value = { title: p.titleZh, color: p.colorHex }
+  hovered.value = { titleZh: p.titleZh, titleEn: p.titleEn, difficultyLabel: p.difficultyLabel, color: p.colorHex, index: String(i + 1).padStart(2, '0') }
   const chip = chipRefEls.value[i]
   const dock = dockRef.value
   if (chip && dock) {
     const r = chip.getBoundingClientRect()
     const d = dock.getBoundingClientRect()
-    tipX.value = r.left + r.width / 2 - d.left
+    const raw = r.left + r.width / 2 - d.left
+    // clamp so the tooltip can't clip off the dock's left/right edges
+    tipX.value = Math.max(70, Math.min(d.width - 70, raw))
   }
 }
 function onLeave() {
@@ -79,18 +86,15 @@ onMounted(() => {
   if (reduce.value) {
     ready.value = true
   } else {
-    gsap.from(chips, {
-      opacity: 0,
-      y: 18,
-      duration: 0.6,
-      ease: 'power3.out',
-      stagger: 0.05,
-      delay: 0.5,
-      onComplete: () => { ready.value = true },
-    })
+    // blur-in entrance (Aetheris BlurText family): opacity + y + scale, staggered.
+    // fromTo + clearProps so the chips always end at scale 1 / transform none
+    // (a plain gsap.from can leave them stuck at the start scale if interrupted).
+    gsap.fromTo(chips,
+      { opacity: 0, y: 16, scale: 0.7 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'power3.out', stagger: 0.06, delay: 0.5, clearProps: 'transform', onComplete: () => { ready.value = true } }
+    )
   }
-  // shared-pointer parallax: the same cursor that scrubs the video also drifts
-  // the dock (subtle, ±10px). quickTo is efficient (no gsap.to per move).
+  // shared-pointer parallax: the same cursor that scrubs the video drifts the shelf
   if (dockRef.value && !reduce.value) {
     xTo = gsap.quickTo(dockRef.value, 'x', { duration: 0.9, ease: 'power2.out' })
     yTo = gsap.quickTo(dockRef.value, 'y', { duration: 0.9, ease: 'power2.out' })
@@ -114,25 +118,24 @@ onUnmounted(() => {
   position: relative;
   display: inline-flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   will-change: transform;
 }
 
-/* single-shell liquid-glass bar (Aetheris .liquid-glass pattern: backdrop-blur +
-   gradient border via mask::before) — the ONE shared glass material, same as the
-   navbar/CTA, so the dock reads as UI chrome, not a competing 3D object. */
+/* single-shell liquid-glass shelf (Aetheris .liquid-glass: backdrop-blur +
+   gradient border via mask::before) — the ONE shared glass material. */
 .hero-dock-shell {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 1px;
-  padding: 6px;
+  gap: 2px;
+  padding: 7px;
   max-width: 100%;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px) saturate(1.3);
-  -webkit-backdrop-filter: blur(12px) saturate(1.3);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.14), 0 14px 44px -14px rgba(0, 0, 0, 0.65);
+  background: rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(14px) saturate(1.35);
+  -webkit-backdrop-filter: blur(14px) saturate(1.35);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.16), 0 16px 50px -16px rgba(0, 0, 0, 0.7);
   overflow-x: auto;
   scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch;
@@ -146,12 +149,12 @@ onUnmounted(() => {
   border-radius: inherit;
   padding: 1.4px;
   background: linear-gradient(180deg,
-    rgba(255, 255, 255, 0.42) 0%,
-    rgba(255, 255, 255, 0.12) 22%,
+    rgba(255, 255, 255, 0.46) 0%,
+    rgba(255, 255, 255, 0.14) 22%,
     rgba(255, 255, 255, 0) 45%,
     rgba(255, 255, 255, 0) 55%,
-    rgba(255, 255, 255, 0.12) 78%,
-    rgba(255, 255, 255, 0.42) 100%);
+    rgba(255, 255, 255, 0.14) 78%,
+    rgba(255, 255, 255, 0.46) 100%);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -163,79 +166,84 @@ onUnmounted(() => {
   flex: 0 0 auto;
   scroll-snap-align: center;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  width: 52px;
-  height: 52px;
+  width: 22px;
+  height: 22px;
   border: none;
   border-radius: 9999px;
   background: transparent;
-  color: rgba(244, 245, 247, 0.62);
   cursor: pointer;
-  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), background 0.32s ease, color 0.32s ease;
+  transition: transform 0.34s cubic-bezier(0.16, 1, 0.3, 1), background 0.34s ease;
 }
 .dock-chip:hover,
 .dock-chip:focus-visible {
   background: rgba(255, 255, 255, 0.07);
-  color: #fff;
   transform: translateY(-5px);
   outline: none;
 }
-.dock-dot {
-  width: 10px;
-  height: 10px;
+
+/* the glowing light-point orb (光点): radial gradient (white-hot core → project
+   colour → transparent) + additive glow halo. This is the "light-point" form. */
+.dock-orb {
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: var(--c);
-  box-shadow: 0 0 9px var(--c);
-  transition: box-shadow 0.32s ease, transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, var(--c) 42%, transparent 78%);
+  box-shadow: 0 0 15px var(--c), 0 0 6px var(--c), inset 0 0 3px rgba(255, 255, 255, 0.7);
+  transition: box-shadow 0.34s ease, transform 0.34s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.dock-chip:hover .dock-dot,
-.dock-chip:focus-visible .dock-dot {
-  box-shadow: 0 0 18px var(--c), 0 0 4px var(--c);
-  transform: scale(1.25);
+.dock-chip:hover .dock-orb,
+.dock-chip:focus-visible .dock-orb {
+  transform: scale(1.28);
+  box-shadow: 0 0 22px var(--c), 0 0 9px var(--c), 0 0 3px #fff, inset 0 0 4px rgba(255, 255, 255, 0.9);
 }
 .dock-idx {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 9px;
-  letter-spacing: 0.06em;
+  font-size: 8px;
+  letter-spacing: 0.08em;
   font-weight: 500;
+  color: rgba(244, 245, 247, 0.5);
+  transition: color 0.34s ease;
 }
+.dock-chip:hover .dock-idx,
+.dock-chip:focus-visible .dock-idx { color: rgba(244, 245, 247, 0.9); }
 
-/* tooltip above the hovered chip */
+/* rich frosted tooltip (titleZh + titleEn + difficulty) */
 .dock-tip {
   position: absolute;
-  top: -14px;
+  top: -12px;
   transform: translate(-50%, -100%);
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 5px 12px;
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #f4f5f7;
+  gap: 9px;
+  padding: 7px 13px 7px 11px;
+  border-radius: 14px;
   background: rgba(11, 13, 18, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  white-space: nowrap;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(14px) saturate(1.3);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  box-shadow: 0 12px 36px -12px rgba(0, 0, 0, 0.7);
   pointer-events: none;
   z-index: 10;
+  white-space: nowrap;
 }
-.dock-tip .tip-dot {
-  width: 7px;
-  height: 7px;
+.tip-orb {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  box-shadow: 0 0 8px currentColor;
+  background: radial-gradient(circle at 35% 30%, #fff 0%, var(--c) 45%, transparent 78%);
+  box-shadow: 0 0 9px var(--c), 0 0 3px var(--c);
+  flex: 0 0 auto;
 }
-.docktip-enter-active, .docktip-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; }
-.docktip-enter-from, .docktip-leave-to { opacity: 0; }
+.tip-text { display: flex; flex-direction: column; gap: 1px; }
+.tip-title { font-size: 12px; font-weight: 600; color: #f4f5f7; line-height: 1.2; }
+.tip-sub { font-size: 9.5px; color: rgba(244, 245, 247, 0.55); letter-spacing: 0.02em; line-height: 1.2; }
+.docktip-enter-active, .docktip-leave-active { transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1); }
+.docktip-enter-from, .docktip-leave-to { opacity: 0; transform: translate(-50%, -90%); }
 
 @media (max-width: 640px) {
-  .dock-chip { width: 46px; height: 46px; }
-  .dock-dot { width: 9px; height: 9px; }
-  .dock-idx { font-size: 8px; }
+  .dock-chip { width: 20px; height: 20px; }
+  .dock-orb { width: 12px; height: 12px; }
 }
 </style>
