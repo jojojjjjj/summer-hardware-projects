@@ -16,8 +16,13 @@
       mode="mouse-scrub"
       poster=""
       src="/media/hero-scrub.mp4"
-      overlay-class="bg-gradient-to-r from-background/90 via-background/50 to-background/80"
+      overlay-class="bg-gradient-to-r from-background/75 via-background/20 to-transparent"
     />
+    <!-- Indigo+cream grade: a warm-cream multiply wash pulls the video's natural
+         tones into the site palette (Aetheris/Prisma move) so the video + dock +
+         chrome share one color family. Contrast comes from the glass chrome, not
+         from dimming the video (light left-only gradient above keeps copy readable). -->
+    <div class="pointer-events-none absolute inset-0" style="background: rgba(222,219,200,0.07); mix-blend-mode: multiply;" />
     <!-- Directional volumetric light: a soft corner bloom (light source, top-left) + faint diagonal wash -->
     <div ref="bgLayer2" class="absolute inset-0" style="background: radial-gradient(ellipse 55% 65% at 14% 6%, rgba(99,102,241,0.18) 0%, rgba(99,102,241,0.05) 35%, transparent 60%), linear-gradient(125deg, rgba(99,102,241,0.06) 0%, transparent 45%);" />
     <!-- Faint cool grid texture -->
@@ -34,23 +39,8 @@
       style="background: radial-gradient(circle, rgba(99,102,241,0.10) 0%, rgba(99,102,241,0.04) 38%, transparent 66%); filter: blur(40px); opacity: 0; will-change: transform;"
     />
 
-    <!-- 10v2 · Full-bleed 3D ring canvas. The ring (positioned via 3D offset in
-         HeroArtifact) floats ABOVE the scrub-video person's head like an angel
-         halo, spins with the head (scrub), and tilts with the mouse. Sits over
-         the video (z-5) and under the copy (z-10). Frosted-glass node chips blur
-         the video behind them. Falls back to a positioned SVG poster. -->
-    <div class="absolute inset-0 z-[5]">
-      <ClientOnly>
-        <HeroArtifact :projects="projects" />
-        <template #fallback>
-          <div class="pointer-events-none absolute left-[73%] top-[20%] h-[180px] w-[180px] -translate-x-1/2 -translate-y-1/2 sm:h-[240px] sm:w-[240px] md:h-[300px] md:w-[300px]">
-            <ConstellationPoster :projects="projects" />
-          </div>
-        </template>
-      </ClientOnly>
-    </div>
-
-    <!-- Content — 7:5 asymmetric, left-aligned -->
+    <!-- Content — 7:5 asymmetric, left-aligned. The dock lives in the right column
+         (beneath the figure), not bottom-center, so it never overlaps the copy. -->
     <div class="relative z-10 mx-auto w-full max-w-6xl px-6">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
         <div class="lg:col-span-7 text-left">
@@ -100,20 +90,14 @@
           </div>
         </div>
 
-        <!-- Stats column (the 3D ring is now a full-bleed layer above; this right
-             column holds the project-count stats). -->
-        <div ref="specsRef" class="lg:col-span-5 lg:pl-4 flex items-center justify-center lg:justify-start min-h-[420px]">
-          <div class="flex items-center justify-center gap-7 lg:justify-start">
-            <div class="flex items-baseline gap-2">
-              <span class="text-3xl font-bold tabular-nums font-mono tracking-tight text-text-primary">{{ countUp.projects }}</span>
-              <span class="text-[11px] uppercase tracking-[0.2em] text-text-tertiary font-semibold">个项目节点</span>
-            </div>
-            <div class="h-7 w-px bg-white/[0.08]" />
-            <div class="flex items-baseline gap-2">
-              <span class="text-3xl font-bold tabular-nums font-mono tracking-tight text-text-primary">12–15</span>
-              <span class="text-[11px] uppercase tracking-[0.2em] text-text-tertiary font-semibold">天完成</span>
-            </div>
-          </div>
+        <!-- 10v4 · Indigo Archive dock (right column, beneath the figure). The 9
+             project nodes become a single-shell liquid-glass specimen dock — same
+             glass material as the navbar/CTA (one design system), grounded beneath
+             the figure (not a competing 3D object). Pure DOM (no WebGL → no
+             clipping; SSG/reduced-motion/touch all render the same dock). -->
+        <div ref="specsRef" class="lg:col-span-5 lg:pl-4 flex flex-col items-start lg:items-start justify-end lg:min-h-[440px] pt-2 gap-3">
+          <HeroDock :projects="projects" />
+          <div class="text-[11px] uppercase tracking-[0.2em] text-text-tertiary font-semibold">12–15 天完成</div>
         </div>
       </div>
     </div>

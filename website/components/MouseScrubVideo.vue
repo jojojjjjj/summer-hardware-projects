@@ -10,7 +10,7 @@
     <video
       ref="videoRef"
       class="absolute inset-0 h-full w-full object-cover"
-      style="object-position: 72% center"
+      style="object-position: 72% center; filter: saturate(0.72) hue-rotate(-16deg) brightness(0.92) contrast(1.06);"
       :poster="poster"
       muted
       playsinline

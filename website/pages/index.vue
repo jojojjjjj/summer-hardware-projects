@@ -21,8 +21,8 @@
 
     <JackServices />
 
-    <!-- Bridge · Services (white) → Projects (dark): white→dark color shift -->
-    <SectionBridge variant="color-shift" from="#ffffff" to="#0b0d12" />
+    <!-- Bridge · Services (dark) → Projects (dark): flat dark seam, indigo hairline only -->
+    <SectionBridge variant="color-shift" from="#0b0d12" to="#0b0d12" />
 
     <!-- Projects: reverted to the original horizontal-scroll shelf + difficulty
          filters (JackProjects sticky-stack reverted per user request). -->
