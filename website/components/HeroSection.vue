@@ -96,15 +96,12 @@
               了解更多
             </a>
           </div>
-        </div>
 
-        <!-- 10v4 · Indigo Archive dock (right column, beneath the figure). The 9
-             project nodes become a single-shell liquid-glass specimen dock — same
-             glass material as the navbar/CTA (one design system), grounded beneath
-             the figure (not a competing 3D object). Pure DOM (no WebGL → no
-             clipping; SSG/reduced-motion/touch all render the same dock). -->
-        <div ref="specsRef" class="lg:col-span-5 lg:pl-4 flex flex-col items-start lg:items-start justify-center">
-          <div class="flex flex-col items-start gap-3 lg:translate-y-[22vh]">
+          <!-- 10v5 · dock directly below the "查看项目" CTA, in the left column —
+               same mt-12 gap as the subtitle→CTA. The 9 glowing light-points as a
+               liquid-glass shelf. Pure DOM (no WebGL → no clipping; SSG/reduced-
+               motion/touch all render the same dock). -->
+          <div ref="specsRef" class="mt-12 flex flex-col items-start gap-3">
             <HeroDock :projects="projects" />
             <div class="text-[11px] uppercase tracking-[0.2em] text-text-tertiary font-semibold">12–15 天完成</div>
           </div>
@@ -232,7 +229,6 @@ onMounted(() => {
     .from(logoRef.value, { opacity: 0, y: 14, duration: 0.5 }, '-=0.55')
     .from(subtitleRef.value, { opacity: 0, y: 16, duration: 0.6 }, '-=0.3')
     .from(ctaRef.value, { opacity: 0, y: 16, duration: 0.6 }, '-=0.3')
-    .from(specsRef.value, { y: 22, duration: 0.7, onStart: startCountUp }, '-=0.45')
     .from(scrollIndicatorRef.value, { opacity: 0, duration: 0.8 }, '-=0.3')
 
   // ── Scroll-driven parallax (title rises + fades; specs 3D tilt; bg drifts) ──

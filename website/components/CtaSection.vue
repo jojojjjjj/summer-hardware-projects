@@ -41,12 +41,16 @@
         </div>
       </div>
     </div>
+
+    <!-- Signup modal — teleports to body; reduced-motion-friendly -->
+    <SignupModal :open="signupOpen" @close="signupOpen = false" />
   </section>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useReducedMotion } from '~/composables/useReducedMotion'
+import SignupModal from '~/components/SignupModal.vue'
 
 const cardRef = ref<HTMLElement | null>(null)
 const headingRef = ref<HTMLElement | null>(null)
@@ -55,6 +59,8 @@ const ctaWrapperRef = ref<HTMLElement | null>(null)
 const ctaBtnRef = ref<HTMLElement | null>(null)
 const rippleRef = ref<HTMLElement | null>(null)
 const orbRef = ref<HTMLElement | null>(null)
+
+const signupOpen = ref(false)
 
 const reduce = useReducedMotion()
 let gsapInstance: any = null
@@ -82,6 +88,11 @@ function onBtnLeave() {
 }
 
 function onBtnClick(e: MouseEvent) {
+  // The signup modal opens unconditionally — it is reduced-motion-friendly,
+  // so it shows even under prefers-reduced-motion. The ripple below is the
+  // only motion piece and stays gated on !reduce.
+  signupOpen.value = true
+
   if (!gsapInstance || !rippleRef.value || !ctaBtnRef.value || reduce.value) return
   const rect = ctaBtnRef.value.getBoundingClientRect()
   const x = e.clientX - rect.left

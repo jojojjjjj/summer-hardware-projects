@@ -14,7 +14,7 @@
       class="absolute inset-0"
       mode="bg-autoplay"
       poster="/media/blackhole-code.jpg"
-      src="/media/blackhole-code.mp4"
+      src="/media/blackhole-code-bg.mp4"
       overlay-class="bg-gradient-to-r from-background/90 via-background/78 to-background/62"
     />
 
@@ -59,7 +59,7 @@
               class="absolute inset-0"
               mode="bg-autoplay"
               poster="/media/gears-tower-hd.webp"
-              src="/media/gears-tower.mp4"
+              src="/media/gears-tower-card.mp4"
               overlay-class="bg-gradient-to-t from-background/70 via-transparent to-background/20"
             />
             <div class="absolute bottom-0 left-0 right-0 p-5">

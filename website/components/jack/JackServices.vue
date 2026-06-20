@@ -6,10 +6,10 @@
        REPLACED with TWO peripheral diagonal slash accents (clip-path polygons)
        sitting in the section's negative-space gutters, OUTSIDE the centered
        max-w-4xl content column:
-         · SLASH A (primary, lower-left): gears-tower.mp4 — engineered gear/tower
-           motion maps onto the 5-stage climb metaphor.
+         · SLASH A (primary, lower-left): rainbow-moon.mp4 — a lunar/rainbow
+           arc showcase texture maps onto the 5-stage climb metaphor.
          · SLASH B (secondary, upper-right): code-river.mp4 — lateral code flow
-           vs. mechanical vertical, so the overlap reads as two distinct textures.
+           vs. rainbow-moon's arc, so the overlap reads as two distinct textures.
        Both are vertical 1920×3414 portrait clips; the portrait aspect lets the
        diagonal polygon read as a tall slash rather than a cropped band. clip-path
        gives the angled-graphic read with ZERO bounding-box growth (the DOM box
@@ -57,7 +57,7 @@
          slashes are always-present decor. SSG-safe: visible in the no-JS
          baseline (clip-path is inline CSS, MediaSlot poster <img> renders). -->
 
-    <!-- SLASH A (primary, lower-left) — gears-tower. 6-point parallelogram-ish
+    <!-- SLASH A (primary, lower-left) — rainbow-moon. 6-point parallelogram-ish
          slash running lower-left → upper-right (an upward vector that
          foreshadows the 5-stage progression the drawers describe). -->
     <div
@@ -68,8 +68,8 @@
       <MediaSlot
         class="h-full w-full"
         mode="bg-autoplay"
-        poster="/media/gears-tower-hd.webp"
-        src="/media/gears-tower.mp4"
+        poster="/media/rainbow-moon-hd.webp"
+        src="/media/rainbow-moon.mp4"
         :noise="true"
         :noise-opacity="0.32"
         overlay-class="bg-[#0b0d12]/68"
@@ -342,7 +342,7 @@ const openIndex = ref(0)
 // live in the scoped <style> below so a mobile media query can tighten the
 // negative bleed; the clip-path + dimensions are inline here per the plan.
 //
-// SLASH A — primary lower-left slash (gears-tower). 6-point parallelogram
+// SLASH A — primary lower-left slash (rainbow-moon). 6-point parallelogram
 // running lower-left → upper-right. width/height capped via min() so a very
 // tall phone never stretches the slash beyond the section height.
 const slashAStyle = computed(() => ({
