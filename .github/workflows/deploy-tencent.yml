@@ -40,7 +40,9 @@ jobs:
           echo "${{ secrets.TENCENT_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.TENCENT_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
-          rsync -avz --delete \
+          # --checksum: verify by content, not just size+mtime — prevents truncated
+          # (half-pushed) files from being skipped on subsequent deploys.
+          rsync -avz --delete --checksum \
             -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
             website/.output/public/ \
             ${{ secrets.TENCENT_USER }}@${{ secrets.TENCENT_HOST }}:/var/www/duowei-summer/
