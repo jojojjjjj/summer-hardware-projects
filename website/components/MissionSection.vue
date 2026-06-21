@@ -13,7 +13,7 @@
     <MediaSlot
       class="absolute inset-0"
       mode="bg-autoplay"
-      poster="/media/blackhole-code.jpg"
+      poster="/media/blackhole-code.webp"
       src="/media/blackhole-code-bg.mp4"
       overlay-class="bg-gradient-to-r from-background/90 via-background/78 to-background/62"
     />

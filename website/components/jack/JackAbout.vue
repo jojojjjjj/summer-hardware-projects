@@ -20,7 +20,7 @@
     <!-- Bottom-right: hand-art accent (V4 direct fusion) — "动手造物" motif.
          Replaces the generic Satellite icon with the real art, framed + tilted. -->
     <JackFadeIn :tag="'div'" :delay="0.3" :x="80" :y="0" :duration="0.9" class="pointer-events-none absolute bottom-[8%] right-[3%] sm:right-[6%] md:right-[10%]">
-      <img src="/media/hand-art.webp" alt="" class="w-[130px] max-sm:w-[88px] sm:w-[170px] md:w-[220px] h-auto rotate-3 rounded-2xl border border-white/10 object-cover opacity-30" style="filter: saturate(0.9);" loading="lazy" decoding="async" />
+      <img src="/media/hand-art.webp" alt="" width="440" height="982" class="w-[130px] max-sm:w-[88px] sm:w-[170px] md:w-[220px] h-auto rotate-3 rounded-2xl border border-white/10 object-cover opacity-30" style="filter: saturate(0.9);" loading="lazy" decoding="async" />
     </JackFadeIn>
 
     <!-- Heading -->

@@ -11,12 +11,30 @@
           @click.self="emit('close')"
         >
           <div ref="cardRef" class="relative">
-            <img
-              src="/media/signup-link.png"
-              alt="报名链接"
-              class="w-[calc(100vw-2.5rem)] max-h-[86vh] rounded-2xl border border-white/10 object-contain shadow-2xl md:w-[1344px] md:max-w-[calc(100vw-2rem)]"
-              @click.stop
-            />
+            <!-- Image + skeleton share one box (width/height attrs reserve the
+                 aspect-ratio up front, so no CLS; skeleton hides on @load). -->
+            <div class="relative">
+              <div
+                v-if="!loaded"
+                aria-hidden="true"
+                class="signup-skeleton absolute inset-0 rounded-2xl border border-white/10"
+              ></div>
+              <img
+                ref="imgRef"
+                src="/media/signup-link.webp"
+                srcset="/media/signup-link-672.webp 672w, /media/signup-link.webp 1088w"
+                sizes="(max-width: 768px) calc(100vw - 2.5rem), 1344px"
+                width="1088"
+                height="581"
+                alt="报名链接"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+                class="w-[calc(100vw-2.5rem)] max-h-[86vh] rounded-2xl border border-white/10 object-contain shadow-2xl md:w-[1344px] md:max-w-[calc(100vw-2rem)]"
+                @load="onImgLoad"
+                @click.stop
+              />
+            </div>
 
             <!-- Close button -->
             <button
@@ -49,9 +67,17 @@ const emit = defineEmits<{ (e: 'close'): void }>()
 
 const closeBtnRef = ref<HTMLButtonElement | null>(null)
 const cardRef = ref<HTMLElement | null>(null)
+const imgRef = ref<HTMLImageElement | null>(null)
+// loaded stays true once the image has decoded (it stays cached afterwards, so
+// re-opening is instant and never re-shows the skeleton).
+const loaded = ref(false)
 
 let prevOverflow = ''
 let keydownHandler: ((e: KeyboardEvent) => void) | null = null
+
+function onImgLoad() {
+  loaded.value = true
+}
 
 function lockBody() {
   if (typeof document === 'undefined') return
@@ -71,6 +97,11 @@ watch(
     if (isOpen) {
       lockBody()
       await nextTick()
+      // If the image is already cached (prefetched by CtaSection), mark it
+      // loaded before paint so the skeleton never flashes on a warm cache.
+      if (imgRef.value?.complete && imgRef.value.naturalWidth > 0) {
+        loaded.value = true
+      }
       // Focus close button (or card) for a11y; focus itself is not motion,
       // so this is fine under prefers-reduced-motion.
       const target = closeBtnRef.value ?? cardRef.value
@@ -112,5 +143,24 @@ onUnmounted(() => {
 .signup-fade-enter-from,
 .signup-fade-leave-to {
   opacity: 0;
+}
+/* Skeleton shown until the signup image decodes. Reduced-motion-safe. */
+.signup-skeleton {
+  background: rgba(255, 255, 255, 0.06);
+  animation: signup-skeleton-pulse 1.4s ease-in-out infinite;
+}
+@keyframes signup-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .signup-skeleton {
+    animation: none;
+  }
 }
 </style>

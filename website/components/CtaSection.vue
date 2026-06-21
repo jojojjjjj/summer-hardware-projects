@@ -27,6 +27,7 @@
               @mouseenter="onBtnEnter"
               @mousemove="onBtnMove"
               @mouseleave="onBtnLeave"
+              @focus="prefetchSignup"
               @click="onBtnClick"
               class="group cta-btn relative inline-flex items-center justify-center gap-3 rounded-full text-[16px] font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-warm-coral/50 overflow-hidden"
               style="padding: 20px 48px;"
@@ -67,7 +68,23 @@ let gsapInstance: any = null
 let orbScrollHandler: (() => void) | null = null
 let ticking = false
 
+// Warm the signup-image cache before the user can click, so the modal image is
+// near-instant. Fires once — on CTA hover/focus (intent) and when the card
+// scrolls into view (proximity). Not motion, so it runs under reduced-motion too.
+let signupPrefetched = false
+function prefetchSignup() {
+  if (signupPrefetched || typeof window === 'undefined') return
+  signupPrefetched = true
+  // Both responsive variants are tiny (26 KB + 17 KB); warming both guarantees
+  // a cache hit on any viewport.
+  const a = new Image()
+  a.src = '/media/signup-link.webp'
+  const b = new Image()
+  b.src = '/media/signup-link-672.webp'
+}
+
 function onBtnEnter() {
+  prefetchSignup()
   if (!gsapInstance || !ctaBtnRef.value || reduce.value) return
   gsapInstance.to(ctaBtnRef.value, { scale: 1.05, duration: 0.3, ease: 'power2.out' })
 }
@@ -125,6 +142,21 @@ function onBtnClick(e: MouseEvent) {
 onMounted(async () => {
   const gsap = (await import('gsap')).default
   gsapInstance = gsap
+
+  // Prefetch the signup image as soon as the CTA card nears the viewport, so
+  // the click is near-instant. Always on (independent of reduced-motion).
+  if (cardRef.value && typeof IntersectionObserver !== 'undefined') {
+    const prefetchObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          prefetchSignup()
+          prefetchObserver.disconnect()
+        }
+      },
+      { rootMargin: '200px' }
+    )
+    prefetchObserver.observe(cardRef.value)
+  }
 
   // headingRef is revealed by <WordsPullUp>; only the subtitle + CTA animate here.
   const els = [subRef.value, ctaWrapperRef.value].filter(Boolean) as HTMLElement[]

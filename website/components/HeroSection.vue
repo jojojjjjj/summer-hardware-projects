@@ -54,7 +54,7 @@
         <div class="lg:col-span-7 text-left">
           <!-- Brand logo -->
           <div ref="logoRef" class="mb-8 md:mb-10">
-            <img src="/logo.png" alt="暑期硬件实践课程" class="h-14 md:h-20 w-auto object-contain" />
+            <img src="/logo.webp" alt="暑期硬件实践课程" width="826" height="201" loading="eager" decoding="async" class="h-14 md:h-20 w-auto object-contain" />
           </div>
 
           <!-- Eyebrow -->

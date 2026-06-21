@@ -3,7 +3,7 @@
     <!-- V4 · Direct-fusion hardware backdrop: 3D circuit board, dimmed + overlay.
          Sits behind all section content (header / filters / shelf are z-10 above). -->
     <div class="pointer-events-none absolute inset-0 z-0">
-      <img src="/media/circuit-3d.jpg" alt="" class="h-full w-full object-cover opacity-[0.12]" loading="lazy" decoding="async" />
+      <img src="/media/circuit-3d.webp" alt="" width="736" height="1104" class="h-full w-full object-cover opacity-[0.12]" loading="lazy" decoding="async" />
       <div class="absolute inset-0 bg-gradient-to-b from-background/70 via-background/45 to-background/90" />
     </div>
     <!-- Section header — formula B: oversized bleeding "02" (z-overlap graphic) +
@@ -102,7 +102,7 @@
           >
             <ProjectCard
               :project="project"
-              :video-poster="project.slug === 'pocket-signal-generator' ? '/media/code-river.jpg' : undefined"
+              :video-poster="project.slug === 'pocket-signal-generator' ? '/media/code-river.webp' : undefined"
               :video-src="''"
             />
           </div>

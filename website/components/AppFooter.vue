@@ -10,7 +10,7 @@
         <!-- Left: Logo + copyright -->
         <div class="flex items-center gap-3">
           <NuxtLink to="/" class="group inline-block transition-opacity duration-300 hover:opacity-70 max-md:inline-flex max-md:items-center max-md:min-h-[44px]">
-            <img src="/logo.png" alt="Logo" class="h-5 w-auto object-contain opacity-40 transition-opacity duration-500 group-hover:opacity-60" />
+            <img src="/logo.webp" alt="Logo" width="826" height="201" loading="lazy" decoding="async" class="h-5 w-auto object-contain opacity-40 transition-opacity duration-500 group-hover:opacity-60" />
           </NuxtLink>
           <span class="text-caption text-text-tertiary/50">© 2026 <span class="text-text-secondary/60">暑期硬件实践课程</span></span>
         </div>

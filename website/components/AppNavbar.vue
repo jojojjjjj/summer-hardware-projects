@@ -15,7 +15,7 @@
     <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-2.5">
       <!-- Logo -->
       <NuxtLink to="/" class="group flex items-center gap-2.5 transition-opacity duration-300 hover:opacity-80">
-        <img src="/logo.png" alt="Logo" class="h-7 w-auto object-contain transition-opacity duration-500 group-hover:opacity-90" />
+        <img src="/logo.webp" alt="Logo" width="826" height="201" loading="eager" decoding="async" class="h-7 w-auto object-contain transition-opacity duration-500 group-hover:opacity-90" />
       </NuxtLink>
 
       <!-- Center links (desktop) -->
