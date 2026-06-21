@@ -140,7 +140,7 @@
       <div class="mx-auto max-w-5xl px-6 text-center">
         <p class="eyebrow mb-5">资源</p>
         <h2 class="text-subsection font-semibold tracking-tight">开源参考</h2>
-        <p class="mt-4 text-[14px] max-md:text-[13px] text-text-tertiary max-w-xl mx-auto leading-relaxed">本项目基于以下开源项目改编 · Adapted from the open-source project below</p>
+        <p class="mt-4 text-[14px] max-md:text-[13px] text-text-tertiary max-w-xl mx-auto leading-relaxed">{{ project.links.adaptedRepo ? '本项目基于以下开源项目改编 · Adapted from the open-source project below' : '本项目开源仓库 · This project\'s open-source repo' }}</p>
 
         <div v-if="primaryLink" class="mt-10 flex flex-col items-center">
           <p class="eyebrow text-text-tertiary/70 mb-4">开源原项目 · Original project</p>

@@ -146,8 +146,7 @@ export const projects: Project[] = [
       { days: 'Day 8-10', title: '可视化', titleEn: 'Visualization', description: 'Grafana 仪表盘、系统整合、展示', descriptionEn: 'Grafana dashboard, integration, demo' },
     ],
     links: {
-      github: 'https://github.com/AnshulFursule/ESP32-IoT-Air-Quality-Monitoring-System',
-      adaptedRepo: 'https://github.com/jojojjjjj/project-02-env-monitor-mid',
+      github: 'https://github.com/jojojjjjj/project-02-env-monitor-mid',
     },
   },
   {
