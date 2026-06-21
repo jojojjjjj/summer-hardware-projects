@@ -9,11 +9,6 @@
     <!-- Section header — formula B: oversized bleeding "02" (z-overlap graphic) +
          asymmetric 7:5 (title / legend), no eyebrow (distinct from Value's formula A) -->
     <div class="relative mx-auto max-w-6xl px-6 pt-28 md:pt-40 pb-12 md:pb-16">
-      <span
-        class="pointer-events-none absolute left-1/2 -translate-x-1/2 font-mono font-bold leading-none select-none text-text-primary"
-        style="font-size: clamp(8rem, 22vw, 18rem); opacity: 0.05; letter-spacing: -0.06em; z-index: 0; top: -2.5rem;"
-        aria-hidden="true"
-      >02</span>
       <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-end">
         <div class="md:col-span-7">
           <h2
