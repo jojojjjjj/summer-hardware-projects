@@ -38,6 +38,8 @@ export interface ProjectLinks {
   oshwhub?: string
   gitee?: string
   other?: { label: string; url: string }[]
+  /** User's adapted course-pack repo (jojojjjjj/<folder>) — secondary, below the original. */
+  adaptedRepo?: string
 }
 
 /** Full project data */
@@ -108,7 +110,14 @@ export const projects: Project[] = [
       { days: 'Day 8-11', title: 'USB通信', titleEn: 'USB Communication', description: 'USB CDC 配置、数据传输协议、手机端接收', descriptionEn: 'USB CDC, data protocol, phone receive' },
       { days: 'Day 12-15', title: '图像融合', titleEn: 'Image Fusion', description: 'OpenCV 图像处理、热成像叠加、调试与展示', descriptionEn: 'OpenCV processing, thermal overlay, demo' },
     ],
-    links: { github: 'https://github.com/RAK1002/STM32_Thermal_Imager' },
+    links: {
+      github: 'https://github.com/colourfate/thermal_bridge',
+      other: [
+        { label: '原作者 Android APP · Original app', url: 'https://github.com/colourfate/ThermalEyes' },
+        { label: '原作者 PCB · 立创开源', url: 'https://oshwhub.com/colourfate/binocular_thermal_imager' },
+      ],
+      adaptedRepo: 'https://github.com/jojojjjjj/project-01-binocular-thermal-imager',
+    },
   },
   {
     id: '02', slug: 'env-monitor', number: 2,
@@ -136,7 +145,10 @@ export const projects: Project[] = [
       { days: 'Day 4-7', title: '数据上云', titleEn: 'Cloud Data', description: 'MQTT 协议、InfluxDB 存储、数据流水线', descriptionEn: 'MQTT protocol, InfluxDB, data pipeline' },
       { days: 'Day 8-10', title: '可视化', titleEn: 'Visualization', description: 'Grafana 仪表盘、系统整合、展示', descriptionEn: 'Grafana dashboard, integration, demo' },
     ],
-    links: { github: 'https://github.com/AnshulFursule/ESP32-IoT-Air-Quality-Monitoring-System' },
+    links: {
+      github: 'https://github.com/AnshulFursule/ESP32-IoT-Air-Quality-Monitoring-System',
+      adaptedRepo: 'https://github.com/jojojjjjj/project-02-env-monitor-mid',
+    },
   },
   {
     id: '03', slug: '4mode-keyboard', number: 3,
@@ -166,7 +178,10 @@ export const projects: Project[] = [
       { days: 'Day 10-14', title: 'PCB 设计', titleEn: 'PCB Design', description: '四层板设计、布线规则、DFM', descriptionEn: '4-layer PCB, routing rules, DFM' },
       { days: 'Day 15-18', title: '组装调试', titleEn: 'Assembly', description: '焊接组装、固件调试、展示', descriptionEn: 'Soldering, firmware debug, demo' },
     ],
-    links: { github: 'https://github.com/JiaBao-Hong/4mod-keyboard' },
+    links: {
+      oshwhub: 'https://oshwhub.com/ran-pang/multifunctional-keyboard',
+      adaptedRepo: 'https://github.com/jojojjjjj/project-03-4mode-keyboard',
+    },
   },
   {
     id: '04', slug: 'pocket-signal-generator', number: 4,
@@ -196,7 +211,10 @@ export const projects: Project[] = [
       { days: 'Day 11-15', title: '交互显示', titleEn: 'Display & Control', description: 'TFT 显示、编码器控制、参数调节', descriptionEn: 'TFT display, encoder, parameter tuning' },
       { days: 'Day 16-20', title: '系统集成', titleEn: 'Integration', description: 'PCB 设计、焊接调试、项目展示', descriptionEn: 'PCB design, soldering, demo' },
     ],
-    links: { github: 'https://github.com/RoboLinkB/FPGA_Signal_Generator' },
+    links: {
+      oshwhub: 'https://oshwhub.com/greentor/tinyawg-signal-source',
+      adaptedRepo: 'https://github.com/jojojjjjj/project-04-pocket-oscilloscope-high',
+    },
   },
   {
     id: '05', slug: 'desktop-pet', number: 5,
@@ -225,7 +243,13 @@ export const projects: Project[] = [
       { days: 'Day 5-9', title: 'AI 能力', titleEn: 'AI Capabilities', description: 'STT 语音识别、LLM API、TTS 合成', descriptionEn: 'STT, LLM API, TTS synthesis' },
       { days: 'Day 10-15', title: '系统集成', titleEn: 'Integration', description: '对话状态机、3D 外壳、组装展示', descriptionEn: 'Dialog state machine, 3D shell, demo' },
     ],
-    links: { github: 'https://github.com/luca-marchiori/ESP32-ChatGPT' },
+    links: {
+      gitee: 'https://gitee.com/esp-friends/esp_sparkbot',
+      other: [
+        { label: '进阶原项目 · AI DesktopCat', url: 'https://github.com/AI-FanGe/AI_DesktopCat_Qwen3.5Omni' },
+      ],
+      adaptedRepo: 'https://github.com/jojojjjjj/project-05-desktop-pet-mid',
+    },
   },
   {
     id: '06', slug: 'weather-cube', number: 6,
@@ -253,7 +277,10 @@ export const projects: Project[] = [
       { days: 'Day 3-5', title: '显示与传感器', titleEn: 'Display & Sensor', description: 'TFT 驱动、传感器读取、数据展示', descriptionEn: 'TFT driver, sensor read, display' },
       { days: 'Day 6-8', title: '联网与整合', titleEn: 'WiFi & Integration', description: 'WiFi 天气、NTP 时间、外壳组装', descriptionEn: 'WiFi weather, NTP, enclosure' },
     ],
-    links: { github: 'https://github.com/G6EJD/ESP32-8266-Air-Quality-Monitoring' },
+    links: {
+      github: 'https://github.com/bilibilifmk/ESP_weather_Cube',
+      adaptedRepo: 'https://github.com/jojojjjjj/project-06-weather-cube-easy',
+    },
   },
   {
     id: '07', slug: 'bipedal-wheeled-robot', number: 7,
@@ -283,7 +310,10 @@ export const projects: Project[] = [
       { days: 'Day 10-14', title: '步态运动', titleEn: 'Gait Motion', description: '步态规划、运动控制、遥控集成', descriptionEn: 'Gait planning, motion, remote' },
       { days: 'Day 15-18', title: '系统集成', titleEn: 'Integration', description: '结构组装、系统调试、项目展示', descriptionEn: 'Assembly, debug, demo' },
     ],
-    links: { github: 'https://github.com/JiaBao-Hong/Bipedal-Wheeled-Robot' },
+    links: {
+      gitee: 'https://gitee.com/StackForce/bipedal_wheeled_robot',
+      adaptedRepo: 'https://github.com/jojojjjjj/project-07-bipedal-wheeled-robot-high',
+    },
   },
   {
     id: '08', slug: 'electronbot', number: 8,
@@ -311,7 +341,11 @@ export const projects: Project[] = [
       { days: 'Day 5-8', title: '核心功能', titleEn: 'Core Features', description: 'USB HS 通信、I2C 舵机 PID、LCD 表情、传感器', descriptionEn: 'USB HS, I2C servo PID, LCD expressions, sensors' },
       { days: 'Day 9-15', title: '上位机与集成', titleEn: 'Desktop App & Integration', description: 'Unity 上位机、OpenCV 视觉、系统集成、展示', descriptionEn: 'Unity app, OpenCV vision, integration, demo' },
     ],
-    links: { github: 'https://github.com/peng-zhihui/ElectronBot', bilibili: 'https://www.bilibili.com/video/BV1ka411b76m' },
+    links: {
+      github: 'https://github.com/peng-zhihui/ElectronBot',
+      bilibili: 'https://www.bilibili.com/video/BV1ka411b76m',
+      adaptedRepo: 'https://github.com/jojojjjjj/project-08-electronbot-xhigh',
+    },
   },
   {
     id: '09', slug: 'desk-satellite', number: 9,
@@ -340,7 +374,13 @@ export const projects: Project[] = [
       { days: 'Day 5-8', title: '核心功能', titleEn: 'Core Features', description: '电源管理、显示界面、交互功能、系统整合', descriptionEn: 'Power management, display UI, interaction, integration' },
       { days: 'Day 9-14', title: '结构组装与展示', titleEn: 'Assembly & Demo', description: '铜线结构焊接、卫星外壳组装、整机调试、展示', descriptionEn: 'Copper wire structure, satellite assembly, testing, demo' },
     ],
-    links: { other: [{ label: '原作者 YouTube', url: 'https://www.youtube.com/watch?v=0zJG3wExY-c' }, { label: '原作者网站', url: 'https://www.huyvector.org/clocks/desk-satellite' }] },
+    links: {
+      other: [
+        { label: '原作者 YouTube · Author video', url: 'https://www.youtube.com/watch?v=0zJG3wExY-c' },
+        { label: '原作者网站 · Author site', url: 'https://www.huyvector.org/clocks/desk-satellite' },
+      ],
+      adaptedRepo: 'https://github.com/jojojjjjj/project-09-desk-satellite-high',
+    },
   },
 ]
 

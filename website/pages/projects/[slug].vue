@@ -135,28 +135,39 @@
       </div>
     </section>
 
-    <!-- Links -->
+    <!-- Links — original project (primary) + user's adaptation (secondary) + supporting -->
     <section v-if="hasLinks" class="section-dark py-20 sm:py-28">
       <div class="mx-auto max-w-5xl px-6 text-center">
         <p class="eyebrow mb-5">资源</p>
         <h2 class="text-subsection font-semibold tracking-tight">开源参考</h2>
-        <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
-          <a v-if="project.links.github" :href="project.links.github" target="_blank" rel="noopener noreferrer"
-            class="inline-flex items-center gap-2.5 rounded-full border border-white/[0.08] px-5 py-2.5 text-[14px] font-medium text-text-secondary transition-all duration-200 hover:border-white/[0.15] hover:text-text-primary">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-            GitHub
+        <p class="mt-4 text-[14px] max-md:text-[13px] text-text-tertiary max-w-xl mx-auto leading-relaxed">本项目基于以下开源项目改编 · Adapted from the open-source project below</p>
+
+        <div v-if="primaryLink" class="mt-10 flex flex-col items-center">
+          <p class="eyebrow text-text-tertiary/70 mb-4">开源原项目 · Original project</p>
+          <a :href="primaryLink.url" target="_blank" rel="noopener noreferrer"
+            class="group inline-flex items-center gap-3 rounded-full px-7 py-3.5 text-white font-semibold transition-all duration-200 hover:scale-[1.02] max-md:min-h-[44px] max-md:px-5"
+            :style="{ background: 'linear-gradient(135deg, ' + project.colorHex + ', ' + project.colorHex + 'cc)', boxShadow: '0 10px 34px ' + project.colorHex + '33' }">
+            <template v-if="primaryLink.kind !== 'other'">
+              <span class="text-[11px] font-mono uppercase tracking-[0.18em] opacity-80">{{ primaryLink.platformTag }}</span>
+              <span class="h-4 w-px bg-white/30" />
+            </template>
+            <span class="font-mono text-[14px] max-md:text-[13px]">{{ primaryLink.short }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-80 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
           </a>
-          <a v-if="project.links.bilibili" :href="project.links.bilibili" target="_blank" rel="noopener noreferrer"
-            class="inline-flex items-center gap-2.5 rounded-full border border-white/[0.08] px-5 py-2.5 text-[14px] font-medium text-text-secondary transition-all duration-200 hover:border-white/[0.15] hover:text-text-primary">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="2 4 6 4 8 2 10 4 14 4 16 2 18 4 22 4 22 18 2 18"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/></svg>
-            Bilibili
+
+          <!-- Secondary: user's adapted course-pack repo (small, below the original) -->
+          <a v-if="project.links.adaptedRepo" :href="project.links.adaptedRepo" target="_blank" rel="noopener noreferrer"
+            class="group mt-4 inline-flex items-center gap-1.5 text-[13px] max-md:text-[13px] text-text-tertiary transition-colors hover:text-text-secondary max-md:min-h-[44px] max-md:px-2">
+            <span class="text-text-tertiary/70">我的改编版 · My adaptation:</span>
+            <span class="font-mono underline-offset-4 group-hover:underline decoration-white/25">{{ adaptedRepoShort }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
           </a>
-          <a v-if="project.links.oshwhub" :href="project.links.oshwhub" target="_blank" rel="noopener noreferrer"
-            class="inline-flex items-center gap-2.5 rounded-full border border-white/[0.08] px-5 py-2.5 text-[14px] font-medium text-text-secondary transition-all duration-200 hover:border-white/[0.15] hover:text-text-primary">
-            立创开源
-          </a>
-          <a v-for="link in project.links.other || []" :key="link.label" :href="link.url" target="_blank" rel="noopener noreferrer"
-            class="inline-flex items-center gap-2.5 rounded-full border border-white/[0.08] px-5 py-2.5 text-[14px] font-medium text-text-secondary transition-all duration-200 hover:border-white/[0.15] hover:text-text-primary">
+        </div>
+
+        <!-- Supporting links: bilibili / other original sources (equal pills) -->
+        <div v-if="supportingLinks.length" class="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <a v-for="link in supportingLinks" :key="link.url" :href="link.url" target="_blank" rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 rounded-full border border-white/[0.08] px-4 py-2 max-md:px-5 max-md:min-h-[44px] text-[13px] max-md:text-[13px] font-medium text-text-secondary transition-all duration-200 hover:border-white/[0.15] hover:text-text-primary">
             {{ link.label }}
           </a>
         </div>
@@ -213,8 +224,37 @@ const nextProject = computed(() => currentIndex < projects.length - 1 ? projects
 
 const hasLinks = computed(() => {
   const l = project.links
-  return l.github || l.bilibili || l.oshwhub || l.gitee || (l.other && l.other.length > 0)
+  return l.github || l.bilibili || l.oshwhub || l.gitee || (l.other && l.other.length > 0) || l.adaptedRepo
 })
+
+/** Strip scheme+host → "owner/repo" (or trailing path) for compact display. */
+function shortRepo(u: string): string {
+  return u.replace(/^https?:\/\/[^/]+\//, '').replace(/\/+$/, '')
+}
+
+/** Primary original upstream link (priority: github → gitee → oshwhub → other[0]). */
+const primaryLink = computed(() => {
+  const l = project.links
+  if (l.github) return { url: l.github, kind: 'github' as const, platformTag: 'GitHub', short: shortRepo(l.github) }
+  if (l.gitee) return { url: l.gitee, kind: 'gitee' as const, platformTag: 'Gitee', short: shortRepo(l.gitee) }
+  if (l.oshwhub) return { url: l.oshwhub, kind: 'oshwhub' as const, platformTag: '立创开源', short: shortRepo(l.oshwhub) }
+  if (l.other && l.other.length) return { url: l.other[0].url, kind: 'other' as const, platformTag: 'Link', short: l.other[0].label }
+  return null
+})
+
+/** Supporting links: bilibili + any original sources not used as the primary. */
+const supportingLinks = computed(() => {
+  const l = project.links
+  const arr: { url: string; label: string }[] = []
+  if (l.bilibili) arr.push({ url: l.bilibili, label: 'Bilibili' })
+  if (l.other) {
+    const start = primaryLink.value && primaryLink.value.kind === 'other' ? 1 : 0
+    l.other.slice(start).forEach((o) => arr.push({ url: o.url, label: o.label }))
+  }
+  return arr
+})
+
+const adaptedRepoShort = computed(() => (project.links.adaptedRepo ? shortRepo(project.links.adaptedRepo) : ''))
 
 definePageMeta({
   validate: (route) => {
