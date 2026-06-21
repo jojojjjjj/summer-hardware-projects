@@ -20,7 +20,7 @@
         </div>
         <div class="md:col-span-5 md:text-right">
           <span
-            class="inline-block mb-3 rounded-full px-3 py-1 text-[12px] font-medium"
+            class="inline-block mb-3 rounded-full px-3 py-1 text-[12px] max-md:text-[13px] font-medium"
             style="background: rgba(99,102,241,0.10); color: #a5aceb; border: 1px solid rgba(99,102,241,0.20);"
           >9 个项目 · 5 级难度</span>
           <p
@@ -41,7 +41,7 @@
           v-for="filter in difficultyFilters"
           :key="filter.value"
           @click="activeFilter = filter.value"
-          class="rounded-full px-5 py-2 text-[14px] font-semibold transition-all duration-300"
+          class="rounded-full px-5 py-2 max-md:py-3 text-[14px] font-semibold transition-all duration-300"
           :class="activeFilter === filter.value
             ? 'text-white shadow-glow scale-105'
             : 'bg-white/[0.04] text-text-secondary hover:bg-white/[0.08] hover:text-text-primary'"
@@ -55,20 +55,20 @@
     <!-- Horizontal scroll shelf -->
     <div class="relative z-10">
       <!-- Left fade + arrow -->
-      <div class="pointer-events-none absolute left-0 top-0 bottom-0 z-10 w-32 bg-gradient-to-r from-background to-transparent" />
+      <div class="pointer-events-none absolute left-0 top-0 bottom-0 z-10 w-32 max-md:w-16 bg-gradient-to-r from-background to-transparent" />
       <button
         @click="scrollBy(-380)"
-        class="absolute left-4 top-1/2 -translate-y-1/2 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-white/[0.08] backdrop-blur-md border border-white/[0.1] text-text-secondary hover:text-text-primary hover:bg-white/[0.14] hover:border-white/[0.2] hover:shadow-[0_0_20px_rgba(255,255,255,0.06)] transition-all duration-300"
+        class="absolute left-4 top-1/2 -translate-y-1/2 z-20 flex h-12 w-12 max-md:hidden items-center justify-center rounded-full bg-white/[0.08] backdrop-blur-md border border-white/[0.1] text-text-secondary hover:text-text-primary hover:bg-white/[0.14] hover:border-white/[0.2] hover:shadow-[0_0_20px_rgba(255,255,255,0.06)] transition-all duration-300"
         aria-label="向左滚动"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
       </button>
 
       <!-- Right fade + arrow -->
-      <div class="pointer-events-none absolute right-0 top-0 bottom-0 z-10 w-32 bg-gradient-to-l from-background to-transparent" />
+      <div class="pointer-events-none absolute right-0 top-0 bottom-0 z-10 w-32 max-md:w-16 bg-gradient-to-l from-background to-transparent" />
       <button
         @click="scrollBy(380)"
-        class="absolute right-4 top-1/2 -translate-y-1/2 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-white/[0.08] backdrop-blur-md border border-white/[0.1] text-text-secondary hover:text-text-primary hover:bg-white/[0.14] hover:border-white/[0.2] hover:shadow-[0_0_20px_rgba(255,255,255,0.06)] transition-all duration-300"
+        class="absolute right-4 top-1/2 -translate-y-1/2 z-20 flex h-12 w-12 max-md:hidden items-center justify-center rounded-full bg-white/[0.08] backdrop-blur-md border border-white/[0.1] text-text-secondary hover:text-text-primary hover:bg-white/[0.14] hover:border-white/[0.2] hover:shadow-[0_0_20px_rgba(255,255,255,0.06)] transition-all duration-300"
         aria-label="向右滚动"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
@@ -77,7 +77,7 @@
       <!-- Scroll hint (visible on desktop before first scroll) -->
       <div
         v-if="!hasScrolled"
-        class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 text-cool-indigo/60 text-[12px] select-none"
+        class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 text-cool-indigo/60 text-[12px] max-md:text-[13px] select-none"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         左右滑动浏览

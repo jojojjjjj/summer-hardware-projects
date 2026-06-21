@@ -106,7 +106,7 @@
       <!-- HEADER (preserved verbatim — already matches the dark Jack flow) -->
       <div class="relative mx-auto mb-10 sm:mb-12 md:mb-14 text-center">
         <JackFadeIn :tag="'div'" :y="20" :duration="0.7">
-          <span class="eyebrow inline-block mb-5">课程阶段 · COURSE STAGES</span>
+          <span class="eyebrow inline-block mb-5 js-services-eyebrow">课程阶段 · COURSE STAGES</span>
         </JackFadeIn>
         <BlurText
           text="课程阶段"
@@ -124,7 +124,7 @@
       <!-- QUIET MONO COUNTER (Neo's "01 / 05" chapter counter, demoted
            from a giant watermark to a single section-level readout). -->
       <JackFadeIn :tag="'div'" :delay="0.15" :y="10" :duration="0.6" class="flex justify-end mb-3">
-        <span class="font-mono text-xs tracking-[0.2em] text-text-tertiary">
+        <span class="font-mono text-xs tracking-[0.2em] text-text-tertiary js-stage-counter">
           {{ String(openIndex + 1).padStart(2, '0') }}
           <span class="opacity-40">/ 05</span>
         </span>
@@ -182,7 +182,7 @@
                   <span class="font-semibold text-text-primary leading-tight truncate" style="font-size: clamp(0.95rem, 3.5vw, 1.1rem);">
                     {{ stage.title }}
                   </span>
-                  <span class="font-mono uppercase tracking-[0.18em] text-text-tertiary truncate" style="font-size: clamp(0.62rem, 1.6vw, 0.72rem);">
+                  <span class="font-mono uppercase tracking-[0.18em] text-text-tertiary truncate js-stage-label-en" style="font-size: clamp(0.62rem, 1.6vw, 0.72rem);">
                     {{ stage.titleEn }}
                   </span>
                 </span>
@@ -192,7 +192,7 @@
 
                 <!-- Days badge -->
                 <span
-                  class="font-mono text-xs px-2 py-0.5 rounded-full shrink-0"
+                  class="font-mono text-xs px-2 py-0.5 rounded-full shrink-0 js-stage-days"
                   :style="{ backgroundColor: stage.color + '1F', color: stage.color }"
                 >{{ stage.days }}</span>
 
@@ -229,7 +229,7 @@
                   {{ stage.description }}
                 </p>
                 <!-- Description EN -->
-                <p class="text-text-tertiary leading-relaxed mb-4" style="font-size: clamp(0.78rem, 1vw, 0.88rem);">
+                <p class="text-text-tertiary leading-relaxed mb-4 js-stage-desc-en" style="font-size: clamp(0.78rem, 1vw, 0.88rem);">
                   {{ stage.descriptionEn }}
                 </p>
                 <!-- Bullets (dot + text pattern verbatim) -->
@@ -244,7 +244,7 @@
                       :style="{ backgroundColor: stage.color + '66' }"
                       aria-hidden="true"
                     />
-                    <span class="text-text-secondary" style="font-size: clamp(0.8rem, 1vw, 0.9rem);">{{ bullet }}</span>
+                    <span class="text-text-secondary js-stage-bullet" style="font-size: clamp(0.8rem, 1vw, 0.9rem);">{{ bullet }}</span>
                   </li>
                 </ul>
               </div>
@@ -395,5 +395,23 @@ function toggle(i: number) {
 @media (max-width: 640px) {
   .slash-a { left: -10%; }
   .slash-b { right: -9%; }
+}
+
+/* 14 · mobile touch-up: stage-card typography uses inline clamp() with sub-13px
+   floors (9.9px EN label, 12.5px EN desc, 12.8px bullets) and text-xs (12px)
+   counter/days + the global .eyebrow (10-11px). Inline style beats Tailwind
+   utilities, so each fix is a hook class + scoped @media(max-width:767px) with
+   !important. Desktop (>=768px) is untouched — these rules never match there.
+   Note: the section title "课程阶段" itself renders at 15px (mobile) / 17px
+   (desktop) due to a pre-existing BlurText :style-forwarding bug; fixing that
+   would change desktop, so it is FROZEN and these labels stay at 13px (clearly
+   subordinate to the 15px title). */
+@media (max-width: 767px) {
+  .js-services-eyebrow { font-size: 13px !important; }
+  .js-stage-counter { font-size: 13px !important; }
+  .js-stage-label-en { font-size: 13px !important; }
+  .js-stage-days { font-size: 13px !important; }
+  .js-stage-desc-en { font-size: 13px !important; line-height: 1.55; }
+  .js-stage-bullet { font-size: 13px !important; }
 }
 </style>

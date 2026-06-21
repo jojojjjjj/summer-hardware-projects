@@ -55,8 +55,8 @@
             :key="i"
             @click="goTo(i)"
             :class="[
-              'h-2 rounded-full transition-all duration-500 ease-out-expo focus:outline-none focus-visible:ring-2 focus-visible:ring-cool-indigo/50',
-              activeIndex === i ? 'w-8 bg-cool-indigo' : 'w-2 bg-white/[0.14] hover:bg-white/[0.24]'
+              'h-2 rounded-full transition-all duration-500 ease-out-expo focus:outline-none focus-visible:ring-2 focus-visible:ring-cool-indigo/50 testi-dot',
+              activeIndex === i ? 'w-8 bg-cool-indigo is-active' : 'w-2 bg-white/[0.14] hover:bg-white/[0.24]'
             ]"
             :style="activeIndex === i ? { boxShadow: '0 0 12px rgba(99,102,241,0.5)' } : {}"
             :aria-label="`查看第 ${i + 1} 条反馈`"
@@ -128,5 +128,39 @@ onMounted(async () => {
 .quote-fade-leave-to {
   opacity: 0;
   transform: translateY(-10px) scale(0.99);
+}
+
+/* 14 · mobile touch-up: testimonial nav dots are 8px tall — far under the 44px
+   touch floor. On phones, turn each .testi-dot into a 44x44 transparent hit
+   box and paint the dot as a ::after pseudo (active = 32px indigo + glow,
+   inactive = 8px muted). Desktop (>=768px) keeps the dot-as-button rendering
+   (h-2/w-8/w-2 + bg) — this scoped rule never matches at >=768px. */
+@media (max-width: 767px) {
+  .testi-dot {
+    width: 44px !important;
+    height: 44px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    position: relative;
+  }
+  .testi-dot::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    height: 8px;
+    border-radius: 9999px;
+    transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.5s ease;
+  }
+  .testi-dot.is-active::after {
+    width: 32px;
+    background: #6366f1;
+    box-shadow: 0 0 12px rgba(99,102,241,0.5);
+  }
+  .testi-dot:not(.is-active)::after {
+    width: 8px;
+    background: rgba(255, 255, 255, 0.14);
+  }
 }
 </style>

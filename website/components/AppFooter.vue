@@ -9,7 +9,7 @@
       <div class="flex flex-col items-center gap-6 md:flex-row md:justify-between md:gap-0">
         <!-- Left: Logo + copyright -->
         <div class="flex items-center gap-3">
-          <NuxtLink to="/" class="group inline-block transition-opacity duration-300 hover:opacity-70">
+          <NuxtLink to="/" class="group inline-block transition-opacity duration-300 hover:opacity-70 max-md:inline-flex max-md:items-center max-md:min-h-[44px]">
             <img src="/logo.png" alt="Logo" class="h-5 w-auto object-contain opacity-40 transition-opacity duration-500 group-hover:opacity-60" />
           </NuxtLink>
           <span class="text-caption text-text-tertiary/50">© 2026 <span class="text-text-secondary/60">暑期硬件实践课程</span></span>
@@ -21,7 +21,7 @@
             v-for="link in navLinks"
             :key="link.label"
             :href="link.href"
-            class="text-caption text-text-tertiary transition-colors duration-300 hover:text-text-primary underline-offset-4 decoration-cool-indigo/30 hover:underline"
+            class="text-caption text-text-tertiary transition-colors duration-300 hover:text-text-primary underline-offset-4 decoration-cool-indigo/30 hover:underline max-md:inline-flex max-md:items-center max-md:min-h-[44px] max-md:min-w-[44px] max-md:px-1"
           >
             {{ link.label }}
           </a>
@@ -35,7 +35,7 @@
             :href="ext.href"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-caption text-text-tertiary/50 transition-colors duration-300 hover:text-text-primary underline-offset-4 decoration-cool-indigo/30 hover:underline"
+            class="text-caption text-text-tertiary/50 transition-colors duration-300 hover:text-text-primary underline-offset-4 decoration-cool-indigo/30 hover:underline max-md:inline-flex max-md:items-center max-md:min-h-[44px] max-md:min-w-[44px] max-md:px-1"
             :aria-label="ext.label"
           >
             {{ ext.label }}
@@ -43,7 +43,7 @@
           <span class="text-text-faint/30">|</span>
           <a
             href="#"
-            class="group flex items-center gap-1 text-caption text-text-tertiary/50 transition-colors duration-300 hover:text-text-primary"
+            class="group flex items-center gap-1 text-caption text-text-tertiary/50 transition-colors duration-300 hover:text-text-primary max-md:min-h-[44px] max-md:min-w-[44px] max-md:px-1"
             @click.prevent="scrollToTop"
           >
             回到顶部
@@ -78,3 +78,12 @@ function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 </script>
+
+<style scoped>
+/* 14 · mobile touch-up: guarantee footer text-caption copy is >=13px on phones
+   regardless of which global definition (config 13px vs main.css 12.8px) wins
+   the cascade. Desktop (>=768px) is untouched. */
+@media (max-width: 767px) {
+  :deep(.text-caption) { font-size: 13px !important; }
+}
+</style>

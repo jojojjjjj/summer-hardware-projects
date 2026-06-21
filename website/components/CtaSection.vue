@@ -12,7 +12,7 @@
         <!-- Static cool top hairline (replaces spinning conic border) -->
         <div class="absolute inset-x-0 top-0 h-px" style="background: linear-gradient(90deg, transparent, rgba(99,102,241,0.5), transparent);" />
 
-        <div class="relative z-10 px-8 py-20 sm:px-16 sm:py-28 md:py-32 text-center">
+        <div class="relative z-10 px-8 py-20 max-sm:px-6 max-sm:py-12 sm:px-16 sm:py-28 md:py-32 text-center">
           <h2 ref="headingRef" class="text-[2.5rem] md:text-[3.75rem] font-semibold tracking-[-0.04em] text-text-primary leading-[1.05]">
             <WordsPullUp text="准备好开始了吗？" />
           </h2>

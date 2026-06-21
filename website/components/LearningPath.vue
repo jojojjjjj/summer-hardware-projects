@@ -178,10 +178,10 @@
               @click="toggleStep(i)"
               :aria-expanded="!!expandedSteps[i]"
               :aria-label="expandedSteps[i] ? `收起第${i+1}步详情` : `展开第${i+1}步详情`"
-              class="relative flex h-9 w-9 shrink-0 items-center justify-center cursor-pointer focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-secondary rounded-full focus:outline-none"
+              class="relative flex h-11 w-11 shrink-0 items-center justify-center cursor-pointer focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-secondary rounded-full focus:outline-none"
             >
               <div
-                class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[12px] font-bold font-mono transition-all duration-500"
+                class="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[12px] font-bold font-mono transition-all duration-500"
                 :style="{
                   background: activatedSteps[i] ? `linear-gradient(135deg, ${step.color}, ${step.color}cc)` : 'rgba(255,255,255,0.04)',
                   color: activatedSteps[i] ? '#0b0d12' : '#6b7280',
@@ -213,7 +213,7 @@
             <p class="text-body-sm text-text-secondary leading-relaxed">{{ step.description }}</p>
             <div class="step-bullets overflow-hidden" style="max-height: 300px; opacity: 1;">
               <div class="mt-3 space-y-1.5">
-                <div v-for="bullet in step.bullets" :key="bullet" class="flex items-start gap-2 text-[12px] text-text-tertiary">
+                <div v-for="bullet in step.bullets" :key="bullet" class="flex items-start gap-2 text-[13px] text-text-tertiary">
                   <span class="mt-1 h-1 w-1 shrink-0 rounded-full" :style="{ backgroundColor: step.color + '50' }" />
                   <span>{{ bullet }}</span>
                 </div>

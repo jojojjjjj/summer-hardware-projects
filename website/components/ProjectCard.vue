@@ -79,7 +79,7 @@
                 {{ project.mcu.split('-')[0] }}
               </span>
             </div>
-            <span class="text-[12px] font-mono text-text-tertiary tracking-wider">{{ project.coreTech }}</span>
+            <span class="text-[12px] max-md:text-[13px] font-mono text-text-tertiary tracking-wider">{{ project.coreTech }}</span>
           </div>
         </div>
 
@@ -99,7 +99,7 @@
           </p>
 
           <!-- Duration -->
-          <div class="mt-4 flex items-center gap-5 text-[12px] text-text-tertiary bg-white/[0.02] rounded-xl px-3 py-1.5 -mx-3">
+          <div class="mt-4 flex items-center gap-5 text-[12px] max-md:text-[13px] text-text-tertiary bg-white/[0.02] rounded-xl px-3 py-1.5 -mx-3">
             <span class="flex items-center gap-1.5">
               <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="opacity-60">
                 <circle cx="12" cy="12" r="10" />
@@ -114,7 +114,7 @@
             <span
               v-for="tag in project.tags.slice(0, 3)"
               :key="tag.label"
-              class="rounded-full px-2.5 py-0.5 text-[11px] font-semibold transition-colors duration-300"
+              class="rounded-full px-2.5 py-0.5 text-[11px] max-md:text-[12px] font-semibold transition-colors duration-300"
               :style="{
                 backgroundColor: `${project.colorHex}20`,
                 color: project.colorHex,
@@ -127,7 +127,7 @@
 
           <!-- Arrow -->
           <div class="mt-5 flex items-center justify-between">
-            <span class="text-[11px] text-text-faint transition-colors duration-300 group-hover:text-text-tertiary">查看详情</span>
+            <span class="text-[11px] max-md:text-[13px] text-text-faint transition-colors duration-300 group-hover:text-text-tertiary">查看详情</span>
             <div
               class="flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300 text-text-tertiary group-hover:text-white group-hover:scale-110"
               :style="{ backgroundColor: isHovered ? project.colorHex : 'rgba(255,255,255,0.04)' }"

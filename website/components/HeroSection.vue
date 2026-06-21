@@ -92,7 +92,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="relative z-10 transition-transform duration-300 group-hover:translate-x-0.5"><path d="m9 18 6-6-6-6"/></svg>
               <span ref="rippleRef" class="pointer-events-none absolute inset-0 overflow-hidden rounded-full" />
             </a>
-            <a href="#value-props" class="text-[15px] font-medium text-text-secondary/80 transition-colors duration-300 hover:text-text-primary hover:underline underline-offset-4 decoration-cool-indigo/40">
+            <a href="#value-props" class="text-[15px] font-medium text-text-secondary/80 transition-colors duration-300 hover:text-text-primary hover:underline underline-offset-4 decoration-cool-indigo/40 max-md:inline-flex max-md:items-center max-md:min-h-[44px] max-md:-ml-2 max-md:px-2">
               了解更多
             </a>
           </div>
@@ -103,7 +103,7 @@
                motion/touch all render the same dock). -->
           <div ref="specsRef" class="mt-12 flex flex-col items-start gap-3">
             <HeroDock :projects="projects" />
-            <div class="text-[11px] uppercase tracking-[0.2em] text-text-tertiary font-semibold">12–15 天完成</div>
+            <div class="text-[11px] max-md:text-[13px] uppercase tracking-[0.2em] text-text-tertiary font-semibold">12–15 天完成</div>
           </div>
         </div>
       </div>

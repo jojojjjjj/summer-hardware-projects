@@ -49,4 +49,13 @@ withDefaults(
 @media (min-width: 768px) {
   .jack-contact-btn { padding: 1rem 3rem; font-size: 1rem; }
 }
+/* 14 · mobile touch-up: guarantee >=44px tap height on phones (base 36px,
+   sm 42px — both under the 44px floor) and lift the <640px label from 12px to
+   13px. Desktop (>=768px, 48px / 16px) is untouched. */
+@media (max-width: 767px) {
+  .jack-contact-btn { min-height: 44px; }
+}
+@media (max-width: 639px) {
+  .jack-contact-btn { font-size: 0.8125rem; }  /* 13px */
+}
 </style>

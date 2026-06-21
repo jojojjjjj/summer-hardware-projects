@@ -24,15 +24,15 @@
             <p class="mt-6 text-body-lg text-text-secondary leading-relaxed">{{ project.description }}</p>
 
             <div class="mt-8 flex flex-wrap gap-2.5">
-              <span class="rounded-full px-4 py-1.5 text-[12px] font-semibold"
+              <span class="rounded-full px-4 py-1.5 text-[12px] max-md:text-[13px] font-semibold"
                 :style="{ backgroundColor: getDifficultyColor(project.difficulty) + '20', color: getDifficultyColor(project.difficulty) }">
                 {{ project.difficultyLabel }}
               </span>
-              <span class="flex items-center gap-1.5 rounded-full border border-white/[0.08] px-4 py-1.5 text-[12px] text-text-secondary">
+              <span class="flex items-center gap-1.5 rounded-full border border-white/[0.08] px-4 py-1.5 text-[12px] max-md:text-[13px] text-text-secondary">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 {{ project.duration }} {{ project.durationUnit }}
               </span>
-              <span class="flex items-center gap-1.5 rounded-full border border-white/[0.08] px-4 py-1.5 text-[12px] text-text-secondary">
+              <span class="flex items-center gap-1.5 rounded-full border border-white/[0.08] px-4 py-1.5 text-[12px] max-md:text-[13px] text-text-secondary">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>
                 {{ project.mcu }}
               </span>
@@ -102,7 +102,7 @@
               <span class="text-[13px] font-mono font-bold text-text-tertiary">{{ String(i + 1).padStart(2, '0') }}</span>
               <div>
                 <p class="text-[14px] font-semibold text-text-primary">{{ item.name }}</p>
-                <p class="text-[12px] text-text-tertiary">{{ item.spec }}</p>
+                <p class="text-[12px] max-md:text-[13px] text-text-tertiary">{{ item.spec }}</p>
               </div>
             </div>
           </div>
@@ -170,7 +170,7 @@
           <NuxtLink v-if="prevProject" :to="'/projects/' + prevProject.slug"
             class="group relative rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 overflow-hidden transition-all duration-300 hover:border-white/[0.14] hover:bg-white/[0.04] inner-glow">
             <div class="absolute top-0 left-0 h-full w-1" :style="{ background: prevProject.colorHex }" />
-            <p class="text-[11px] font-mono uppercase tracking-[0.2em] text-text-tertiary mb-2">← 上一个</p>
+            <p class="text-[11px] max-md:text-[13px] font-mono uppercase tracking-[0.2em] text-text-tertiary mb-2">← 上一个</p>
             <p class="text-lg font-semibold text-text-primary">{{ prevProject.titleZh }}</p>
             <p class="text-[13px] font-mono text-text-tertiary mt-0.5">{{ prevProject.titleEn }}</p>
           </NuxtLink>
@@ -178,7 +178,7 @@
           <NuxtLink v-if="nextProject" :to="'/projects/' + nextProject.slug"
             class="group relative rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 overflow-hidden transition-all duration-300 hover:border-white/[0.14] hover:bg-white/[0.04] inner-glow md:text-right">
             <div class="absolute top-0 right-0 h-full w-1" :style="{ background: nextProject.colorHex }" />
-            <p class="text-[11px] font-mono uppercase tracking-[0.2em] text-text-tertiary mb-2">下一个 →</p>
+            <p class="text-[11px] max-md:text-[13px] font-mono uppercase tracking-[0.2em] text-text-tertiary mb-2">下一个 →</p>
             <p class="text-lg font-semibold text-text-primary">{{ nextProject.titleZh }}</p>
             <p class="text-[13px] font-mono text-text-tertiary mt-0.5">{{ nextProject.titleEn }}</p>
           </NuxtLink>

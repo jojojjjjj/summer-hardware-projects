@@ -4,23 +4,23 @@
     <!-- Decorative corner icons -->
     <!-- Top-left: Cpu -->
     <JackFadeIn :tag="'div'" :delay="0.1" :x="-80" :y="0" :duration="0.9" class="pointer-events-none absolute top-[4%] left-[1%] sm:left-[2%] md:left-[4%]">
-      <Cpu class="w-[120px] sm:w-[160px] md:w-[210px] h-auto opacity-15 text-indigo-400/60" aria-hidden="true" />
+      <Cpu class="w-[120px] max-sm:w-[80px] sm:w-[160px] md:w-[210px] h-auto opacity-15 text-indigo-400/60" aria-hidden="true" />
     </JackFadeIn>
 
     <!-- Bottom-left: CircuitBoard -->
     <JackFadeIn :tag="'div'" :delay="0.25" :x="-80" :y="0" :duration="0.9" class="pointer-events-none absolute bottom-[8%] left-[3%] sm:left-[6%] md:left-[10%]">
-      <CircuitBoard class="w-[100px] sm:w-[140px] md:w-[180px] h-auto opacity-15 text-indigo-400/60" aria-hidden="true" />
+      <CircuitBoard class="w-[100px] max-sm:w-[72px] sm:w-[140px] md:w-[180px] h-auto opacity-15 text-indigo-400/60" aria-hidden="true" />
     </JackFadeIn>
 
     <!-- Top-right: Bot -->
     <JackFadeIn :tag="'div'" :delay="0.15" :x="80" :y="0" :duration="0.9" class="pointer-events-none absolute top-[4%] right-[1%] sm:right-[2%] md:right-[4%]">
-      <Bot class="w-[120px] sm:w-[160px] md:w-[210px] h-auto opacity-15 text-indigo-400/60" aria-hidden="true" />
+      <Bot class="w-[120px] max-sm:w-[80px] sm:w-[160px] md:w-[210px] h-auto opacity-15 text-indigo-400/60" aria-hidden="true" />
     </JackFadeIn>
 
     <!-- Bottom-right: hand-art accent (V4 direct fusion) — "动手造物" motif.
          Replaces the generic Satellite icon with the real art, framed + tilted. -->
     <JackFadeIn :tag="'div'" :delay="0.3" :x="80" :y="0" :duration="0.9" class="pointer-events-none absolute bottom-[8%] right-[3%] sm:right-[6%] md:right-[10%]">
-      <img src="/media/hand-art.webp" alt="" class="w-[130px] sm:w-[170px] md:w-[220px] h-auto rotate-3 rounded-2xl border border-white/10 object-cover opacity-30" style="filter: saturate(0.9);" loading="lazy" decoding="async" />
+      <img src="/media/hand-art.webp" alt="" class="w-[130px] max-sm:w-[88px] sm:w-[170px] md:w-[220px] h-auto rotate-3 rounded-2xl border border-white/10 object-cover opacity-30" style="filter: saturate(0.9);" loading="lazy" decoding="async" />
     </JackFadeIn>
 
     <!-- Heading -->
@@ -86,21 +86,21 @@ const aboutTextEn = 'A summer hardware practicum for high school students. In 12
 
 const valueProps = [
   {
-    value: '9+',
-    label: '真实项目',
-    desc: '社区验证的开源硬件项目改编，非玩具示例',
+    value: '真实',
+    label: '开源硬件项目',
+    desc: '改编自社区验证的开源项目，能焊、能跑、能改',
     accent: '#9aa3d4',
   },
   {
-    value: '5',
-    label: '完整工程',
-    desc: '大学级课程体系：提案、评分、Git 工作流',
+    value: '严谨',
+    label: '大学级工程训练',
+    desc: '提案、周报、评分、Git 工作流，一套完整的工程闭环',
     accent: '#6366f1',
   },
   {
-    value: '∞',
-    label: '社区支持',
-    desc: '活跃开源社区 + 论坛资源，遇到问题不孤立',
+    value: '在场',
+    label: 'TA 全程辅导',
+    desc: '每堂课都有 TA 在现场，焊接、调试、报错随时问',
     accent: '#8b5cf6',
   },
 ]

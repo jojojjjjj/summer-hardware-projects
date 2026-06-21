@@ -18,7 +18,7 @@
           <button v-for="filter in difficultyFilters" :key="filter.value"
             @click="activeFilter = filter.value"
             :class="[
-              'rounded-full px-5 py-2 text-[13px] font-semibold transition-all duration-300',
+              'rounded-full px-5 py-2 max-md:py-3 text-[13px] font-semibold transition-all duration-300',
               activeFilter === filter.value
                 ? 'text-white shadow-glow'
                 : 'bg-white/[0.04] text-text-secondary hover:bg-white/[0.08] hover:text-text-primary'
@@ -60,7 +60,7 @@
               <div class="p-5">
                 <h3 class="text-base font-semibold tracking-tight text-text-primary transition-colors duration-300">{{ project.titleZh }}</h3>
                 <p class="mt-1.5 text-[13px] text-text-secondary">{{ project.subtitle }}</p>
-                <div class="mt-3 flex items-center gap-4 text-[12px] text-text-tertiary">
+                <div class="mt-3 flex items-center gap-4 text-[12px] max-md:text-[13px] text-text-tertiary">
                   <span>{{ project.duration }}{{ project.durationUnit }}</span>
                   <span>{{ project.mcu }}</span>
                 </div>

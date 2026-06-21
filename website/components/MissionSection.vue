@@ -47,7 +47,7 @@
               :key="`en-${i}`"
               :text="line"
               as="p"
-              :class="i === missionEnLines.length - 1 ? 'mt-1.5 pl-4 text-xs italic text-text-tertiary/70' : ''"
+              :class="i === missionEnLines.length - 1 ? 'mt-1.5 pl-4 text-xs italic text-text-tertiary/70 max-md:text-[13px]' : ''"
             />
           </div>
         </div>

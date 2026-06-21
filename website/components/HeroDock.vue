@@ -242,8 +242,16 @@ onUnmounted(() => {
 .docktip-enter-active, .docktip-leave-active { transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1); }
 .docktip-enter-from, .docktip-leave-to { opacity: 0; transform: translate(-50%, -90%); }
 
-@media (max-width: 640px) {
-  .dock-chip { width: 20px; height: 20px; }
-  .dock-orb { width: 12px; height: 12px; }
+/* 14 · mobile touch-up: enlarge the .dock-chip HIT AREA to 44px on phones while
+   keeping the .dock-orb visual at 14px (transparent tap cell + small glowing
+   dot). The shelf is overflow-x:auto + scroll-snap, so the wider dock scrolls
+   horizontally inside its shell (no page-level overflow). Replaces the old
+   max-width:640px block that SHRANK chips to 20px on the smallest phones
+   (backwards for touch). Scoped to <768px only — desktop keeps 22px chips. */
+@media (max-width: 767px) {
+  .dock-chip { width: 44px; height: 44px; }
+  .dock-orb { width: 14px; height: 14px; }
+  .tip-title { font-size: 13px; }
+  .tip-sub { font-size: 11px; }
 }
 </style>

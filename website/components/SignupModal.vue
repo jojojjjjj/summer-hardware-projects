@@ -14,7 +14,7 @@
             <img
               src="/media/signup-link.png"
               alt="报名链接"
-              class="w-[94vw] max-h-[86vh] rounded-2xl border border-white/10 object-contain shadow-2xl md:w-[1344px] md:max-w-[calc(100vw-2rem)]"
+              class="w-[calc(100vw-2.5rem)] max-h-[86vh] rounded-2xl border border-white/10 object-contain shadow-2xl md:w-[1344px] md:max-w-[calc(100vw-2rem)]"
               @click.stop
             />
 
@@ -23,14 +23,14 @@
               ref="closeBtnRef"
               type="button"
               aria-label="关闭"
-              class="absolute right-3 top-3 rounded-full bg-black/40 p-2 text-white transition-colors hover:bg-black/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+              class="absolute right-3 top-3 rounded-full bg-black/40 p-2 max-md:p-3 text-white transition-colors hover:bg-black/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
               @click="emit('close')"
             >
               <X class="h-5 w-5" aria-hidden="true" />
             </button>
 
             <!-- Caption -->
-            <p class="mt-3 text-center text-xs text-text-tertiary">
+            <p class="mt-3 text-center text-xs max-md:text-[13px] text-text-tertiary">
               扫码或长按识别报名 · Scan to register
             </p>
           </div>
