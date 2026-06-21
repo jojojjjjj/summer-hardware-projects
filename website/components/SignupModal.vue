@@ -14,7 +14,7 @@
             <img
               src="/media/signup-link.png"
               alt="报名链接"
-              class="max-w-[88vw] max-h-[80vh] rounded-2xl border border-white/10 object-contain shadow-2xl sm:max-w-sm md:max-w-md"
+              class="w-[94vw] max-h-[86vh] rounded-2xl border border-white/10 object-contain shadow-2xl md:w-[1344px] md:max-w-[calc(100vw-2rem)]"
               @click.stop
             />
 
