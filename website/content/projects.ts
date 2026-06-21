@@ -65,6 +65,7 @@ export interface Project {
   links: ProjectLinks
   mcu: string
   coreTech: string
+  cover?: string
 }
 
 /** Difficulty filter options */
@@ -87,6 +88,7 @@ export const projects: Project[] = [
     difficulty: 3, difficultyLabel: '中等', duration: 15, durationUnit: '天',
     color: 'text-project-01', colorHex: '#f97316', icon: 'ScanEye',
     mcu: 'STM32F411', coreTech: 'STM32 + MLX90640 + OpenCV + USB',
+    cover: '/media/thermal-cover.jpg',
     tags: [
       { label: 'STM32', color: 'bg-tag-bronze text-tag-bronze-text' },
       { label: 'OpenCV', color: 'bg-tag-solder text-tag-solder-text' },

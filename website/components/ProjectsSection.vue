@@ -94,14 +94,18 @@
           class="flex gap-6 px-6 md:px-[max(1.5rem,calc((100vw-72rem)/2+1.5rem))]"
           style="min-width: max-content;"
         >
-          <ProjectCard
+          <div
             v-for="(project, i) in filteredProjects"
             :key="project.id"
-            :project="project"
-            :video-poster="project.slug === 'pocket-signal-generator' ? '/media/code-river.jpg' : undefined"
-            :video-src="''"
+            class="shrink-0"
             :style="{ opacity: cardsVisible ? 1 : 0, transform: cardsVisible ? 'translateY(0)' : 'translateY(40px)', transition: `all 0.8s cubic-bezier(0.16,1,0.3,1) ${i * 0.08}s` }"
-          />
+          >
+            <ProjectCard
+              :project="project"
+              :video-poster="project.slug === 'pocket-signal-generator' ? '/media/code-river.jpg' : undefined"
+              :video-src="''"
+            />
+          </div>
         </div>
       </div>
     </div>

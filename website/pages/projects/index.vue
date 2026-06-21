@@ -30,44 +30,49 @@
         </div>
 
         <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <NuxtLink v-for="project in filteredProjects" :key="project.id"
-            :to="`/projects/${project.slug}`"
-            class="group block rounded-3xl border border-white/[0.06] bg-white/[0.02] overflow-hidden transition-all duration-300 hover:border-white/[0.12] hover:bg-white/[0.04] inner-glow">
-            <div class="relative aspect-[16/10] flex items-center justify-center overflow-hidden"
-              :style="{ background: `linear-gradient(145deg, ${project.colorHex}12 0%, ${project.colorHex}05 60%, transparent 100%)`, viewTransitionName: 'vt-project-' + project.slug }">
-              <span class="font-mono font-bold tracking-tighter text-5xl opacity-[0.05] select-none"
-                :style="{ color: project.colorHex }">
-                {{ project.titleEn }}
-              </span>
-              <div class="absolute top-3 left-3">
-                <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold font-mono tracking-wide backdrop-blur-sm"
-                  :style="{ backgroundColor: `${project.colorHex}25`, color: project.colorHex }">
-                  <span class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: project.colorHex }" />
-                  P{{ project.id }}
+          <TiltCard v-for="project in filteredProjects" :key="project.id"
+            :max-tilt="tiltFor(project.difficulty)" glow="cool">
+            <NuxtLink
+              :to="`/projects/${project.slug}`"
+              class="group block h-full rounded-3xl border border-white/[0.06] bg-white/[0.02] overflow-hidden transition-all duration-300 hover:border-white/[0.12] hover:bg-white/[0.04] inner-glow">
+              <div class="relative aspect-[16/10] flex items-center justify-center overflow-hidden"
+                :style="{ background: `linear-gradient(145deg, ${project.colorHex}12 0%, ${project.colorHex}05 60%, transparent 100%)`, viewTransitionName: 'vt-project-' + project.slug }">
+                <img v-if="project.cover" :src="project.cover" alt="" class="absolute inset-0 h-full w-full object-cover" style="object-position: center 65%;" loading="lazy" decoding="async" />
+                <div v-if="project.cover" class="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/70" />
+                <span v-if="!project.cover" class="font-mono font-bold tracking-tighter text-5xl opacity-[0.05] select-none"
+                  :style="{ color: project.colorHex }">
+                  {{ project.titleEn }}
                 </span>
+                <div class="absolute top-3 left-3">
+                  <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold font-mono tracking-wide backdrop-blur-sm"
+                    :style="{ backgroundColor: `${project.colorHex}25`, color: project.colorHex }">
+                    <span class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: project.colorHex }" />
+                    P{{ project.id }}
+                  </span>
+                </div>
+                <div class="absolute top-3 right-3">
+                  <span class="rounded-full px-2.5 py-1 text-[11px] font-semibold backdrop-blur-sm"
+                    :style="{ backgroundColor: getDifficultyColor(project.difficulty) + '20', color: getDifficultyColor(project.difficulty) }">
+                    {{ project.difficultyLabel }}
+                  </span>
+                </div>
               </div>
-              <div class="absolute top-3 right-3">
-                <span class="rounded-full px-2.5 py-1 text-[11px] font-semibold backdrop-blur-sm"
-                  :style="{ backgroundColor: getDifficultyColor(project.difficulty) + '20', color: getDifficultyColor(project.difficulty) }">
-                  {{ project.difficultyLabel }}
-                </span>
+              <div class="p-5">
+                <h3 class="text-base font-semibold tracking-tight text-text-primary transition-colors duration-300">{{ project.titleZh }}</h3>
+                <p class="mt-1.5 text-[13px] text-text-secondary">{{ project.subtitle }}</p>
+                <div class="mt-3 flex items-center gap-4 text-[12px] text-text-tertiary">
+                  <span>{{ project.duration }}{{ project.durationUnit }}</span>
+                  <span>{{ project.mcu }}</span>
+                </div>
+                <div class="mt-3 flex flex-wrap gap-1.5">
+                  <span v-for="tag in project.tags.slice(0, 3)" :key="tag.label"
+                    class="rounded-full px-2 py-0.5 text-[11px] font-semibold bg-white/[0.06] text-text-secondary">
+                    {{ tag.label }}
+                  </span>
+                </div>
               </div>
-            </div>
-            <div class="p-5">
-              <h3 class="text-base font-semibold tracking-tight text-text-primary transition-colors duration-300">{{ project.titleZh }}</h3>
-              <p class="mt-1.5 text-[13px] text-text-secondary">{{ project.subtitle }}</p>
-              <div class="mt-3 flex items-center gap-4 text-[12px] text-text-tertiary">
-                <span>{{ project.duration }}{{ project.durationUnit }}</span>
-                <span>{{ project.mcu }}</span>
-              </div>
-              <div class="mt-3 flex flex-wrap gap-1.5">
-                <span v-for="tag in project.tags.slice(0, 3)" :key="tag.label"
-                  class="rounded-full px-2 py-0.5 text-[11px] font-semibold bg-white/[0.06] text-text-secondary">
-                  {{ tag.label }}
-                </span>
-              </div>
-            </div>
-          </NuxtLink>
+            </NuxtLink>
+          </TiltCard>
         </div>
       </div>
     </section>
@@ -79,6 +84,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { projects, difficultyFilters } from '~/content/projects'
+import TiltCard from '~/components/TiltCard.vue'
 
 const activeFilter = ref(0)
 
@@ -96,6 +102,12 @@ function getFilterCount(value: number): number {
 function getDifficultyColor(d: number): string {
   const colors: Record<number, string> = { 1: '#3d8b5e', 2: '#3d8b5e', 3: '#c9944a', 4: '#ff9a76', 5: '#ff6b6b' }
   return colors[d] || '#c9944a'
+}
+
+/** Difficulty-scaled tilt — matches the landing shelf so all 9 cards feel consistent across scenes */
+function tiltFor(d: number): number {
+  const map: Record<number, number> = { 1: 4, 2: 4, 3: 6, 4: 8, 5: 10 }
+  return map[d] ?? 6
 }
 
 useHead({

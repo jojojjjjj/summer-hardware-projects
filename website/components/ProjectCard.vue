@@ -18,18 +18,18 @@
         <!-- Top area — gradient (default) or video/poster slot (featured card, V4) -->
         <div class="relative aspect-[4/3] flex items-center justify-center overflow-hidden px-6 pt-6">
           <MediaSlot
-            v-if="videoPoster"
+            v-if="coverImage"
             class="absolute inset-0"
             mode="bg-autoplay"
-            :poster="videoPoster"
+            :poster="coverImage"
             :src="videoSrc"
             overlay-class="bg-gradient-to-b from-black/30 via-transparent to-black/75"
           />
           <div v-else class="absolute inset-0" :style="{ background: `linear-gradient(180deg, ${project.colorHex}18 0%, ${project.colorHex}06 50%, transparent 100%)` }" />
 
-          <!-- Large project number watermark (hidden over video for clarity) -->
+          <!-- Large project number watermark (hidden over a cover image for clarity) -->
           <span
-            v-if="!videoPoster"
+            v-if="!coverImage"
             class="absolute font-mono font-bold leading-none select-none pointer-events-none transition-transform duration-700"
             :style="{
               color: project.colorHex,
@@ -160,6 +160,10 @@ const props = defineProps<{
 const isHovered = ref(false)
 const cardRef = ref<HTMLElement | null>(null)
 useSpotlight(cardRef, { glow: 'cool' })
+
+/** Cover image (project.cover) or the legacy video poster — either turns the card
+ *  top into a photo surface; the project-number watermark hides over a photo. */
+const coverImage = computed(() => props.project.cover || props.videoPoster)
 
 // Map a hex accent to "r, g, b" so the .spotlight follow-light tints to the card's own accent
 function glowRgb(hex: string): string {
