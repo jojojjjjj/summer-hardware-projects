@@ -446,3 +446,53 @@
   .noise-overlay::before, .noise::after { display: none; }
   body { background: white; color: black; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   Safari adaptation (Round 18) — Safari-scoped fixes ONLY.
+   Every rule here is gated by @supports / -webkit- feature detection that is
+   FALSE in Chrome/Edge/Firefox, so non-Safari browsers render byte-identically
+   before/after (pixel-verified in verify/safari/after). No design / layout-
+   structure / content / route changes. See verify/safari/audit.md.
+   These rules are intentionally UNLAYERED so they win over Tailwind's layered
+   utilities (e.g. .min-h-screen) in the cascade.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* F1 · Horizontal-clip robustness — body { overflow-x: clip } (set in @layer base)
+   is unsupported on Safari <16 → wide decor (JackMarquee, JackServices diagonal
+   slashes, ProjectsSection horizontal shelf) bleeds horizontally → page-level
+   horizontal scroll = "排版打架". Where `overflow: clip` is unsupported, fall back
+   to `overflow-x: hidden` on BOTH html (the universal horizontal-clip guarantee)
+   and body. GATED to old-Safari-only: modern WebKit + Chrome/Edge/Firefox all
+   support `overflow: clip`, so this block is skipped for them → they keep body's
+   `overflow-x: clip` and render byte-identically before/after. Safe because there
+   is NO active position:sticky anywhere (JackProjects sticky-stack was reverted),
+   so `overflow-x: hidden` cannot break sticky. */
+@supports not (overflow: clip) {
+  html { overflow-x: hidden; }
+  body { overflow-x: hidden; }
+}
+
+/* F2 · iPhone Safari 100vh bug. Tailwind's .min-h-screen (100vh) includes the
+   dynamic address-bar area, so HeroSection / JackAbout / the page wrapper are
+   taller than the visible viewport → bottom content (scroll indicator, dock,
+   next section) hides behind the address bar / overlaps the next section.
+   100dvh (dynamic viewport height) fits the visible area. Scoped to iOS Safari
+   ONLY via -webkit-touch-callout (an iOS-only property) AND dvh support — Mac
+   Safari has no 100vh bug (stable desktop viewport) and Chrome desktop/Android
+   are untouched, so the Chrome pixel-identical red line holds. */
+@supports (-webkit-touch-callout: none) and (height: 100dvh) {
+  .min-h-screen { min-height: 100dvh; }
+}
+
+/* F3 · mask-composite fallback for .glass-card::after (chromatic-dispersion
+   edge). The masked 1px gradient ring relies on mask-composite: exclude /
+   -webkit-mask-composite: xor. On Safari versions where neither composite
+   syntax renders correctly, the masked gradient can paint as a full rectangle.
+   Where mask-composite is unsupported, hide the ring — .glass-card keeps its
+   base `1px solid rgba(255,255,255,0.07)` border, so the card edge is still
+   defined. Chrome supports mask-composite: exclude → block skipped → unchanged.
+   (.hero-dock-shell::before gradient border has the same fallback in
+   HeroDock.vue's scoped style.) */
+@supports not ((mask-composite: exclude) or (-webkit-mask-composite: xor)) {
+  .glass-card::after { display: none; }
+}

@@ -31,7 +31,15 @@ defineProps<{ to: string }>()
   .jack-live-btn { padding: 0.875rem 2.5rem; }
 }
 .jack-live-btn:hover {
-  background: color-mix(in srgb, var(--accent, #d7e2ea) 10%, transparent);
+  background: rgba(255, 255, 255, 0.04);
   transform: translateY(-2px);
+}
+/* color-mix override — Safari 16.2+/Chrome/etc. The static fallback above
+   covers Safari 16.0-16.1 (color-mix dropped → no hover fill). Chrome supports
+   color-mix → same value → pixel-identical. (Round 18 Safari completeness fix.) */
+@supports (color: color-mix(in srgb, red, blue)) {
+  .jack-live-btn:hover {
+    background: color-mix(in srgb, var(--accent, #d7e2ea) 10%, transparent);
+  }
 }
 </style>

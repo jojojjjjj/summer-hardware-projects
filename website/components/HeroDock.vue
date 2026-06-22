@@ -160,6 +160,14 @@ onUnmounted(() => {
   mask-composite: exclude;
   pointer-events: none;
 }
+/* F3 (Round 18) · Safari mask-composite fallback. Where neither composite syntax
+   renders correctly, the masked gradient border can paint as a full rectangle and
+   occlude the dock chips. Hide it on unsupported browsers — the shelf keeps its
+   box-shadow inner-highlight edge. Chrome supports mask-composite: exclude →
+   block skipped → unchanged. */
+@supports not ((mask-composite: exclude) or (-webkit-mask-composite: xor)) {
+  .hero-dock-shell::before { display: none; }
+}
 
 .dock-chip {
   position: relative;

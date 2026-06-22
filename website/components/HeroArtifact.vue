@@ -427,12 +427,16 @@ onUnmounted(() => {
   height: 26px;
   margin: -13px 0 0 -13px;
   border-radius: 50%;
-  /* frosted glass: blur the scrub video behind the chip + a translucent tint */
-  background: color-mix(in srgb, var(--c) 26%, rgba(255, 255, 255, 0.05));
-  border: 1px solid color-mix(in srgb, var(--c) 55%, rgba(255, 255, 255, 0.28));
+  /* frosted glass: blur the scrub video behind the chip + a translucent tint.
+     Static fallbacks (Safari 16.0-16.1 lack color-mix → a color-mix value is
+     dropped wholesale, which would lose fill+border+glow at once). The tinted
+     color-mix values are restored in the @supports block below for browsers
+     that support color-mix. */
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.30);
   backdrop-filter: blur(7px) saturate(1.25);
   -webkit-backdrop-filter: blur(7px) saturate(1.25);
-  box-shadow: 0 0 14px color-mix(in srgb, var(--c) 70%, transparent),
+  box-shadow: 0 0 14px var(--c),
     inset 0 1px 2px rgba(255, 255, 255, 0.4),
     inset 0 -2px 4px rgba(0, 0, 0, 0.25);
   transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, background 0.28s ease;
@@ -453,10 +457,31 @@ onUnmounted(() => {
 }
 .ring-node.is-hover {
   transform: scale(1.55);
-  background: color-mix(in srgb, var(--c) 40%, rgba(255, 255, 255, 0.12));
-  box-shadow: 0 0 26px color-mix(in srgb, var(--c) 90%, transparent),
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 0 26px var(--c),
     inset 0 1px 2px rgba(255, 255, 255, 0.55),
     inset 0 -2px 4px rgba(0, 0, 0, 0.25);
+}
+/* color-mix override — Safari 16.2+/Chrome/Edge/Firefox. The static fallbacks
+   above cover Safari 16.0-16.1 (color-mix unsupported → the whole declaration
+   is dropped → chips would lose fill+border+glow and render as flat dots).
+   This @supports block restores the tinted color-mix values where supported;
+   Chrome already supports color-mix → identical values → pixel-identical.
+   (Round 18 Safari completeness fix.) */
+@supports (color: color-mix(in srgb, red, blue)) {
+  .ring-node {
+    background: color-mix(in srgb, var(--c) 26%, rgba(255, 255, 255, 0.05));
+    border: 1px solid color-mix(in srgb, var(--c) 55%, rgba(255, 255, 255, 0.28));
+    box-shadow: 0 0 14px color-mix(in srgb, var(--c) 70%, transparent),
+      inset 0 1px 2px rgba(255, 255, 255, 0.4),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.25);
+  }
+  .ring-node.is-hover {
+    background: color-mix(in srgb, var(--c) 40%, rgba(255, 255, 255, 0.12));
+    box-shadow: 0 0 26px color-mix(in srgb, var(--c) 90%, transparent),
+      inset 0 1px 2px rgba(255, 255, 255, 0.55),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.25);
+  }
 }
 
 .artifact-tooltip {
