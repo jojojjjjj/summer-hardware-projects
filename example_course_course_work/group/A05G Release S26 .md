@@ -32,7 +32,7 @@ This section includes commonly asked questions about the assignment. It will be 
 
 There are many components on your PCBA that were depopulated: **connectors, resistors, all through-hole components, etc**. It is now time for you to order these components so you may solder them onto your board later in the semester. **If you fail to order these parts, you will not have them for your final project assembly.** 
 
-**If your off-board components total more than $60, talk with your account manager.**
+**If your off-board components total more than <!-- $60 -->, talk with your account manager.**
 
 **Dev Board & Non-dev-board Stuff Specification**  
 If you plan to use **off-board development boards** for your final demo, you must order them as part of this assignment.

@@ -1,4 +1,5 @@
 # 高中生暑期硬件项目库 | High School Summer Hardware Project Repository
+<!-- 注：价格信息已注释隐藏（查价不准确，仅作参考不严谨）/ Note: price info commented out (inaccurate, not rigorous as reference) -->
 
 ## 项目定位 | Project Overview
 
@@ -44,7 +45,7 @@
 ### 3. 真实可复现（Reproducible & Open-source Based）
 所有项目基于社区已验证的开源项目改编，确保：
 - 有真实的社区资源和论坛支持
-- 硬件选型成本可控（< ¥500/套）
+- 硬件选型成本可控（<!-- < ¥500/套 -->）
 - 在标准暑期时间内可完成 MVP
 
 ---

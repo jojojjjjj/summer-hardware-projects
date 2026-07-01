@@ -1,4 +1,5 @@
 # 第一阶段：项目调研指令 | Phase 1: Research Phase Instructions
+<!-- 注：价格信息已注释隐藏（查价不准确，仅作参考不严谨）/ Note: price info commented out (inaccurate, not rigorous as reference) -->
 
 > 本文件指导调研员 Agent 如何搜索、筛选和记录候选开源项目。
 > This file guides researcher agents on how to search, filter, and document candidate open-source projects.
@@ -60,7 +61,7 @@
 **必须满足（硬性条件）：**
 1. 开源且有公开代码/硬件设计
 2. 核心功能可在 10-20 天内实现
-3. 硬件总成本 < ¥500（单套）
+3. 硬件总成本 <!-- < ¥500 -->（单套）
 4. 有社区讨论或教程资源
 
 **优先考虑（软性条件）：**
@@ -86,7 +87,7 @@
 - **关键组件：** 传感器、执行器、显示屏等
 - **社区数据：** ⭐ Stars | 最近更新 | Issues 数
 - **难度评分：** 1-5（1=入门，5=高级）
-- **成本估算：** ¥XXX
+- **成本估算：** <!-- ¥XXX -->
 - **适合改编度：** 1-5（1=不适合，5=非常适合）
 - **改编理由：** 一句话说明为什么适合/不适合高中生
 - **参考教程：** 相关教程链接（如有）

@@ -1,4 +1,5 @@
 # 项目二重新设计提示词 | Project 02 Redesign Prompt
+<!-- 注：价格信息已注释隐藏（查价不准确，仅作参考不严谨）/ Note: price info commented out (inaccurate, not rigorous as reference) -->
 
 > 重新设计**项目二（env-monitor / 环境感知监测站）**的课程包：以 Bilibili 视频 `BV1tb4y1U7Du` 为准，从项目二文件夹里**筛选提取有用的核心信息**（文件夹太大、大部分没用、核心只有一点点），据此重做课程包并同步网站数据。**只动项目二，其它项目/section 不动。**
 > Redesign Project 02's course-pack: use Bilibili video `BV1tb4y1U7Du` as the source of truth, extract the small useful core from the project-02 folder (mostly noise), rebuild the course-pack + sync website data. ONLY Project 02; everything else frozen.
@@ -67,11 +68,11 @@
 
 - **`README.md`**：项目概述、硬件平台、功能、技术栈、开源出处（视频 UP 主/原仓库）、Bilibili 视频链接、难度/时长
 - **`curriculum/`**：`overview.md`（项目目标/成果）、`prerequisites.md`（前置）、`day-01..day-10`（或 12，按 10-20 天约束）逐日教案（笨鸟先飞：讲 why 不止 how、含调试指南、常见错误）；`assignments.md`/`grading-rubric.md`
-- **`hardware/`**：`BOM.md`（**≤¥500/套**，含型号/规格/价格/购买参考）、`wiring-guide.md`、`assembly-steps.md`、`troubleshooting.md`
+- **`hardware/`**：`BOM.md`（<!-- ≤¥500/套 -->，含型号/规格/价格/购买参考）、`wiring-guide.md`、`assembly-steps.md`、`troubleshooting.md`
 - **`software/`**：`src/` 真实可跑代码（从视频源码提取/整理，**不是占位**）、`config.template.yaml`、`requirements.txt`、`tests/`
 - **`assignments/`**：周报、最终展示、评分量规
 - **双语**：中文为主、英文辅助（标题/关键术语/描述）
-- **约束**：硬件 <¥500、10-20 天、高中零基础可完成 MVP、基于真实开源/视频项目
+- **约束**：硬件 <!-- <¥500 -->、10-20 天、高中零基础可完成 MVP、基于真实开源/视频项目
 - **清噪**：把 `视频例程共享资源/` 里**确认无关的噪音**从子模块删除（commit 删除）；仅保留核心源码 + 直接相关参考。不确定的留作 `resources/` 并说明
 
 ---
@@ -103,7 +104,7 @@
 - **只动项目二**：`project-02-env-monitor-mid/`（子模块）+ `content/projects.ts` 的 02 条目。**其它 8 个项目、网站 section、视觉/动效/路由/全局 token 锁死。**
 - **视频为准**：课程包内容须与 Bilibili 视频 `BV1tb4y1U7Du` 一致；现课程包若冲突，以视频重做（重大方向冲突先问用户）
 - **核心提取**：只用文件夹里小部分有用信息，不硬塞噪音；无关 zip/exe/pdf 从子模块清掉
-- **保持**：双语；硬件 <¥500；10-20 天；高中零基础 MVP 可完成；基于真实开源/视频项目；`npm run build` 通过；SSG；`app.baseURL`
+- **保持**：双语；硬件 <!-- <¥500 -->；10-20 天；高中零基础 MVP 可完成；基于真实开源/视频项目；`npm run build` 通过；SSG；`app.baseURL`
 - **真实可跑**：`software/src/` 是视频源码整理出的真实代码，不是占位
 - **视觉验证产物一律 `verify/project02/`**
 
@@ -182,7 +183,7 @@ Agent **被完全授权**，可**自由 fan-out 子 Agent**、**自由用 skills
 2. ❌ 没筛选、把噪音硬塞进课程包 / 噪音未清
 3. ❌ `software/src/` 是占位/与视频无关的旧代码
 4. ❌ 改了项目二以外的项目 / 网站 section / 视觉 / 路由
-5. ❌ 硬件 BOM >¥500 / 时长不在 10-20 天 / 非双语 / 非真实开源基础
+5. ❌ 硬件 BOM <!-- >¥500 --> / 时长不在 10-20 天 / 非双语 / 非真实开源基础
 6. ❌ 详情页缺 Bilibili 链接 / `github` 非上游 / `adaptedRepo` 丢失
 7. ❌ 子模块未 commit+push / 父仓库未 bump 指针
 8. ❌ `npm run build` 失败 / SSG 破

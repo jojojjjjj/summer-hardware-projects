@@ -132,7 +132,7 @@ Remember the difference between **components** and **development boards**. Gener
 * At least one actuator in your system  
 * Graduate-level system complexity  
 * A reasonable budget for the sensors & actuators  
-  * \~$30 max for the sensors & actuators per PCB assembly (assuming chip component cost)  
+  * <!-- ~$30 max for the sensors & actuators per PCB assembly (assuming chip component cost) -->  
   * If you need more budget, email the professor to request special permission. We like to see you go above and beyond\!  
 * Runs from a single-cell Li-Ion battery (3.7V nominal voltage)  
   * [Your Battery for ESE5160](https://www.adafruit.com/product/1781)

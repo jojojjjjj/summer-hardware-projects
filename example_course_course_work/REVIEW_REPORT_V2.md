@@ -1,5 +1,7 @@
 # 评审报告 V2 | Review Report V2（体验式再审）
 
+<!-- 注：价格信息已注释隐藏（查价不准确，仅作参考不严谨）/ Note: price info commented out (inaccurate, not rigorous as reference) -->
+
 > 9 课程包再审，BAR = **夏令营体验式 + 每方面粗糙了解**（不是深学）。5 法官评审团（ultracode workflow 编排）+ Phase 2 修复。
 > 接 [REVIEW_REPORT.md](./REVIEW_REPORT.md)（旧评，2026-06-16，100 分制深度 bar）。本次用**体验式 bar 重判**——过深是扣分项，故旧评 86-97 的过深课程反而降级。
 > 评审 + 修复时间：2026-06-23。
@@ -12,7 +14,7 @@
 |---|---|---|---|---|---|---|
 | 01 | ThermalEyes | 3/5 | ⚠️ | ✅ | medium | 砍 Android 走 PC Python+OpenCV，开发板主线，HW2 校准降 CC |
 | 02 | EnvClock | 2/5 | ⚠️ | ✅ | small | 金标准复刻型；量规 GPA→体验档，LDO/Buck 去重 |
-| 03 | KeyForge | 4/5 | ❌ | ✅(主线) | rewrite | re-scope 精简键盘(<¥500)，FOC/音频/LVGL/语音→可选进阶 |
+| 03 | KeyForge | 4/5 | ❌ | ✅(主线) | rewrite | re-scope 精简键盘(<!-- <¥500 -->)，FOC/音频/LVGL/语音→可选进阶 |
 | 04 | WavePocket | 5/5 | ❌ | ✅ | rewrite | 修编码损坏，ZYNQ→iCE40（开发板+模块，开源工具链） |
 | 05 | DeskPet | 3/5 | ⚠️ | ✅ | medium | 删"大二级别"卖点，ST7789 统一，履带→选做 |
 | 06 | WeatherCube | 1/5 | ⚠️ | ✅ | small | P0 固件引脚 D1/D2→GPIO0/GPIO2（ESP-01S 可用） |
@@ -43,12 +45,12 @@
 - **保留**：作业 pipeline 依赖链、CC 5 题为什么、日常类比（厨房/红绿灯/快递/合唱团）、真代码脚手架。
 
 ### P02 EnvClock（⚠️→✅，金标准）
-- **优点**：复刻型（UP主固件已给，学生做接线+烧录+配置+调试+组装），作业考工程流程；成本 ¥100；五方面都能上手且说清 why；无脱节无红线。
+- **优点**：复刻型（UP主固件已给，学生做接线+烧录+配置+调试+组装），作业考工程流程；成本 <!-- ¥100 -->；五方面都能上手且说清 why；无脱节无红线。
 - **修**：grading-rubric 的 GPA 4.0→体验档三档；LDO vs Buck 题去重（5 处→保留 day-05 一处带答案）。
 
 ### P03 KeyForge（❌→✅主线）
-- **问题**：成本 ¥1028（翻倍违约束）+3×ESP32-S3+12 块 4 层 PCB+FOC 旋钮+I2S 音频+LVGL 圆屏+语音+HX711 厨房水槽+软件全 Python 模拟桩+网站 STM32F103 全脱节。
-- **修**：re-scope 主线为精简纯键盘（1×ESP32-S3+按键扫描+USB HID+1 无线+RGB，1-2 块双层 PCB 学生手焊，<¥500）；FOC 旋钮/语音/USB Hub/磁吸扩展→可选进阶，全配档仅作高配参考；音频/四层板→全配档参考主线不做；修 AS507P→AS5047P；同步 projects.ts→ESP32-S3/20 天。
+- **问题**：成本 <!-- ¥1028 -->（翻倍违约束）+3×ESP32-S3+12 块 4 层 PCB+FOC 旋钮+I2S 音频+LVGL 圆屏+语音+HX711 厨房水槽+软件全 Python 模拟桩+网站 STM32F103 全脱节。
+- **修**：re-scope 主线为精简纯键盘（1×ESP32-S3+按键扫描+USB HID+1 无线+RGB，1-2 块双层 PCB 学生手焊，<!-- <¥500 -->）；FOC 旋钮/语音/USB Hub/磁吸扩展→可选进阶，全配档仅作高配参考；音频/四层板→全配档参考主线不做；修 AS507P→AS5047P；同步 projects.ts→ESP32-S3/20 天。
 - **残留**：20 天 day-XX 逐日连贯性未全读；FOC 代码仍为模拟桩（已标可选进阶）。
 
 ### P04 WavePocket（❌→✅）
@@ -64,12 +66,12 @@
 ### P06 WeatherCube（⚠️→✅，金标准）
 - **问题**：**P0 固件引脚 bug**——标准固件用 D1/D2(=GPIO5/4)，ESP-01S 根本没引出这俩脚→照烧无显示；HW1 接线表同错；config 宏名与 .ino 变量不统一；网站 ESP32/TFT/8 天脱节。
 - **修**：固件引脚 D1/D2→GPIO0/GPIO2（ESP-01S 可用，pin 3/2），加注释说明；HW1 接线表改 GPIO0/GPIO2；config 统一；同步 projects.ts→ESP8266/OLED/12 天。
-- **保留**：复刻型、成本 ~¥45、脚手架强、U8g2/和风API 教学。
+- **保留**：复刻型、成本 <!-- ~¥45 -->、脚手架强、U8g2/和风API 教学。
 
 ### P07 BipedBot（⚠️→✅）
 - **问题**：自述"涉及大学水平的控制理论"把过深当卖点+HW2 Clarke/Park+HW4 倒立摆传递函数 G(s)=1/(Ms²-mgL) 推导偏深+网站 STM32F103 脱节+HW6 轮足混合运动过量。
 - **修**：删"大学水平控制理论"卖点改"体验倒立摆控制核心思想"；HW2 FOC 原理→调库+说清力矩平滑（不推 Clarke/Park）；HW4 传递函数→老师给+跑仿真说清为什么不稳定（不推导）；HW6 轮足混合→选做加分，保平衡+遥控为必做 MVP；day-12 硬件表统一 ESP32-S3/3S/MG996R；同步 projects.ts→ESP32-S3/12 天。
-- **保留**：类比极佳（IMU=前庭/PID=扫帚/串级=小脑+大脑）、复刻型、成本三档<¥500、真 C++ 代码、CC 5 题为什么。
+- **保留**：类比极佳（IMU=前庭/PID=扫帚/串级=小脑+大脑）、复刻型、成本三档<!-- <¥500 -->、真 C++ 代码、CC 5 题为什么。
 
 ### P08 ElectronBot（❌→✅P0修）
 - **问题**：Unity+C#+C++DLL(P/Invoke)+Python/OpenCV/OpenPose+LLM/STT/TTS 五层全栈+QFN-24/LQFP64 焊接需热风枪+4 层 PCB+网站 F411(无 USB HS OTG)脱节+舵机 x5/x6 矛盾+prerequisites 寄存器位操作+MVP 12 天不可行。
@@ -80,7 +82,7 @@
 ### P09 Desk Satellite（⚠️→✅，金标准）
 - **问题**：.ino 头部引脚注释陈旧错误（与 config/wiring 冲突会误导接错线）+day-07 触摸引脚 TOUCH_PIN=2 vs config=1+时长 12/14 脱节。
 - **修**：.ino 头部注释→"引脚映射见 config.h"（不列数字避免再过时）；day-07 触摸引脚统一 GPIO1（与 config/wiring 一致）；Phase3 加时间风险缓解提示；同步 projects.ts 时长 14→12。
-- **保留**：复刻金标准、真代码、成本 ~¥125、类比（SPI=高速公路/I2C=乡间小路）、结构 DNA 量裁到位。
+- **保留**：复刻金标准、真代码、成本 <!-- ~¥125 -->、类比（SPI=高速公路/I2C=乡间小路）、结构 DNA 量裁到位。
 
 ---
 

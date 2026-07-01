@@ -156,8 +156,9 @@ export const projects: Project[] = [
     id: '03', slug: '4mode-keyboard', number: 3,
     titleZh: '四模机械键盘', titleEn: 'KeyForge',
     subtitle: 'ESP32-S3 四模机械键盘', subtitleEn: 'ESP32-S3 quad-mode mechanical keyboard',
-    description: '基于 ESP32-S3 的机械键盘，支持 USB HID 有线与 BLE/ESP-NOW 无线，45 键布局、74HC165 移位扫描、WS2812B 背光。夏令营主线为精简档（成本 <¥500），FOC 旋钮/语音等列为可选进阶。',
-    descriptionEn: 'ESP32-S3-based mechanical keyboard with USB HID and BLE/ESP-NOW wireless, 45-key, 74HC165 shift-scan, WS2812B backlight. Summer-camp main line is a simplified tier (cost <¥500); FOC knob/voice are optional/advanced.',
+    // (成本 <¥500 / cost <¥500) removed — price hidden per user request (inaccurate, not rigorous as reference)
+    description: '基于 ESP32-S3 的机械键盘，支持 USB HID 有线与 BLE/ESP-NOW 无线，45 键布局、74HC165 移位扫描、WS2812B 背光。夏令营主线为精简档，FOC 旋钮/语音等列为可选进阶。',
+    descriptionEn: 'ESP32-S3-based mechanical keyboard with USB HID and BLE/ESP-NOW wireless, 45-key, 74HC165 shift-scan, WS2812B backlight. Summer-camp main line is a simplified tier; FOC knob/voice are optional/advanced.',
     difficulty: 4, difficultyLabel: '进阶', duration: 20, durationUnit: '天',
     color: 'text-project-03', colorHex: '#7c6bb5', icon: 'Keyboard',
     mcu: 'ESP32-S3', coreTech: 'ESP32-S3 + USB HID + BLE/ESP-NOW',

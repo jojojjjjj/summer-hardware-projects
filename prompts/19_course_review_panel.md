@@ -1,4 +1,5 @@
 # 课程设计评审团（体验式再审）提示词 | Course-Design Review Panel (Experiential Re-Review) Prompt
+<!-- 注：价格信息已注释隐藏（查价不准确，仅作参考不严谨）/ Note: price info commented out (inaccurate, not rigorous as reference) -->
 
 > 设立设计评审团，**再审一遍全部 9 个课程包**，看每个课程设计是否符合"夏令营=体验 + 每方面粗糙了解"的要求（不是每方面深学）。参考 `example_course_course_work/` 的课程设计结构，但**难度调到体验式、不深**；评审语言**平实、不官话**。执行 agent 自由设计 ultracode 动态 workflow 跑评审团。
 > A design review panel re-reviews all 9 course-packs against an *experiential* bar (rough hands-on breadth, not deep mastery). Reference `example_course_course_work/` structure but tune depth down; plain-language review (no bureaucratic tone). Agent freely designs the ultracode dynamic workflow.
@@ -30,7 +31,7 @@
 3. **粗糙广度 vs 深度**——每个方面**浅尝辄止**即可，别在一个点上深挖到大学大二。能说"这是什么、为什么这么选、我跑通了"就够，不要求精通。
 4. **语言平实**——课程文案/作业**说人话**，别学术腔/官腔/堆术语。有日常类比最好（参考 example 的"Why This Matters + 类比"）。发现官话连篇的，标出来改。
 5. **结构（借鉴 example，但简化）**——参考 `example_course_course_work/ABSTRACTED_DESIGN_METHODOLOGY.md` 的好 DNA：作业 pipeline（上一个是下一个的输入）、Learning Outcomes/Why This Matters/Comprehension Check/任务⭐难度/Rubric 模板、"对话式理解"（能说清为什么 > 做得多完美）。**但作业量/深度按体验档裁**，别照搬 ESE5160 的 12+ 份研究生作业量。
-6. **约束合规**——硬件 <¥500/套、10-20 天、双语（中为主英辅助）、基于真实开源/视频、MVP 可在夏令营完成、笨鸟先飞（讲 why 不止 how）。
+6. **约束合规**——硬件 <!-- <¥500/套 -->、10-20 天、双语（中为主英辅助）、基于真实开源/视频、MVP 可在夏令营完成、笨鸟先飞（讲 why 不止 how）。
 
 > **判级（平实）**：✅ 达标（体验式 bar 过）/ ⚠️ 要改（指出哪儿过深/官话/缺体验 + 怎么改）/ ❌ 不达标（明显跑偏，如纯理论无动手、或深到大学课）。不用打 100 分。
 
@@ -55,7 +56,7 @@
   - **J2 难度法官**：哪儿过深了？该简化到体验档的列出来
   - **J3 语言法官**：哪儿官话/学术腔？日常类比够不够？标出来改
   - **J4 结构法官**：pipeline/作业模板/Comprehension Check 借 example 了吗？作业量是否裁到体验档？
-  - **J5 约束法官**：<¥500/10-20 天/双语/开源/MVP/笨鸟先飞 合规吗？
+  - **J5 约束法官**：<!-- <¥500 -->/10-20 天/双语/开源/MVP/笨鸟先飞 合规吗？
 - **每课程产出**：✅/⚠️/❌ 判级 + 平实发现 + 具体改法（哪份文件、哪段、怎么改）
 - **综合**：每课程总判（达标/要改/不达标）+ 跨课程共性问题
 - **失败课程修+复审**（可选轻循环）：⚠️/❌ 的课程 → agent 按评审改（简化/去官话/补体验）→ 复审 → 达标为止（最多 3 轮）
@@ -94,7 +95,7 @@
 - **bar 是体验式**：每方面粗略了解、上手摸过、能说个大概为什么；**不深学**、不每样精通
 - **平实不官话**：评审输出 + 课程文案都说人话
 - **借 example 结构、不学深度**：pipeline/作业模板/Comprehension Check/类比借鉴；作业量裁到体验档
-- **保持**：双语；<¥500；10-20 天；开源基础；MVP 可完成；笨鸟先飞
+- **保持**：双语；<!-- <¥500 -->；10-20 天；开源基础；MVP 可完成；笨鸟先飞
 - **不动**：网站视觉/动效/路由/其它 section（只评审+改课程内容）
 - **不破坏**：已有正确内容只改评审指出处
 - **产物一律 `verify/course-review/`**；最终评审报告也放一份到 `example_course_course_work/REVIEW_REPORT_V2.md`（接旧报告）
@@ -171,7 +172,7 @@ Agent **被完全授权**，可**自由 fan-out 子 Agent**、**自由用 skills
 3. ❌ 课程仍过深（ZYNQ/多语言栈/寄存器级/全 PCB 未简化到体验档）
 4. ❌ 课程缺动手体验（纯理论、无脚手架、零基础跟不下来）
 5. ❌ 改课程破坏了已有正确内容 / 推倒重来
-6. ❌ 约束违例未修（>¥500 / 不在 10-20 天 / 非双语 / 非开源基础）
+6. ❌ 约束违例未修（<!-- >¥500 --> / 不在 10-20 天 / 非双语 / 非开源基础）
 7. ❌ 子模块未 commit+push / 父仓库未 bump
 8. ❌ 动了网站视觉/动效/路由（超出课程内容范围）
 9. ❌ 没出真机... 不适用；改为：没出最终评审报告（`review.md` + `REVIEW_REPORT_V2.md`）

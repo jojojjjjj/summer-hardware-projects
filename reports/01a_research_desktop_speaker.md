@@ -1,5 +1,6 @@
 # 调研员A - 桌宠机器人 & 智能音箱方向调研报告
 # Researcher A - Desktop Pet Robot & Smart Speaker Research Report
+<!-- 注：价格信息已注释隐藏（查价不准确，仅作参考不严谨）/ Note: price info commented out (inaccurate, not rigorous as reference) -->
 
 **调研日期 | Research Date:** 2026-05-05
 **调研方向 | Focus Areas:** 桌宠机器人 (Desktop Pet Robot), 智能音箱/语音助手 (Smart Speaker/Voice Assistant)
@@ -13,8 +14,8 @@
 
 | 项目名称 | 链接 | 方向 | 核心技术 | 难度 | 成本估算 | 适合改编度 |
 |---------|------|------|----------|------|----------|-----------|
-| Whisper Large V3 | [hf-audio/whisper-large-v3](https://hf.co/spaces/hf-audio/whisper-large-v3) | 智能音箱 | Transformer-based ASR | 2/5 | ¥0-50 | 5/5 |
-| Fast Whisper WebUI | [insanely-fast-whisper](https://hf.co/spaces/reedmayhew/insanely-fast-whisper-webui-zero) | 智能音箱 | 优化的Whisper推理 | 2/5 | ¥0-50 | 5/5 |
+| Whisper Large V3 | [hf-audio/whisper-large-v3](https://hf.co/spaces/hf-audio/whisper-large-v3) | 智能音箱 | Transformer-based ASR | 2/5 | <!-- ¥0-50 --> | 5/5 |
+| Fast Whisper WebUI | [insanely-fast-whisper](https://hf.co/spaces/reedmayhew/insanely-fast-whisper-webui-zero) | 智能音箱 | 优化的Whisper推理 | 2/5 | <!-- ¥0-50 --> | 5/5 |
 
 **改编理由 | Adaptation Rationale:**
 - Whisper是目前最准确的开源语音识别模型
@@ -32,10 +33,10 @@
 
 | 项目名称 | 链接 | 方向 | 核心技术 | 难度 | 成本估算 | 适合改编度 |
 |---------|------|------|----------|------|----------|-----------|
-| Edge TTS | [innoai/Edge-TTS](https://hf.co/spaces/innoai/Edge-TTS-Text-to-Speech) | 智能音箱 | Edge浏览器TTS引擎 | 1/5 | ¥0 | 5/5 |
-| Kaldi TTS | [k2-fsa/text-to-speech](https://hf.co/spaces/k2-fsa/text-to-speech) | 智能音箱 | Next-gen Kaldi | 3/5 | ¥0-50 | 4/5 |
-| SpeechT5 | [Transformers文档](https://hf.co/docs/transformers/tasks/text-to-speech) | 智能音箱 | SpeechT5架构 | 3/5 | ¥0-50 | 4/5 |
-| CSM 1B | [sesame/csm-1b](https://hf.co/sesame/csm-1b) | 智能音箱 | 现代TTS模型 | 3/5 | ¥0-50 | 4/5 |
+| Edge TTS | [innoai/Edge-TTS](https://hf.co/spaces/innoai/Edge-TTS-Text-to-Speech) | 智能音箱 | Edge浏览器TTS引擎 | 1/5 | <!-- ¥0 --> | 5/5 |
+| Kaldi TTS | [k2-fsa/text-to-speech](https://hf.co/spaces/k2-fsa/text-to-speech) | 智能音箱 | Next-gen Kaldi | 3/5 | <!-- ¥0-50 --> | 4/5 |
+| SpeechT5 | [Transformers文档](https://hf.co/docs/transformers/tasks/text-to-speech) | 智能音箱 | SpeechT5架构 | 3/5 | <!-- ¥0-50 --> | 4/5 |
+| CSM 1B | [sesame/csm-1b](https://hf.co/sesame/csm-1b) | 智能音箱 | 现代TTS模型 | 3/5 | <!-- ¥0-50 --> | 4/5 |
 
 **改编理由 | Adaptation Rationale:**
 - Edge TTS最简单，无需GPU，适合快速原型
@@ -53,7 +54,7 @@
 
 | 项目名称 | 链接 | 方向 | 核心技术 | 难度 | 成本估算 | 适合改编度 |
 |---------|------|------|----------|------|----------|-----------|
-| Wake Word RPi | [sharjeel103/wake_word_detection_smart_rpi](https://hf.co/sharjeel103/wake_word_detection_smart_rpi) | 智能音箱 | 专为树莓派优化 | 2/5 | ¥0-100 | 5/5 |
+| Wake Word RPi | [sharjeel103/wake_word_detection_smart_rpi](https://hf.co/sharjeel103/wake_word_detection_smart_rpi) | 智能音箱 | 专为树莓派优化 | 2/5 | <!-- ¥0-100 --> | 5/5 |
 
 **改编理由 | Adaptation Rationale:**
 - 专门针对树莓派优化的唤醒词检测
@@ -70,9 +71,9 @@
 
 | 项目名称 | 链接 | 方向 | 核心技术 | 难度 | 成本估算 | 适合改编度 |
 |---------|------|------|----------|------|----------|-----------|
-| Qwen2.5 Omni 7B | [Qwen/Qwen2.5-Omni-7B-Demo](https://hf.co/spaces/Qwen/Qwen2.5-Omni-7B-Demo) | 桌宠/音箱 | 文本/音频/图像/视频 | 4/5 | ¥200-500 | 3/5 |
-| Qwen3.5 Omni | [Qwen/Qwen3.5-Omni-Offline-Demo](https://hf.co/spaces/Qwen/Qwen3.5-Omni-Offline-Demo) | 桌宠/音箱 | 离线多模态对话 | 4/5 | ¥200-500 | 3/5 |
-| Groq Voice Assistant | [Groq/groq-gradio-voice-assistant](https://hf.co/spaces/Groq/groq-gradio-voice-assistant) | 智能音箱 | 实时语音对话 | 3/5 | ¥100-300 | 4/5 |
+| Qwen2.5 Omni 7B | [Qwen/Qwen2.5-Omni-7B-Demo](https://hf.co/spaces/Qwen/Qwen2.5-Omni-7B-Demo) | 桌宠/音箱 | 文本/音频/图像/视频 | 4/5 | <!-- ¥200-500 --> | 3/5 |
+| Qwen3.5 Omni | [Qwen/Qwen3.5-Omni-Offline-Demo](https://hf.co/spaces/Qwen/Qwen3.5-Omni-Offline-Demo) | 桌宠/音箱 | 离线多模态对话 | 4/5 | <!-- ¥200-500 --> | 3/5 |
+| Groq Voice Assistant | [Groq/groq-gradio-voice-assistant](https://hf.co/spaces/Groq/groq-gradio-voice-assistant) | 智能音箱 | 实时语音对话 | 3/5 | <!-- ¥100-300 --> | 4/5 |
 
 **改编理由 | Adaptation Rationale:**
 - Qwen Omni系列支持真正的全模态交互
@@ -92,7 +93,7 @@
 
 | 项目名称 | 链接 | 方向 | 核心技术 | 难度 | 成本估算 | 适合改编度 |
 |---------|------|------|----------|------|----------|-----------|
-| SERL | [serl-robot.github.io](https://serl-robot.github.io/) | 桌宠机器人 | 样本高效RL | 5/5 | ¥500-1000 | 2/5 |
+| SERL | [serl-robot.github.io](https://serl-robot.github.io/) | 桌宠机器人 | 样本高效RL | 5/5 | <!-- ¥500-1000 --> | 2/5 |
 
 **改编理由 | Adaptation Rationale:**
 - 2024年最新机器人RL框架
@@ -107,8 +108,8 @@
 
 | 项目名称 | 链接 | 方向 | 核心技术 | 难度 | 成本估算 | 适合改编度 |
 |---------|------|------|----------|------|----------|-----------|
-| Gym-Electric-Motor | [OpenAI Gym框架](https://hf.co/papers/1910.09434) | 桌宠机器人 | 电机控制仿真 | 3/5 | ¥50-200 | 4/5 |
-| Learning to Fly | [多无人机仿真](https://hf.co/papers/2103.02142) | 桌宠机器人 | Bullet物理引擎 | 4/5 | ¥100-300 | 3/5 |
+| Gym-Electric-Motor | [OpenAI Gym框架](https://hf.co/papers/1910.09434) | 桌宠机器人 | 电机控制仿真 | 3/5 | <!-- ¥50-200 --> | 4/5 |
+| Learning to Fly | [多无人机仿真](https://hf.co/papers/2103.02142) | 桌宠机器人 | Bullet物理引擎 | 4/5 | <!-- ¥100-300 --> | 3/5 |
 
 **改编理由 | Adaptation Rationale:**
 - Gym-Electric-Motor提供完整电机控制框架
@@ -125,8 +126,8 @@
 
 | 项目名称 | 链接 | 方向 | 核心技术 | 难度 | 成本估算 | 适合改编度 |
 |---------|------|------|----------|------|----------|-----------|
-| Chatbot Voice Assistant | [Muhammad-Hassaan/Chatbot_Voice_Assistant](https://hf.co/spaces/Muhammad-Hassaan/Chatbot_Voice_Assistant) | 智能音箱 | Gradio + 语音 | 2/5 | ¥100-300 | 5/5 |
-| Voice Enabled ChatBot | [qurbanalikhaskheli/Voice_Enabled_Assistant_ChatBot](https://hf.co/spaces/qurbanalikhaskheli/Voice_Enabled_Assistant_ChatBot) | 智能音箱 | Streamlit + 语音 | 2/5 | ¥100-300 | 5/5 |
+| Chatbot Voice Assistant | [Muhammad-Hassaan/Chatbot_Voice_Assistant](https://hf.co/spaces/Muhammad-Hassaan/Chatbot_Voice_Assistant) | 智能音箱 | Gradio + 语音 | 2/5 | <!-- ¥100-300 --> | 5/5 |
+| Voice Enabled ChatBot | [qurbanalikhaskheli/Voice_Enabled_Assistant_ChatBot](https://hf.co/spaces/qurbanalikhaskheli/Voice_Enabled_Assistant_ChatBot) | 智能音箱 | Streamlit + 语音 | 2/5 | <!-- ¥100-300 --> | 5/5 |
 
 **改编理由 | Adaptation Rationale:**
 - 完整的语音助手参考实现
@@ -151,7 +152,7 @@
   - TTS: Edge TTS
   - 唤醒词: sharjeel103/wake_word_detection_smart_rpi
   - LLM: API调用（可选离线小模型）
-- 成本: ¥300-400
+- 成本: <!-- ¥300-400 -->
 - 周期: 10-14天
 - 难度: 2/5
 
@@ -162,7 +163,7 @@
   - TTS: SpeechT5或CSM 1B
   - 唤醒词: 自定义训练
   - LLM: Qwen2.5-3B (本地量化)
-- 成本: ¥400-500
+- 成本: <!-- ¥400-500 -->
 - 周期: 14-20天
 - 难度: 3/5
 
@@ -176,7 +177,7 @@
   - 控制: C++/MicroPython
   - 语音: 连接RPi进行语音处理
   - 表情: LED矩阵或OLED屏幕
-- 成本: ¥200-300
+- 成本: <!-- ¥200-300 -->
 - 周期: 10-15天
 - 难度: 3/5
 
@@ -187,7 +188,7 @@
   - 视觉: OpenCV (人脸追踪)
   - 语音: 完整语音助手栈
   - 对话: Qwen2.5-Omni
-- 成本: ¥400-500
+- 成本: <!-- ¥400-500 -->
 - 周期: 18-20天
 - 难度: 4/5
 
@@ -200,7 +201,7 @@
 - 推荐树莓派使用: `openai/whisper-tiny` 或 `openai/whisper-base`
 
 ### 语音合成 (TTS) 组件
-- [Edge TTS](https://hf.co/spaces/innoai/Edge-TTS-Text-to-Speech) - 最简单，零成本
+- [Edge TTS](https://hf.co/spaces/innoai/Edge-TTS-Text-to-Speech) - 最简单，<!-- 零成本 -->
 - [SpeechT5](https://hf.co/docs/transformers/tasks/text-to-speech) - 支持多说话人
 - [CSM 1B](https://hf.co/sesame/csm-1b) - 现代高质量TTS
 
@@ -241,12 +242,12 @@
 
 ### 成本风险
 1. **硬件价格波动** | **Hardware price volatility**
-   - 树莓派价格在¥200-500之间波动
+   - 树莓派价格在<!-- ¥200-500 -->之间波动
    - 建议提前采购或使用ESP32替代
 
 2. **外围设备成本** | **Peripheral costs**
-   - 麦克风阵列: ¥100-300
-   - 舵机及驱动: ¥50-200
+   - 麦克风阵列: <!-- ¥100-300 -->
+   - 舵机及驱动: <!-- ¥50-200 -->
    - 建议预留20%预算
 
 ---

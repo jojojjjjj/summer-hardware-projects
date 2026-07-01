@@ -1,7 +1,8 @@
 # Top 3 项目最终选择 | Top 3 Project Final Selection
+<!-- 注：价格信息已注释隐藏（查价不准确，仅作参考不严谨）/ Note: price info commented out (inaccurate, not rigorous as reference) -->
 
 **选择日期 | Date:** 2026-05-05
-**选择标准 | Criteria:** 覆盖 ≥2 个方向、难度梯度合理、改编路径清晰、成本 < ¥500
+**选择标准 | Criteria:** 覆盖 ≥2 个方向、难度梯度合理、改编路径清晰、成本 <!-- < ¥500 -->
 
 ---
 
@@ -14,7 +15,7 @@
 | **方向** | 智能音箱 / 语音助手 |
 | **难度梯度** | ★★☆☆☆（最易，适合入门） |
 | **预计周期** | 12-15 天 |
-| **硬件成本** | ¥350-400 |
+| **硬件成本** | <!-- ¥350-400 --> |
 | **核心技术** | Python, Whisper (ASR), Edge TTS, LLM API, Raspberry Pi |
 | **开源基础** | Whisper (OpenAI), Edge TTS, wake_word_detection_smart_rpi, Gradio Voice Assistant |
 | **改编路径** | Phase 1: 文字对话 → Phase 2: 语音输入(STT) → Phase 3: 语音输出(TTS) → Phase 4: 唤醒词 |
@@ -34,14 +35,14 @@
 | **方向** | 环境感知 IoT |
 | **难度梯度** | ★★★☆☆（中等） |
 | **预计周期** | 12-15 天 |
-| **硬件成本** | ¥250-350 |
+| **硬件成本** | <!-- ¥250-350 --> |
 | **核心技术** | ESP32, ESPHome/MicroPython, MQTT, BME680, PM传感器, Grafana |
 | **开源基础** | ESPHome, Klimerko, BME680-Python, Smogly |
 | **改编路径** | Phase 1: 单传感器读取 → Phase 2: 多传感器整合 → Phase 3: 数据上传(MQTT) → Phase 4: 可视化仪表盘 |
 
 **选择理由 | Why this project:**
 - IoT 入门的经典项目，覆盖嵌入式开发全链路
-- ESP32 成本极低（¥35），整套硬件 ¥300 以内
+- ESP32 成本极低（<!-- ¥35 -->），整套硬件 <!-- ¥300 以内 -->
 - 社会意义强（空气质量、环境健康），容易引发学员兴趣
 - 前半程可使用 ESPHome 低门槛入门，后半程用 MicroPython 深化编程
 
@@ -54,7 +55,7 @@
 | **方向** | 视觉 / CV |
 | **难度梯度** | ★★★★☆（较高，作为进阶项目） |
 | **预计周期** | 14-18 天 |
-| **硬件成本** | ¥300-500 |
+| **硬件成本** | <!-- ¥300-500 --> |
 | **核心技术** | Python, MediaPipe, OpenCV, 摄像头, 实时交互 |
 | **开源基础** | Google MediaPipe, OpenCV, ESP32-CAM |
 | **改编路径** | Phase 1: 摄像头采集+显示 → Phase 2: 手部关键点检测 → Phase 3: 手势识别+交互 → Phase 4: 创意扩展(手势控制游戏/音乐/灯光) |

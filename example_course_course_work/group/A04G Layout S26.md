@@ -32,7 +32,7 @@ This section includes commonly asked questions about the assignment. It will be 
 
 For your project, you will need several breakout boards to prototype with the **BRD2708A development board** before receiving your custom PCBs. To ensure smooth progress, you must **order 1x development/breakout boards for your most critical component now**. Failure to do so in time may prevent you from completing **Assignment A08**.
 
-Note: If your dev board exceeds $35, ask your account manager for approval.
+Note: If your dev board exceeds <!-- $35 -->, ask your account manager for approval.
 
 **Submission:** Order your Most Risky Component using this form [https://forms.gle/t21AdA35igJYsziRA](https://forms.gle/t21AdA35igJYsziRA) 
 
