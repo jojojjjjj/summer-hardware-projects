@@ -48,6 +48,92 @@
       </div>
     </section>
 
+    <!-- Project Deep-Dive: summary + who-it's-for + essay takeaways (data-driven; renders only when project.deepDive exists) -->
+    <section v-if="project.deepDive" class="section-dark py-20 sm:py-28">
+      <div class="mx-auto max-w-5xl px-6">
+        <div class="mb-14">
+          <div class="mb-4 flex items-center gap-3">
+            <span class="h-px w-8" :style="{ background: project.colorHex }" />
+            <p class="eyebrow" :style="{ color: project.colorHex }">详解 · Deep Dive</p>
+          </div>
+          <h2 class="text-subsection font-semibold tracking-tight">项目详解</h2>
+          <p class="mt-4 text-[14px] max-md:text-[13px] text-text-tertiary max-w-2xl leading-relaxed">这个项目能带来什么、适合什么样的学生、又如何成为大学申请文书里的真实素材。</p>
+        </div>
+
+        <!-- 项目说明 / Overview -->
+        <div class="mb-16">
+          <div class="mb-5 flex items-center gap-3">
+            <span class="h-px w-6 bg-white/10" />
+            <p class="eyebrow" :style="{ color: project.colorHex }">项目说明 · OVERVIEW</p>
+          </div>
+          <div class="relative rounded-3xl border border-white/[0.06] bg-white/[0.02] p-6 md:p-9 inner-glow overflow-hidden">
+            <div class="absolute top-0 left-0 h-full w-1" :style="{ background: project.colorHex }" />
+            <p class="text-[17px] sm:text-[19px] text-text-primary leading-relaxed font-medium">{{ project.deepDive.summaryZh }}</p>
+            <p class="mt-4 text-[13px] max-md:text-[13px] text-text-tertiary leading-relaxed font-mono">{{ project.deepDive.summaryEn }}</p>
+          </div>
+        </div>
+
+        <!-- 适合谁 / Who It's For -->
+        <div class="mb-16">
+          <div class="mb-6 flex items-center gap-3">
+            <span class="h-px w-6 bg-white/10" />
+            <p class="eyebrow" :style="{ color: project.colorHex }">适合谁 · WHO IT'S FOR</p>
+          </div>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div v-for="(aud, i) in project.deepDive.audiences" :key="aud.key"
+              class="rounded-3xl border border-white/[0.06] bg-white/[0.02] p-6 md:p-7 inner-glow">
+              <div class="mb-3 flex items-baseline gap-2.5">
+                <span class="text-[12px] font-mono font-bold" :style="{ color: project.colorHex }">{{ String(i + 1).padStart(2, '0') }}</span>
+                <h3 class="text-[15px] font-semibold text-text-primary">{{ aud.labelZh }}</h3>
+                <span class="text-[11px] font-mono text-text-tertiary">· {{ aud.labelEn }}</span>
+              </div>
+              <p class="text-[13.5px] max-md:text-[13px] text-text-secondary leading-relaxed">{{ aud.whoZh }}</p>
+              <p class="mt-3 text-[12px] max-md:text-[12px] text-text-tertiary leading-relaxed font-mono">{{ aud.whoEn }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 文书方向 / Essay Takeaways -->
+        <div>
+          <div class="mb-4 flex items-center gap-3">
+            <span class="h-px w-6 bg-white/10" />
+            <p class="eyebrow" :style="{ color: project.colorHex }">文书方向 · ESSAY TAKEAWAYS</p>
+          </div>
+          <p class="mb-6 text-[13px] max-md:text-[13px] text-text-tertiary leading-relaxed max-w-2xl">夏令营期间每个部分都会有基础了解；任意一个方向，只要你的申请方向在 CS / 工程相关，都可以延展为文书的主要收获。以下 8 个方向各自对得上项目里的具体知识点。</p>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div v-for="(t, i) in project.deepDive.takeaways" :key="t.id"
+              class="relative rounded-3xl border border-white/[0.06] bg-white/[0.02] p-6 md:p-7 inner-glow overflow-hidden">
+              <div class="absolute top-0 left-0 h-full w-0.5" :style="{ background: project.colorHex + '60' }" />
+              <div class="mb-4 flex items-baseline gap-3">
+                <span class="text-[12px] font-mono font-bold" :style="{ color: project.colorHex }">{{ String(i + 1).padStart(2, '0') }}</span>
+                <div>
+                  <h3 class="text-[15px] font-semibold text-text-primary leading-snug">{{ t.titleZh }}</h3>
+                  <p class="text-[11px] font-mono text-text-tertiary mt-0.5">{{ t.titleEn }}</p>
+                </div>
+              </div>
+              <div class="space-y-3.5">
+                <div>
+                  <p class="text-[10px] font-mono tracking-[0.16em] text-text-tertiary/80 mb-1">项目对应 · IN THE PROJECT</p>
+                  <p class="text-[13px] max-md:text-[13px] text-text-secondary leading-relaxed">{{ t.projectElementZh }}</p>
+                  <p class="text-[11px] text-text-tertiary leading-relaxed font-mono mt-1">{{ t.projectElementEn }}</p>
+                </div>
+                <div>
+                  <p class="text-[10px] font-mono tracking-[0.16em] text-text-tertiary/80 mb-1">知识点 · KNOWLEDGE</p>
+                  <p class="text-[13px] max-md:text-[13px] text-text-secondary leading-relaxed">{{ t.knowledgePointZh }}</p>
+                  <p class="text-[11px] text-text-tertiary leading-relaxed font-mono mt-1">{{ t.knowledgePointEn }}</p>
+                </div>
+                <div>
+                  <p class="text-[10px] font-mono tracking-[0.16em] text-text-tertiary/80 mb-1">文书角度 · ESSAY ANGLE</p>
+                  <p class="text-[13px] max-md:text-[13px] text-text-secondary leading-relaxed">{{ t.essayAngleZh }}</p>
+                  <p class="text-[11px] text-text-tertiary leading-relaxed font-mono mt-1">{{ t.essayAngleEn }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Skills -->
     <section class="section-elevated py-20 sm:py-28">
       <div class="mx-auto max-w-5xl px-6">
