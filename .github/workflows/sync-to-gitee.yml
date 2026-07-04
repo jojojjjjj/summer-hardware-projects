@@ -1,0 +1,47 @@
+name: Sync to Gitee (mirror + rewrite submodules)
+
+# One-way mirror: GitHub (source of truth) -> Gitee (copy).
+# The Gitee copy is self-contained: .gitmodules is rewritten so submodules
+# also resolve from Gitee. GitHub is never modified by this workflow.
+
+on:
+  push:
+    branches: [master]
+  schedule:
+    - cron: '17 7 * * *'   # daily fallback resync
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history, no submodules)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: false
+
+      - name: Rewrite .gitmodules -> Gitee and push
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEE_PRIVATE_TOKEN }}
+        run: |
+          set -euo pipefail
+          GITEE_USER='sandpie'
+          DEST="https://${GITEE_USER}:${GITEE_TOKEN}@gitee.com/${GITEE_USER}/summer-hardware-projects.git"
+
+          # Point submodule URLs at the Gitee mirrors
+          if [ -f .gitmodules ]; then
+            sed -i "s|github.com/jojojjjjj/|gitee.com/${GITEE_USER}/|g" .gitmodules
+          fi
+
+          git config user.name  "gitee-mirror-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore: point submodules to Gitee mirror" || echo "nothing to commit"
+
+          # Force-push current branch to Gitee master + all tags.
+          # Force is required: the rewrite commit makes the Gitee tip diverge each sync.
+          git push --force "$DEST" HEAD:master
+          git push --force "$DEST" --tags
