@@ -56,6 +56,9 @@ website/verify/
 # Old website backup (not tracked)
 website-old/
 
+# Lectures (separate PRIVATE repo — never commit to this public parent)
+lectures/
+
 # Claude worktrees
 .claude/worktrees/
 
