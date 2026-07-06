@@ -1,8 +1,14 @@
 name: Sync to Gitee (mirror + rewrite submodules)
 
-# One-way mirror: GitHub (source of truth) -> Gitee (copy).
-# The Gitee copy is self-contained: .gitmodules is rewritten so submodules
-# also resolve from Gitee. GitHub is never modified by this workflow.
+# One-way mirror: GitHub (source of truth) -> Gitee (copy), self-contained
+# (.gitmodules rewritten → gitee.com/sandpie). GitHub is never modified.
+#
+# The push is a FAST-FORWARD (never a force-push): Gitee hangs on
+# force-push / history-rewrite, but fast-forwards work (the submodule mirrors
+# prove it). So instead of committing the rewrite on top of GitHub master and
+# force-pushing (which diverges from Gitee's tip), we build the mirror commit
+# directly on top of Gitee's current master via `git commit-tree`, then push it
+# as a fast-forward. Self-contained .gitmodules is preserved.
 
 on:
   push:
@@ -19,13 +25,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
-      - name: Checkout (full history, no submodules)
+      - name: Checkout GitHub master (shallow)
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           submodules: false
 
-      - name: Rewrite .gitmodules -> Gitee and push
+      - name: Build self-contained mirror commit (fast-forward) and push
         env:
           GITEE_TOKEN: ${{ secrets.GITEE_PRIVATE_TOKEN }}
           GIT_TERMINAL_PROMPT: '0'   # never hang on a credential prompt — fail instead
@@ -33,18 +39,25 @@ jobs:
           set -euo pipefail
           GITEE_USER='sandpie'
           DEST="https://${GITEE_USER}:${GITEE_TOKEN}@gitee.com/${GITEE_USER}/summer-hardware-projects.git"
-
-          # Point submodule URLs at the Gitee mirrors
-          if [ -f .gitmodules ]; then
-            sed -i "s|github.com/jojojjjjj/|gitee.com/${GITEE_USER}/|g" .gitmodules
-          fi
-
           git config user.name  "gitee-mirror-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "chore: point submodules to Gitee mirror" || echo "nothing to commit"
 
-          # Force-push with a hard timeout: a stalled Gitee connection fails fast
-          # (daily cron 07:17 UTC retries) instead of hanging for hours.
-          # Force is required: the rewrite commit makes the Gitee tip diverge each sync.
-          timeout 300 git push --force "$DEST" HEAD:master
-          timeout 120 git push --force "$DEST" --tags || echo "tags push skipped"
+          # 1. Rewrite .gitmodules → Gitee (in the GitHub master tree) + stage only that.
+          if [ -f .gitmodules ]; then
+            sed -i "s|github.com/jojojjjjj/|gitee.com/${GITEE_USER}/|g" .gitmodules
+            git add .gitmodules
+          fi
+          TREE=$(git write-tree)   # = GitHub master tree + rewritten .gitmodules
+
+          # 2. Fetch Gitee's current master (shallow) so the new commit fast-forwards over it.
+          #    If Gitee is empty (first ever run), fall back to a root commit.
+          if timeout 90 git fetch --depth=1 "$DEST" master:refs/remotes/gitee/master 2>/dev/null; then
+            PARENT=$(git rev-parse refs/remotes/gitee/master)
+            C=$(git commit-tree "$TREE" -p "$PARENT" -m "chore: mirror master + point submodules to Gitee")
+          else
+            C=$(git commit-tree "$TREE" -m "chore: mirror master + point submodules to Gitee")
+          fi
+
+          # 3. Push as a fast-forward (no --force). Hard timeout → fail fast, daily cron retries.
+          timeout 300 git push "$DEST" "$C:master"
+          timeout 120 git push "$DEST" --tags || echo "tags push skipped"
