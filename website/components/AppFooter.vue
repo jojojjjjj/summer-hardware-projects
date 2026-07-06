@@ -72,6 +72,7 @@ const navLinks = [
 
 const externalLinks = [
   { label: 'GitHub', href: 'https://github.com/jojojjjjj/summer-hardware-projects' },
+  { label: 'Gitee', href: 'https://gitee.com/sandpie/summer-hardware-projects' },
 ]
 
 function scrollToTop() {

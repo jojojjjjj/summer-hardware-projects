@@ -248,6 +248,13 @@
             <span class="font-mono underline-offset-4 group-hover:underline decoration-white/25">{{ adaptedRepoShort }}</span>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
           </a>
+          <!-- Gitee mirror of the user's adapted repo (small, below the adaptation) -->
+          <a v-if="adaptedGiteeUrl" :href="adaptedGiteeUrl" target="_blank" rel="noopener noreferrer"
+            class="group mt-2 inline-flex items-center gap-1.5 text-[12px] max-md:text-[13px] text-text-tertiary/70 transition-colors hover:text-text-secondary max-md:min-h-[44px] max-md:px-2">
+            <span class="text-text-tertiary/60">Gitee 镜像 · Gitee mirror:</span>
+            <span class="font-mono underline-offset-4 group-hover:underline decoration-white/25">{{ adaptedGiteeShort }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+          </a>
         </div>
 
         <!-- Supporting links: bilibili / other original sources (equal pills) -->
@@ -341,6 +348,10 @@ const supportingLinks = computed(() => {
 })
 
 const adaptedRepoShort = computed(() => (project.links.adaptedRepo ? shortRepo(project.links.adaptedRepo) : ''))
+
+/** Gitee mirror of the user's adapted repo — derived: gitee.com/sandpie mirrors github.com/jojojjjjj (same folder names). */
+const adaptedGiteeUrl = computed(() => (project.links.adaptedRepo ? project.links.adaptedRepo.replace('github.com/jojojjjjj', 'gitee.com/sandpie') : ''))
+const adaptedGiteeShort = computed(() => (adaptedGiteeUrl.value ? shortRepo(adaptedGiteeUrl.value) : ''))
 
 definePageMeta({
   validate: (route) => {
