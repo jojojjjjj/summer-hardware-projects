@@ -17,6 +17,7 @@ permissions:
 jobs:
   mirror:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
       - name: Checkout (full history, no submodules)
         uses: actions/checkout@v4
@@ -27,6 +28,7 @@ jobs:
       - name: Rewrite .gitmodules -> Gitee and push
         env:
           GITEE_TOKEN: ${{ secrets.GITEE_PRIVATE_TOKEN }}
+          GIT_TERMINAL_PROMPT: '0'   # never hang on a credential prompt — fail instead
         run: |
           set -euo pipefail
           GITEE_USER='sandpie'
@@ -41,7 +43,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -am "chore: point submodules to Gitee mirror" || echo "nothing to commit"
 
-          # Force-push current branch to Gitee master + all tags.
+          # Force-push with a hard timeout: a stalled Gitee connection fails fast
+          # (daily cron 07:17 UTC retries) instead of hanging for hours.
           # Force is required: the rewrite commit makes the Gitee tip diverge each sync.
-          git push --force "$DEST" HEAD:master
-          git push --force "$DEST" --tags
+          timeout 300 git push --force "$DEST" HEAD:master
+          timeout 120 git push --force "$DEST" --tags || echo "tags push skipped"
