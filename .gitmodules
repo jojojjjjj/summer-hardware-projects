@@ -34,3 +34,7 @@
 	path = project-09-desk-satellite-high
 	url = https://github.com/jojojjjjj/project-09-desk-satellite-high.git
 	branch = main
+[submodule "lectures"]
+	path = lectures
+	url = https://github.com/jojojjjjj/lectures.git
+	branch = main
