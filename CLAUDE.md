@@ -71,7 +71,8 @@ How to use: serve the built site (`npm run preview` from `website/`, or serve `.
 ### Deployment
 
 - `npm run build` (`nuxt generate`) writes static output to `website/.output/public`. `.output/` and the `dist/` symlink are gitignored.
-- `docs/` (at repo root) is the GitHub Pages source and **is committed**. It holds a copy of the generated export (`_nuxt/`, `_payload.json`, `index.html`, `404.html`, `200.html`, `projects/`). Re-running the build does **not** automatically update `docs/` — after generating, copy the export into `../docs/` (the `.nojekyll` file there disables Jekyll).
+- `docs/` (at repo root) is the GitHub Pages source and **is committed**. It holds a copy of the generated export (`_nuxt/`, `_payload.json`, `index.html`, `404.html`, `200.html`, `projects/`). Re-running the build does **not** automatically update `docs/` — after generating, copy the export into `../docs/` (the `.nojekyll` there is retained but unused under Actions deploy).
+- **GitHub Pages is Actions-deployed** (`.github/workflows/deploy-pages.yml`, `build_type: workflow`), NOT the legacy branch builder. The workflow uploads the committed `docs/` via `actions/deploy-pages` with `submodules: false` and triggers only on `docs/**` changes (plus `workflow_dispatch`). ⚠️ Do NOT switch Pages back to `build_type: legacy` — the legacy builder runs `submodules: recursive` on every push and 404s on the **private** `lectures` submodule, failing every push (this was the 2026-07-06→07-13 regression; github.io froze at the 07-06 build). Production deploy is **Cloudflare Pages** (`deploy-cf-pages.yml` → `duoweisummer.pages.dev`, on `website/**` push) + **Tencent** (`deploy-tencent.yml` → `duowei-summer.cn` post-ICP-filing); the github.io site is a secondary mirror.
 - `nuxt.config.ts` sets `app.baseURL` to `/summer-hardware-projects` in production and `/` in dev — so all asset/route URLs are prefixed only in the deployed build. Run dev with no prefix.
 
 ---
