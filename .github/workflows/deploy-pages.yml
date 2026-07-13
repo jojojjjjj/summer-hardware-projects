@@ -1,0 +1,53 @@
+# GitHub Pages 部署（Actions 模式）—— 取代经典的 legacy 分支构建器
+# Actions-based Pages deploy — replaces the legacy branch builder, which failed
+# on EVERY push because its checkout recursed into the private `lectures`
+# submodule (404 "Repository not found"). This workflow checks out with
+# submodules:false (default) and serves the committed docs/ folder — the
+# pre-built Nuxt export — without touching any submodule.
+#
+# 生产部署是 Cloudflare Pages (deploy-cf-pages.yml) + 腾讯云 (deploy-tencent.yml)。
+# 这个 github.io 站点是二级镜像。docs/ 需在本地 `npm run generate` 后手动同步
+# (复制 website/.output/public → docs/)，本 workflow 不重新构建，只上传已提交的 docs/。
+#
+# Trigger: only when docs/ (or this workflow file) changes on master.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write   # required by actions/deploy-pages (OIDC)
+
+# 同分支新 push 取消旧 run, 避免并发部署冲突
+concurrency:
+  group: github-pages-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # submodules: false (default) — lectures 私有子模块不需要, 也不克隆
+      - uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload docs/ as Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
