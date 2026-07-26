@@ -277,6 +277,7 @@ export const projects: Project[] = [
       gitee: 'https://gitee.com/esp-friends/esp_sparkbot',
       bilibili: 'https://www.bilibili.com/video/BV1MezzYaEfP/',
       other: [
+        { label: '实时语音参考 · volc_rtc (ESP-ADF)', url: 'https://github.com/espressif/esp-adf/tree/master/examples/ai_agent/volc_rtc' },
         { label: '进阶原项目 · AI DesktopCat', url: 'https://github.com/AI-FanGe/AI_DesktopCat_Qwen3.5Omni' },
       ],
       adaptedRepo: 'https://github.com/jojojjjjj/project-05-desktop-pet-mid',
